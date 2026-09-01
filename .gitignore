@@ -1,0 +1,34 @@
+# Entorno
+/.env
+
+# Configuración local de Claude Code (contiene historial de comandos permitidos,
+# que puede incluir credenciales pegadas en comandos de esta máquina — nunca subir).
+/.claude/
+
+# Logs y caché
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/cache/*
+!/storage/cache/.gitkeep
+
+# Respaldos de BD/archivos y documentos privados subidos por clientes (facturas,
+# CVs, logos de cotización) — nunca deben vivir en el repositorio.
+/storage/backups/*
+!/storage/backups/.gitkeep
+/storage/cotizaciones_logos/*
+!/storage/cotizaciones_logos/.gitkeep
+/storage/cvs/*
+!/storage/cvs/.gitkeep
+/storage/facturas/*
+!/storage/facturas/.gitkeep
+
+# Subidas de usuarios
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Dependencias (por si se usa Composer más adelante)
+/vendor/
+
+# Sistema
+.DS_Store
+Thumbs.db

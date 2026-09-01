@@ -1,0 +1,5 @@
+nombre,categoria,subcategoria,sku,clave_sae,esquema_impuestos,unidad,descripcion,precio,destacado,personalizable,activo,orden
+Vaso de papel 12 oz,Vasos y contenedores,,VP12,PA0000001,1,Paquete 50 pzas,Vaso biodegradable para bebidas calientes,120.50,1,1,1,1
+Tenedor biodegradable,Biodegradables,Cubiertos,TB01,PA0000002,1,Caja 1000 pzas,Cubierto compostable de fécula de maíz,,0,0,1,2
+Bolsa compostable chica,Biodegradables,Bolsas,BC01,PA0000004,1,Paquete 100 pzas,Bolsa compostable para residuos orgánicos,,0,0,1,3
+Servilleta blanca doble hoja,Servilletas y papel,,SB01,PA0000003,1,Paquete 500 pzas,,,0,0,1,4

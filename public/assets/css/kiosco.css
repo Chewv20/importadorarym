@@ -1,0 +1,81 @@
+/* Kiosco de visitas — pantalla táctil de recepción */
+.kiosco {
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(160deg, var(--rym-primary) 0%, #1b2a6b 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+.kiosco__wrap { width: 100%; max-width: 640px; }
+
+.kiosco-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
+    overflow: hidden;
+}
+.kiosco-card__head {
+    background: var(--rym-primary);
+    color: #fff;
+    padding: 24px 28px;
+    text-align: center;
+}
+.kiosco-card__head img { height: 46px; width: auto; background: #fff; border-radius: 8px; padding: 6px 10px; }
+.kiosco-card__title { margin: 14px 0 4px; font-family: var(--rym-font-head); font-size: 1.6rem; font-weight: var(--rym-fw-bold); }
+.kiosco-card__sub { margin: 0; opacity: .85; font-size: 1rem; }
+.kiosco-card__body { padding: 28px; }
+
+.kiosco-field { margin-bottom: 18px; }
+.kiosco-field label { display: block; margin-bottom: 8px; font-weight: var(--rym-fw-medium); font-size: 1.05rem; color: var(--rym-primary); }
+.kiosco-field .req { color: var(--rym-accent); }
+.kiosco-field input,
+.kiosco-field select {
+    width: 100%;
+    padding: 15px 16px;
+    font-size: 1.15rem;
+    border: 2px solid var(--rym-border);
+    border-radius: 12px;
+    background: #fff;
+    font-family: inherit;
+}
+.kiosco-field input:focus,
+.kiosco-field select:focus { outline: none; border-color: var(--rym-primary); }
+.kiosco-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.kiosco-row > .kiosco-field { flex: 1; min-width: 180px; }
+
+.kiosco-btn {
+    display: block; width: 100%; border: 0; cursor: pointer;
+    background: var(--rym-accent); color: #fff;
+    padding: 18px; border-radius: 14px;
+    font-family: var(--rym-font-head); font-size: 1.25rem; font-weight: var(--rym-fw-bold);
+    transition: background .15s ease;
+}
+.kiosco-btn:hover { background: var(--rym-accent-hover); }
+
+.kiosco-alert {
+    background: #FDECEC; color: #9B1C1C; border: 1px solid #F5B5B5;
+    padding: 14px 16px; border-radius: 12px; margin-bottom: 18px; font-size: 1rem;
+}
+
+/* Confirmación y no-autorizado */
+.kiosco-msg { text-align: center; padding: 20px 8px; }
+.kiosco-msg__icon {
+    width: 88px; height: 88px; margin: 0 auto 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
+.kiosco-msg__icon--ok { background: #E6F6EC; color: #1E9E52; }
+.kiosco-msg__icon--warn { background: #FEF3E2; color: #B9770E; }
+.kiosco-msg__icon svg { width: 46px; height: 46px; }
+.kiosco-msg h1 { font-family: var(--rym-font-head); font-size: 1.7rem; color: var(--rym-primary); margin: 0 0 10px; }
+.kiosco-msg p { font-size: 1.1rem; color: #4b5563; margin: 0 0 24px; }
+
+.kiosco-note { margin: 18px 0 0; text-align: center; font-size: .85rem; color: #9aa0ac; }
+
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+@media (max-width: 560px) {
+    .kiosco-card__body { padding: 20px; }
+    .kiosco-card__title { font-size: 1.35rem; }
+}

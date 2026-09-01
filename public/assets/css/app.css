@@ -1,0 +1,110 @@
+/* ==========================================================================
+   Importadora RYM — Estilos base (reset + fundamentos)
+   Los componentes de la landing se agregarán en el paso de maquetación.
+   Depende de las variables definidas en brand.css.
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--rym-font-body);
+    font-size: var(--rym-fs-base);
+    line-height: var(--rym-lh-base);
+    color: var(--rym-text);
+    background: var(--rym-bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+img, svg { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--rym-secondary); text-decoration: none; transition: color var(--rym-transition); }
+a:hover { color: var(--rym-secondary-hover); }
+
+h1, h2, h3, h4 {
+    font-family: var(--rym-font-head);
+    line-height: var(--rym-lh-tight);
+    color: var(--rym-primary);
+    font-weight: var(--rym-fw-bold);
+}
+
+.container {
+    width: 100%;
+    max-width: var(--rym-container);
+    margin-inline: auto;
+    padding-inline: var(--rym-space-6);
+}
+.container--narrow { max-width: var(--rym-container-narrow); }
+
+/* ==========================================================================
+   Utilidades — clases reutilizables en todo el proyecto.
+   Usar SIEMPRE estas (o componentes) en las vistas: nada de style="" inline
+   ni valores hardcodeados. Todas se apoyan en los tokens de brand.css.
+   ========================================================================== */
+
+/* Visibilidad */
+.is-hidden { display: none !important; }
+.is-disabled { opacity: .5; }
+/* Honeypot: campo trampa oculto para bots (no usar display:none, algunos bots lo detectan) */
+.hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+/* Accesible solo para lectores de pantalla: visualmente oculto pero presente para todos */
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Texto */
+.text-center { text-align: center; }
+.text-left   { text-align: left; }
+.text-right  { text-align: right; }
+.text-muted  { color: var(--rym-text-muted); }
+.text-white  { color: var(--rym-white); }
+.text-on-dark { color: rgba(255, 255, 255, .9); }
+.text-danger { color: #b71c1c; }
+
+/* Tipografía de apoyo */
+.fs-xs { font-size: var(--rym-fs-xs); }
+.fs-sm { font-size: var(--rym-fs-sm); }
+.fs-lg { font-size: var(--rym-fs-lg); }
+.fw-semibold { font-weight: var(--rym-fw-semibold); }
+.fw-bold { font-weight: var(--rym-fw-bold); }
+.underline { text-decoration: underline; }
+
+/* Layout flex */
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: var(--rym-space-2); }
+.gap-3 { gap: var(--rym-space-3); }
+.gap-4 { gap: var(--rym-space-4); }
+.gap-6 { gap: var(--rym-space-6); }
+
+/* Ancho / medida de línea */
+.w-full { width: 100%; }
+.mx-auto { margin-inline: auto; }
+.measure { max-width: 60ch; }
+.measure-narrow { max-width: 42ch; }
+
+/* Márgenes verticales (escala de tokens) */
+.mt-0 { margin-top: 0; }
+.mt-2 { margin-top: var(--rym-space-2); }
+.mt-3 { margin-top: var(--rym-space-3); }
+.mt-4 { margin-top: var(--rym-space-4); }
+.mt-6 { margin-top: var(--rym-space-6); }
+.mt-8 { margin-top: var(--rym-space-8); }
+.mt-12 { margin-top: var(--rym-space-12); }
+.mt-16 { margin-top: var(--rym-space-16); }
+.mb-0 { margin-bottom: 0; }
+.mb-2 { margin-bottom: var(--rym-space-2); }
+.mb-3 { margin-bottom: var(--rym-space-3); }
+.mb-4 { margin-bottom: var(--rym-space-4); }
+.mb-6 { margin-bottom: var(--rym-space-6); }
+.ml-2 { margin-left: var(--rym-space-2); }
+.mb-8 { margin-bottom: var(--rym-space-8); }
+.mb-12 { margin-bottom: var(--rym-space-12); }

@@ -1,0 +1,109 @@
+/* ==========================================================================
+   Importadora RYM — Portal de clientes.
+   Depende de brand.css, app.css y components.css.
+   ========================================================================== */
+
+/* Barra superior del portal */
+.portal-header { background: var(--rym-primary); color: #fff; }
+.portal-header__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--rym-space-6); padding-block: var(--rym-space-4); flex-wrap: wrap; }
+.portal-brand { display: inline-flex; align-items: center; gap: .6rem; color: #fff; font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); }
+.portal-brand:hover { color: #fff; text-decoration: none; }
+.portal-brand img { height: 36px; width: auto; background: #fff; border-radius: 6px; padding: 3px 6px; }
+.portal-nav { display: flex; align-items: center; gap: var(--rym-space-2); flex-wrap: wrap; }
+.portal-nav__link { color: rgba(255,255,255,.85); font-family: var(--rym-font-head); font-weight: var(--rym-fw-medium); font-size: var(--rym-fs-sm); padding: .5rem .9rem; border-radius: var(--rym-radius-pill); }
+.portal-nav__link:hover { color: #fff; background: rgba(255,255,255,.12); text-decoration: none; }
+.portal-nav__link.is-active { color: var(--rym-primary); background: #fff; }
+.portal-user { display: flex; align-items: center; gap: var(--rym-space-3); }
+.portal-user__name { font-size: var(--rym-fs-sm); color: rgba(255,255,255,.9); }
+.portal-header__actions { display: flex; align-items: center; gap: var(--rym-space-4); }
+.portal-nav-toggle { display: none; background: none; border: 0; cursor: pointer; padding: .4rem; color: #fff; }
+.portal-nav-toggle svg { width: 1.6rem; height: 1.6rem; }
+.portal-nav-toggle svg line { transform-box: fill-box; transform-origin: center; transition: transform var(--rym-transition), opacity var(--rym-transition); }
+.portal-nav-toggle[aria-expanded="true"] svg line:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.portal-nav-toggle[aria-expanded="true"] svg line:nth-child(2) { opacity: 0; }
+.portal-nav-toggle[aria-expanded="true"] svg line:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+@media (max-width: 720px) {
+    .portal-nav {
+        position: fixed; inset: 0 0 0 auto; width: min(80vw, 320px); background: #fff;
+        flex-direction: column; align-items: flex-start; padding: var(--rym-space-16) var(--rym-space-8);
+        gap: var(--rym-space-2); transform: translateX(100%); transition: transform var(--rym-transition);
+        box-shadow: var(--rym-shadow-lg); z-index: 200; overflow-y: auto;
+    }
+    .portal-nav.is-open { transform: translateX(0); }
+    .portal-nav__link { color: var(--rym-text); width: 100%; }
+    .portal-nav__link:hover { color: var(--rym-primary); background: var(--rym-bg-soft); }
+    .portal-nav__link.is-active { color: var(--rym-primary); background: var(--rym-bg-soft); }
+    .portal-nav-toggle { display: block; position: relative; z-index: 210; }
+    .portal-nav-backdrop {
+        position: fixed; inset: 0; background: rgba(15,20,50,.5); z-index: 190;
+        opacity: 0; visibility: hidden; transition: opacity var(--rym-transition), visibility 0s linear var(--rym-transition);
+    }
+    .portal-nav-backdrop.is-open { opacity: 1; visibility: visible; transition-delay: 0s; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .portal-nav, .portal-nav-backdrop, .portal-nav-toggle svg line { transition: none !important; }
+}
+
+.portal-main { padding-block: var(--rym-space-12); min-height: 60vh; }
+.portal-title { font-size: var(--rym-fs-2xl); margin-bottom: var(--rym-space-6); }
+.portal-head { display: flex; justify-content: space-between; align-items: center; gap: var(--rym-space-4); flex-wrap: wrap; margin-bottom: var(--rym-space-4); }
+.portal-head .portal-title { margin-bottom: 0; }
+
+/* Login / registro */
+.auth-shell { min-height: 100vh; display: grid; place-items: center; padding: var(--rym-space-8); background: linear-gradient(135deg, var(--rym-primary), var(--rym-secondary)); }
+.auth-card { width: 100%; max-width: 440px; background: #fff; border-radius: var(--rym-radius-lg); box-shadow: var(--rym-shadow-lg); padding: var(--rym-space-12); }
+/* Formularios más largos (registro, con dirección) necesitan más ancho para no verse angostos y alargados. */
+.auth-card--wide { max-width: 680px; }
+.auth-card__logo { display: block; height: 54px; margin: 0 auto var(--rym-space-6); }
+.auth-card__title { text-align: center; font-size: var(--rym-fs-xl); margin-bottom: var(--rym-space-2); }
+.auth-card__sub { text-align: center; color: var(--rym-text-muted); margin-bottom: var(--rym-space-8); }
+.auth-card__foot { text-align: center; margin-top: var(--rym-space-6); color: var(--rym-text-muted); font-size: var(--rym-fs-sm); }
+.auth-card__foot a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Tarjeta de métrica del panel del cliente */
+.tile-num { font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); font-size: var(--rym-fs-2xl); color: var(--rym-primary); }
+
+/* Encuesta de experiencia de pedido */
+.survey-card { background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); margin: var(--rym-space-8) 0; }
+.survey-card--done { background: var(--rym-bg-soft); }
+.survey-field { margin-bottom: var(--rym-space-4); }
+.survey-field > label { display: block; font-weight: var(--rym-fw-medium); margin-bottom: 6px; }
+.survey-card textarea { width: 100%; padding: .6rem .7rem; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); font: inherit; }
+
+.star-rating { display: inline-flex; flex-direction: row-reverse; justify-content: flex-end; }
+.star-rating input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.star-rating label { font-size: 2rem; line-height: 1; color: #d0d5dd; cursor: pointer; padding: 0 3px; transition: color .1s ease; }
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label { color: #f5a623; }
+.star-rating input:focus-visible + label { outline: 2px solid var(--rym-primary); border-radius: 4px; }
+
+.stars-readonly { color: #f5a623; font-size: 1.25rem; letter-spacing: 1px; }
+.stars-off { color: #d0d5dd; }
+.survey-done__row { margin: 6px 0; }
+.survey-comment { border-left: 3px solid var(--rym-border); padding-left: 12px; margin: var(--rym-space-4) 0 0; color: #4b5563; font-style: italic; }
+
+.nps-scale { display: inline-flex; flex-wrap: wrap; gap: 5px; }
+.nps-scale input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.nps-scale label { min-width: 34px; text-align: center; padding: 7px 4px; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); cursor: pointer; font-size: .9rem; transition: background .1s ease, color .1s ease; }
+.nps-scale label:hover { border-color: var(--rym-primary); }
+.nps-scale input:checked + label { background: var(--rym-primary); color: #fff; border-color: var(--rym-primary); }
+
+/* Estado (mismo lenguaje visual que .pill del panel admin) */
+.pill { display: inline-block; font-size: var(--rym-fs-xs); font-weight: var(--rym-fw-semibold); padding: .2rem .6rem; border-radius: var(--rym-radius-pill); }
+.pill--ok { background: #e8f5e9; color: #1b5e20; }
+.pill--off { background: #eceef3; color: #666; }
+
+/* Pedidos recurrentes */
+.recurrentes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--rym-space-4); }
+.recurrente-card { background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); }
+.recurrente-card.is-paused { opacity: .7; }
+.recurrente-card__head { display: flex; justify-content: space-between; align-items: start; gap: var(--rym-space-3); margin-bottom: var(--rym-space-2); }
+.recurrente-card__title { margin: 0; font-family: var(--rym-font-head); font-size: var(--rym-fs-lg); color: var(--rym-primary); }
+.recurrente-card__actions { display: flex; flex-wrap: wrap; gap: var(--rym-space-2); margin-top: var(--rym-space-4); }
+.recurrente-card__actions form { margin: 0; }
+
+/* Formulario en una sola línea (frecuencia + botón) */
+.form--inline { display: flex; align-items: flex-end; gap: var(--rym-space-3); flex-wrap: wrap; }
+.form--inline .field { margin: 0; }

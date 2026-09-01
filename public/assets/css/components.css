@@ -1,0 +1,180 @@
+/* ==========================================================================
+   Importadora RYM — Componentes COMPARTIDOS (público, portal y admin).
+   Depende de brand.css (tokens) y app.css (reset/utilidades).
+   ========================================================================== */
+
+/* ---- Botones ------------------------------------------------------------- */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold);
+    font-size: var(--rym-fs-base); line-height: 1; text-align: center;
+    padding: .85rem 1.6rem; border-radius: var(--rym-radius-pill);
+    border: 2px solid transparent; cursor: pointer;
+    transition: transform var(--rym-transition), background var(--rym-transition), color var(--rym-transition);
+}
+.btn:hover { text-decoration: none; transform: translateY(-2px); }
+.btn--accent { background: var(--rym-accent); color: #fff; box-shadow: 0 6px 18px rgba(198, 9, 59, .28); }
+.btn--accent:hover { background: var(--rym-accent-hover); color: #fff; }
+.btn--primary { background: var(--rym-secondary); color: #fff; }
+.btn--primary:hover { background: var(--rym-secondary-hover); color: #fff; }
+.btn--ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.6); }
+.btn--ghost:hover { background: #fff; color: var(--rym-primary); }
+.btn--outline { background: transparent; color: var(--rym-secondary); border-color: var(--rym-secondary); }
+.btn--outline:hover { background: var(--rym-secondary); color: #fff; }
+/* Texto oscuro (no blanco) sobre el verde: #fff da solo 1.98:1 de contraste
+   sobre #25D366 (fails AA); var(--rym-text) da ~8.3:1 sin tocar el verde
+   reconocible de la marca WhatsApp. */
+.btn--whatsapp { background: #25D366; color: var(--rym-text); border-color: #25D366; }
+.btn--whatsapp:hover { background: #1da851; border-color: #1da851; color: var(--rym-text); }
+.btn--lg { padding: 1rem 2rem; font-size: var(--rym-fs-lg); }
+.btn--sm { padding: .5rem 1rem; font-size: var(--rym-fs-sm); }
+.btn--block { width: 100%; }
+
+/* ---- Grid genérico ------------------------------------------------------- */
+.grid { display: grid; gap: var(--rym-space-6); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
+.grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ---- Tarjetas ------------------------------------------------------------ */
+.card {
+    background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius);
+    padding: var(--rym-space-8); transition: transform var(--rym-transition), box-shadow var(--rym-transition);
+}
+.card:hover { transform: translateY(-4px); box-shadow: var(--rym-shadow); }
+.card__icon { width: 3rem; height: 3rem; display: grid; place-items: center; border-radius: var(--rym-radius); background: rgba(0,94,184,.1); color: var(--rym-secondary); margin-bottom: var(--rym-space-4); }
+.card__icon svg { width: 1.6rem; height: 1.6rem; }
+.card__title { font-size: var(--rym-fs-xl); margin-bottom: var(--rym-space-2); }
+.card__text { color: var(--rym-text-muted); }
+
+/* ---- Formularios --------------------------------------------------------- */
+.form { display: grid; gap: var(--rym-space-4); background: #fff; padding: var(--rym-space-8); border-radius: var(--rym-radius-lg); box-shadow: var(--rym-shadow-lg); }
+.form__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rym-space-4); }
+/* Agrupa campos de un formulario largo en bloques con su propio título,
+   para que se sienta menos como una lista plana (ej. registro). */
+.form-section { display: grid; gap: var(--rym-space-4); }
+.form-section + .form-section { margin-top: var(--rym-space-2); padding-top: var(--rym-space-6); border-top: 1px solid var(--rym-border); }
+.form-section__title { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); font-size: var(--rym-fs-xs); text-transform: uppercase; letter-spacing: .05em; margin: 0; }
+.field { display: grid; gap: .35rem; }
+.field label { font-size: var(--rym-fs-sm); font-weight: var(--rym-fw-medium); color: var(--rym-text); }
+.field input, .field textarea, .field select {
+    width: 100%; font: inherit; color: var(--rym-text);
+    padding: .7rem .9rem; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); background: #fff;
+}
+.field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--rym-secondary); box-shadow: 0 0 0 3px rgba(0,94,184,.15); }
+.field textarea { resize: vertical; min-height: 110px; }
+/* Campo autocompletado por código postal (delegación/municipio, estado): de solo
+   lectura mientras el CP siga siendo el que lo llenó — evita datos manuales que no
+   correspondan al CP. Se corrige cambiando el CP, no escribiendo encima. */
+.field input[readonly] { background: var(--rym-bg-soft); color: var(--rym-text-muted); cursor: not-allowed; }
+.field input[type="file"] { font-size: var(--rym-fs-sm); color: var(--rym-text-muted); max-width: 240px; border: none; padding: 0; }
+.field input[type="file"]::file-selector-button {
+    font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); font-size: var(--rym-fs-sm);
+    color: var(--rym-secondary); background: transparent; border: 2px solid var(--rym-secondary);
+    border-radius: var(--rym-radius-pill); padding: .5rem 1rem; margin-right: .6rem; cursor: pointer;
+    transition: background var(--rym-transition), color var(--rym-transition);
+}
+.field input[type="file"]::file-selector-button:hover { background: var(--rym-secondary); color: #fff; }
+
+/* Reto anti-bot: se distingue del resto con un fondo tenue. */
+.captcha { background: var(--rym-bg-soft); border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); padding: var(--rym-space-3); }
+.captcha input { max-width: 8rem; }
+
+/* Utilidades y acciones compartidas */
+.ta-right { text-align: right; }
+.cot-actions { display: flex; flex-wrap: wrap; gap: var(--rym-space-3); align-items: center; }
+
+/* ---- Alertas ------------------------------------------------------------- */
+.alert { padding: .9rem 1.1rem; border-radius: var(--rym-radius-sm); font-size: var(--rym-fs-sm); }
+.alert--ok { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+.alert--error { background: #fdecea; color: #b71c1c; border: 1px solid #f5c6cb; }
+
+/* ---- Tabla --------------------------------------------------------------- */
+.table-wrap { overflow-x: auto; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); }
+/* Pista visual de que la tabla se puede desplazar horizontalmente (móvil):
+   sombra interior a la derecha, solo mientras falte contenido por ver. */
+.table-wrap.has-more-right { box-shadow: inset -10px 0 8px -8px rgba(0,0,0,.18); }
+.table { width: 100%; border-collapse: collapse; background: #fff; }
+.table th, .table td { padding: .85rem 1rem; text-align: left; border-bottom: 1px solid var(--rym-border); font-size: var(--rym-fs-sm); }
+.table th { font-family: var(--rym-font-head); color: var(--rym-primary); background: var(--rym-bg-soft); white-space: nowrap; }
+.table tbody tr:last-child td { border-bottom: 0; }
+.table tbody tr:hover { background: var(--rym-bg-soft); }
+/* Fila no seleccionable (ej. partida sin clave SAE al exportar): no se resalta al pasar el cursor. */
+.table tbody tr.row-blocked { background: #fdecea; }
+.table tbody tr.row-blocked:hover { background: #fdecea; }
+/* Partida desmarcada para exportar (7.5): se atenúa para que se note que queda fuera. */
+.table tbody tr.row-unselected { opacity: .45; }
+
+/* ---- Estados (badges de pedido/cotización) ------------------------------ */
+.status { display: inline-block; font-size: var(--rym-fs-xs); font-weight: var(--rym-fw-semibold); padding: .25rem .7rem; border-radius: var(--rym-radius-pill); white-space: nowrap; }
+.status--borrador { background: #eceef3; color: #555; }
+.status--enviado { background: rgba(0,94,184,.12); color: var(--rym-secondary); }
+.status--en_proceso { background: rgba(206,220,0,.25); color: #5f6800; }
+.status--parcial { background: rgba(255,152,0,.18); color: #8a4b00; }
+.status--sincronizado { background: #e8f5e9; color: #1b5e20; }
+.status--cancelado { background: #fdecea; color: #b71c1c; }
+
+/* ---- Paginación ---------------------------------------------------------- */
+.pagination { display: flex; flex-wrap: wrap; gap: var(--rym-space-2); justify-content: center; margin-top: var(--rym-space-12); }
+.pagination__link { display: inline-flex; align-items: center; min-width: 42px; height: 42px; justify-content: center; padding: 0 .8rem; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); font-family: var(--rym-font-head); font-weight: var(--rym-fw-medium); color: var(--rym-text); background: #fff; }
+.pagination__link:hover { border-color: var(--rym-secondary); color: var(--rym-secondary); text-decoration: none; }
+.pagination__link.is-active { background: var(--rym-secondary); border-color: var(--rym-secondary); color: #fff; }
+
+/* ---- Filtros tipo pestaña ------------------------------------------------ */
+.filter-tabs { display: flex; flex-wrap: wrap; gap: var(--rym-space-2); }
+.filter-tab { font-family: var(--rym-font-head); font-weight: var(--rym-fw-medium); font-size: var(--rym-fs-sm); padding: .5rem 1.1rem; border-radius: var(--rym-radius-pill); border: 1px solid var(--rym-border); color: var(--rym-text); background: var(--rym-bg-soft); transition: color var(--rym-transition), border-color var(--rym-transition), background var(--rym-transition); }
+.filter-tab:hover { border-color: var(--rym-secondary); color: var(--rym-secondary); background: #fff; text-decoration: none; }
+.filter-tab.is-active { background: var(--rym-secondary); border-color: var(--rym-secondary); color: #fff; }
+
+/* ---- Selector de cantidad (carrito / acciones en tabla) ----------------- */
+.qty-form { display: flex; align-items: center; gap: .5rem; }
+.qty-form input { width: 68px; padding: .5rem; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); font: inherit; text-align: center; }
+
+/* ---- Búsqueda + filtro de productos (armar pedido: portal y panel) ------ */
+.portal-filters { display: flex; flex-wrap: wrap; gap: var(--rym-space-2); align-items: center; margin-bottom: var(--rym-space-6); }
+.portal-filters__search { flex: 1 1 220px; min-width: 180px; padding: .6rem .8rem; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); font: inherit; background: #fff; }
+.portal-filters__cat { padding: .6rem .8rem; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); font: inherit; background: #fff; }
+.portal-filters__search:focus, .portal-filters__cat:focus { outline: none; border-color: var(--rym-secondary); box-shadow: 0 0 0 3px rgba(0,94,184,.15); }
+
+/* ---- Catálogo + carrito (armar pedido: portal del cliente y panel) ------ */
+.order-grid { display: grid; grid-template-columns: 1fr 340px; gap: var(--rym-space-8); align-items: start; }
+.order-item { display: flex; align-items: center; justify-content: space-between; gap: var(--rym-space-4); padding: var(--rym-space-4); border: 1px solid var(--rym-border); border-radius: var(--rym-radius); background: #fff; margin-bottom: var(--rym-space-3); }
+.order-item__main { display: flex; align-items: center; gap: var(--rym-space-3); min-width: 0; }
+.order-item__img { width: 48px; height: 48px; object-fit: cover; border-radius: var(--rym-radius-sm); background: var(--rym-bg-soft); flex-shrink: 0; }
+.order-item__img--empty { display: block; }
+.order-item__info { min-width: 0; }
+.order-item__name { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); }
+.order-item__meta { color: var(--rym-text-muted); font-size: var(--rym-fs-sm); }
+.cart { position: sticky; top: 96px; background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); }
+.cart__title { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); margin-bottom: var(--rym-space-4); }
+.cart__item { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding-block: .6rem; border-bottom: 1px solid var(--rym-border); }
+.cart__item:last-of-type { border-bottom: 0; }
+.cart__empty { color: var(--rym-text-muted); font-size: var(--rym-fs-sm); }
+
+@media (max-width: 860px) {
+    .order-grid { grid-template-columns: 1fr; }
+    .cart { position: static; }
+}
+
+/* ---- Selector de colonia (sugerencias por código postal) ---------------- */
+.colonia-picker { position: relative; }
+.colonia-picker__resultados { position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); box-shadow: var(--rym-shadow-lg); max-height: 220px; overflow-y: auto; }
+.colonia-picker__item { display: block; width: 100%; text-align: left; padding: .55rem .8rem; border: none; background: none; font: inherit; color: var(--rym-text); cursor: pointer; }
+.colonia-picker__item:hover, .colonia-picker__item:focus { background: var(--rym-bg-soft); }
+
+/* ---- Mapa embebido (Google Maps, sin API key) — contacto y perfil ------- */
+.map-embed { position: relative; aspect-ratio: 16 / 10; border-radius: var(--rym-radius); overflow: hidden; border: 1px solid var(--rym-border); box-shadow: var(--rym-shadow-sm); }
+.map-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* ---- Varios -------------------------------------------------------------- */
+.empty-state { text-align: center; color: var(--rym-text-muted); padding-block: var(--rym-space-16); }
+.empty-state a { text-decoration: underline; text-underline-offset: 2px; }
+.portal-subtitle { font-family: var(--rym-font-head); font-size: var(--rym-fs-xl); color: var(--rym-primary); margin-bottom: var(--rym-space-4); }
+
+/* ---- Responsive de componentes ------------------------------------------ */
+@media (max-width: 960px) {
+    .grid--4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px) {
+    .grid--3, .grid--4 { grid-template-columns: 1fr; }
+    .form__row { grid-template-columns: 1fr; }
+}

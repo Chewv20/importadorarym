@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Importadora RYM — Design Tokens (variables de marca)
+   Fuente: Manual de Identidad Gráfica. Ver docs/brand/IDENTIDAD.md
+   Este archivo NO define componentes: solo las variables base del sistema.
+   ========================================================================== */
+
+:root {
+  /* ---- Paleta corporativa (Pantone -> sRGB) ---------------------------- */
+  --rym-blue-072: #10069F; /* Círculo   · Pantone Blue 072 C */
+  --rym-red-193:  #C6093B; /* Servilleta· Pantone 193 C      */
+  --rym-lime-381: #CEDC00; /* Vaso      · Pantone 381 C      */
+  --rym-blue-300: #005EB8; /* Cubiertos · Pantone 300 C      */
+  --rym-gray-cg9: #75787B; /* Logotipo  · Pantone Cool Gray 9 C */
+
+  /* ---- Roles semánticos (usar estos en los componentes) --------------- */
+  /* Nota: el Pantone Blue 072 C puro (--rym-blue-072 #10069F) resulta muy
+     intenso/índigo en pantalla y cansa la vista en áreas grandes. Para el
+     rol de color primario usamos un navy más suave y equilibrado, derivado
+     del mismo matiz. El Pantone original queda documentado arriba. */
+  --rym-primary:        #2A3A8F;             /* navy suave: nav, footer, títulos */
+  --rym-secondary:      var(--rym-blue-300); /* azul brillante: links/botón */
+  --rym-accent:         var(--rym-red-193);  /* carmín: CTA principal       */
+  --rym-highlight:      var(--rym-lime-381); /* lima: acentos puntuales     */
+
+  --rym-primary-hover:   #223074;
+  --rym-secondary-hover: #004E9A;
+  --rym-accent-hover:    #A80732;
+
+  /* ---- Neutros -------------------------------------------------------- */
+  --rym-white:      #FFFFFF;
+  --rym-bg:         #FFFFFF;
+  --rym-bg-soft:    #F4F5F7; /* fondo de secciones alternas */
+  --rym-border:     #E1E3E8;
+  --rym-text:       #1D1F24; /* texto principal */
+  /* Nota: el Cool Gray 9C puro (--rym-gray-cg9 #75787B) da ~4.4:1 de contraste
+     sobre blanco — por debajo del mínimo AA (4.5:1) para texto normal (hallazgo
+     de la auditoría de accesibilidad, 2026-08-03). Mismo criterio que --rym-primary
+     arriba: se usa un tono operativo un poco más oscuro del mismo matiz (~5.1:1),
+     el Pantone original queda documentado en --rym-gray-cg9. */
+  --rym-text-muted: #6B6E73;
+  --rym-text-invert:#FFFFFF;
+
+  /* ---- Tipografía ----------------------------------------------------- */
+  --rym-font-brand: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --rym-font-head:  "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --rym-font-body:  "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --rym-fs-xs:   0.75rem;   /* 12px */
+  --rym-fs-sm:   0.875rem;  /* 14px */
+  --rym-fs-base: 1rem;      /* 16px */
+  --rym-fs-lg:   1.125rem;  /* 18px */
+  --rym-fs-xl:   1.5rem;    /* 24px */
+  --rym-fs-2xl:  2rem;      /* 32px */
+  --rym-fs-3xl:  2.75rem;   /* 44px */
+  --rym-fs-hero: clamp(2.25rem, 5vw, 3.75rem);
+
+  --rym-fw-normal: 400;
+  --rym-fw-medium: 500;
+  --rym-fw-semibold: 600;
+  --rym-fw-bold: 700;
+  --rym-lh-tight: 1.15;
+  --rym-lh-base: 1.6;
+
+  /* ---- Espaciado (escala 4px) ---------------------------------------- */
+  --rym-space-1: 0.25rem;
+  --rym-space-2: 0.5rem;
+  --rym-space-3: 0.75rem;
+  --rym-space-4: 1rem;
+  --rym-space-6: 1.5rem;
+  --rym-space-8: 2rem;
+  --rym-space-12: 3rem;
+  --rym-space-16: 4rem;
+  --rym-space-24: 6rem;
+
+  /* ---- Layout --------------------------------------------------------- */
+  --rym-container:   1200px;
+  --rym-container-narrow: 800px;
+  --rym-radius-sm: 6px;
+  --rym-radius:    12px;
+  --rym-radius-lg: 20px;
+  --rym-radius-pill: 999px;
+
+  /* ---- Sombras -------------------------------------------------------- */
+  --rym-shadow-sm: 0 1px 2px rgba(42, 58, 143, 0.08);
+  --rym-shadow:    0 8px 24px rgba(42, 58, 143, 0.12);
+  --rym-shadow-lg: 0 18px 48px rgba(42, 58, 143, 0.18);
+
+  /* ---- Otros ---------------------------------------------------------- */
+  --rym-transition: 200ms ease;
+}

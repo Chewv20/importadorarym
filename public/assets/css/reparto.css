@@ -1,0 +1,74 @@
+/* Interfaz de reparto — celular del repartidor, poco JS, botones grandes */
+.reparto { margin: 0; background: var(--rym-bg-soft); min-height: 100vh; }
+
+.reparto-top {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--rym-primary); color: #fff;
+    padding: 14px 18px; position: sticky; top: 0; z-index: 10;
+}
+.reparto-top__left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.reparto-top__brand { font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.reparto-top__panel { color: #fff; opacity: .85; font-size: var(--rym-fs-sm); text-decoration: none; white-space: nowrap; }
+.reparto-top__panel:hover { opacity: 1; text-decoration: underline; }
+.reparto-top__user { display: flex; align-items: center; gap: 10px; font-size: var(--rym-fs-sm); opacity: .9; }
+.reparto-top__logout button {
+    background: transparent; border: 1px solid rgba(255,255,255,.6); color: #fff;
+    padding: 4px 10px; border-radius: 999px; font-size: var(--rym-fs-xs); cursor: pointer;
+}
+.reparto-top__logout button:hover { background: rgba(255,255,255,.15); }
+
+.reparto-wrap { max-width: 560px; margin: 0 auto; padding: 18px 16px 40px; }
+
+.reparto-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.reparto-title { font-family: var(--rym-font-head); font-size: 1.4rem; color: var(--rym-primary); margin: 0; }
+.reparto-refresh { font-size: var(--rym-fs-sm); color: var(--rym-secondary); text-decoration: none; white-space: nowrap; }
+.reparto-refresh:hover { text-decoration: underline; }
+.reparto-subtitle { font-family: var(--rym-font-head); font-size: 1.1rem; color: var(--rym-primary); margin: 28px 0 12px; }
+.reparto-empty { color: var(--rym-text-muted); text-align: center; padding: 40px 16px; }
+.reparto-count { color: var(--rym-text-muted); font-size: .9rem; margin: 0 0 14px; }
+.reparto-zona-head {
+    font-family: var(--rym-font-head); font-size: .85rem; font-weight: var(--rym-fw-bold);
+    text-transform: uppercase; letter-spacing: .04em; color: var(--rym-secondary);
+    margin: 22px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--rym-border);
+}
+.reparto-zona-head:first-of-type { margin-top: 4px; }
+
+.reparto-card {
+    background: #fff; border-radius: 16px; padding: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06); margin-bottom: 16px;
+    border-left: 6px solid var(--rym-border);
+}
+.reparto-card--enruta { border-left-color: var(--rym-secondary); }
+.reparto-card__folio { display: flex; align-items: center; gap: 8px; font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); font-size: 1.1rem; color: var(--rym-primary); }
+.reparto-card__zona { font-size: var(--rym-fs-xs); font-weight: var(--rym-fw-semibold); background: var(--rym-bg-soft); color: var(--rym-text-muted); padding: .15rem .55rem; border-radius: 999px; }
+.reparto-card__cliente { font-size: 1rem; font-weight: var(--rym-fw-medium); margin-top: 2px; }
+.reparto-card__dir { color: var(--rym-text-muted); font-size: .92rem; margin: 8px 0; }
+.reparto-card__dir a { display: inline-block; margin-left: 6px; }
+.reparto-card__tel { margin: 0 0 10px; }
+.reparto-card__tel a { font-size: 1rem; text-decoration: none; }
+.reparto-card__notas { background: var(--rym-bg-soft); border-radius: 8px; padding: 8px 10px; font-size: .88rem; color: var(--rym-text); margin: 0 0 12px; }
+.reparto-card__eta { font-size: .92rem; color: var(--rym-secondary); font-weight: var(--rym-fw-semibold); margin: 0 0 10px; }
+
+.reparto-card__form { display: flex; flex-direction: column; gap: 10px; }
+.reparto-card__form input[type="datetime-local"] {
+    padding: 12px 14px; border: 2px solid var(--rym-border); border-radius: 10px; font: inherit; font-size: 1rem;
+}
+
+.reparto-btn {
+    display: block; width: 100%; border: 0; cursor: pointer;
+    padding: 16px; border-radius: 14px;
+    font-family: var(--rym-font-head); font-size: 1.1rem; font-weight: var(--rym-fw-bold);
+    color: #fff; transition: filter .15s ease;
+}
+.reparto-btn:hover { filter: brightness(1.08); }
+.reparto-btn--ruta { background: var(--rym-secondary); }
+.reparto-btn--entregado { background: #1E9E52; }
+
+.reparto-history { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.reparto-history li { display: flex; justify-content: space-between; gap: 10px; background: #fff; border-radius: 10px; padding: 10px 14px; font-size: .9rem; }
+.reparto-history__fecha { color: var(--rym-text-muted); white-space: nowrap; }
+
+@media (max-width: 420px) {
+    .reparto-wrap { padding: 14px 12px 32px; }
+    .reparto-card { padding: 14px; }
+}

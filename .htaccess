@@ -1,0 +1,38 @@
+# ============================================================================
+# Raíz del proyecto. Interviene siempre que el DocumentRoot NO apunte a /public
+# — el caso de XAMPP local Y TAMBIÉN el de producción real (Rackspace Cloud
+# Sites no permite fijar el DocumentRoot en una subcarpeta: sube el proyecto
+# completo a la raíz del hosting). Hace dos cosas:
+#
+#   1. Sirve el sitio desde /public sin que "/public" aparezca en la URL.
+#   2. Protege el backend, que en este montaje queda bajo la raíz web —
+#      TODA esta protección depende de que el hosting respete AllowOverride
+#      All (ver docs/ROADMAP.md Fase 0.3 y docs/DESPLIEGUE.md); si Apache lo
+#      ignora, este archivo no se aplica y las carpetas listadas abajo (y
+#      cualquier .htaccess dentro de ellas) quedan expuestas por HTTP.
+# ============================================================================
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Acceso directo a las carpetas del backend: denegado.
+    RewriteRule ^(app|config|routes|database|storage|docs|build|tests)(/|$) - [F]
+
+    # (La canonicalización de las URLs con /public vive en public/.htaccess:
+    #  Apache NO hereda las reglas de rewrite del directorio padre cuando el
+    #  subdirectorio define las suyas, así que una regla puesta aquí nunca se
+    #  ejecutaría para las peticiones que resuelven dentro de /public.)
+
+    # Todo lo demás se resuelve dentro de /public mediante reescritura interna:
+    # la URL que ve el visitante no cambia. Desde ahí, public/.htaccess sirve los
+    # archivos que existan y manda el resto al front controller.
+    RewriteCond %{REQUEST_URI} !/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Proteger archivos sensibles
+<FilesMatch "^(\.env|composer\.(json|lock))$">
+    Require all denied
+</FilesMatch>

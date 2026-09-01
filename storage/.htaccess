@@ -1,0 +1,10 @@
+# Bloquea todo acceso web directo a esta carpeta.
+# Necesario porque en producción el DocumentRoot NO apunta a /public,
+# por lo que estos archivos quedan bajo la raíz web. Defensa en profundidad.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
