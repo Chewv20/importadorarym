@@ -9,13 +9,14 @@
 <?php if ($usuarios): ?>
 <div class="table-wrap">
     <table class="table">
-        <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Activo</th><th>Último acceso</th><?php if (can('usuarios.gestionar')): ?><th>Acciones</th><?php endif; ?></tr></thead>
+        <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Oficina</th><th>Activo</th><th>Último acceso</th><?php if (can('usuarios.gestionar')): ?><th>Acciones</th><?php endif; ?></tr></thead>
         <tbody>
         <?php foreach ($usuarios as $u): ?>
             <tr>
                 <td><?= e($u['nombre']) ?></td>
                 <td><?= e($u['email']) ?></td>
                 <td><?= e($u['rol_nombre']) ?></td>
+                <td><?= !empty($u['oficina_nombre']) ? e($u['oficina_nombre']) : '—' ?></td>
                 <td><span class="pill <?= (int) $u['activo'] === 1 ? 'pill--ok' : 'pill--off' ?>"><?= (int) $u['activo'] === 1 ? 'Sí' : 'No' ?></span></td>
                 <td><?= $u['last_login_at'] ? e(date('d/m/Y H:i', strtotime($u['last_login_at']))) : '—' ?></td>
                 <?php if (can('usuarios.gestionar')): ?>

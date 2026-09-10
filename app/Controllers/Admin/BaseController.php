@@ -65,4 +65,16 @@ abstract class BaseController extends Controller
     {
         return Auth::can('ventas.solo_asignados') ? (int) $this->usuario['id'] : null;
     }
+
+    /**
+     * Alcance por oficina para la bitácora de visitas:
+     *   - null  = ve todas las oficinas (permiso 'visitas.ver_todas').
+     *   - int   = solo esa oficina (la del usuario). 0 si no tiene ninguna
+     *             asignada, con lo que no verá registros hasta que se le asigne
+     *             una o se le conceda 'visitas.ver_todas'.
+     */
+    protected function oficinaScope(): ?int
+    {
+        return Auth::can('visitas.ver_todas') ? null : (int) ($this->usuario['oficina_id'] ?? 0);
+    }
 }

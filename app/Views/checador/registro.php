@@ -30,12 +30,12 @@
             </div>
 
             <div class="kiosco-field">
-                <label for="anfitrion_id">¿A quién vas a visitar? <span class="req">*</span></label>
+                <label for="anfitrion_id">¿Qué área vas a visitar? <span class="req">*</span></label>
                 <select id="anfitrion_id" name="anfitrion_id" required>
                     <option value="">Selecciona…</option>
                     <?php foreach ($anfitriones as $a): ?>
                         <option value="<?= (int) $a['id'] ?>" <?= (int) ($old['anfitrion_id'] ?? 0) === (int) $a['id'] ? 'selected' : '' ?>>
-                            <?= e($a['nombre']) ?><?= !empty($a['area']) ? ' — ' . e($a['area']) : '' ?>
+                            <?= e(($a['area'] ?? '') !== '' ? $a['area'] : $a['nombre']) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>

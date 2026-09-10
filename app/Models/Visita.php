@@ -15,9 +15,9 @@ class Visita extends Model
         $this->db->prepare(
             "INSERT INTO visitas
                 (nombre_visitante, empresa, telefono, num_personas, motivo,
-                 anfitrion_id, anfitrion_email, dispositivo_id, ip)
+                 anfitrion_id, anfitrion_email, dispositivo_id, oficina_id, ip)
              VALUES (:nombre, :empresa, :telefono, :personas, :motivo,
-                     :anfitrion_id, :anfitrion_email, :dispositivo_id, :ip)"
+                     :anfitrion_id, :anfitrion_email, :dispositivo_id, :oficina_id, :ip)"
         )->execute([
             ':nombre'          => $d['nombre_visitante'],
             ':empresa'         => ($d['empresa'] ?? '') ?: null,
@@ -27,6 +27,7 @@ class Visita extends Model
             ':anfitrion_id'    => $d['anfitrion_id'] ?? null,
             ':anfitrion_email' => ($d['anfitrion_email'] ?? '') ?: null,
             ':dispositivo_id'  => $d['dispositivo_id'] ?? null,
+            ':oficina_id'      => $d['oficina_id'] ?? null,
             ':ip'              => ($d['ip'] ?? '') ?: null,
         ]);
         return (int) $this->db->lastInsertId();
@@ -39,6 +40,10 @@ class Visita extends Model
         if (!empty($f['anfitrion_id'])) {
             $cond[] = 'v.anfitrion_id = :anf';
             $params[':anf'] = (int) $f['anfitrion_id'];
+        }
+        if (($f['oficina_id'] ?? null) !== null) {
+            $cond[] = 'v.oficina_id = :ofi';
+            $params[':ofi'] = (int) $f['oficina_id'];
         }
         if (!empty($f['desde'])) {
             $cond[] = 'v.created_at >= :desde';
@@ -56,10 +61,11 @@ class Visita extends Model
         $params = [];
         $where  = $this->where($f, $params);
         $sql = "SELECT v.*, a.nombre AS anfitrion_nombre, a.area AS anfitrion_area,
-                       d.nombre AS dispositivo_nombre
+                       d.nombre AS dispositivo_nombre, o.nombre AS oficina_nombre
                   FROM visitas v
                   LEFT JOIN anfitriones a ON a.id = v.anfitrion_id
                   LEFT JOIN checador_dispositivos d ON d.id = v.dispositivo_id
+                  LEFT JOIN oficinas o ON o.id = v.oficina_id
                 {$where}
                 ORDER BY v.created_at DESC, v.id DESC
                 LIMIT :lim OFFSET :off";
@@ -91,10 +97,11 @@ class Visita extends Model
         $params = [];
         $where  = $this->where($f, $params);
         $sql = "SELECT v.*, a.nombre AS anfitrion_nombre, a.area AS anfitrion_area,
-                       d.nombre AS dispositivo_nombre
+                       d.nombre AS dispositivo_nombre, o.nombre AS oficina_nombre
                   FROM visitas v
                   LEFT JOIN anfitriones a ON a.id = v.anfitrion_id
                   LEFT JOIN checador_dispositivos d ON d.id = v.dispositivo_id
+                  LEFT JOIN oficinas o ON o.id = v.oficina_id
                 {$where}
                 ORDER BY v.created_at DESC, v.id DESC
                 LIMIT " . self::MAX_EXPORT;

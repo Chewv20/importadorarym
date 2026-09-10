@@ -2,13 +2,21 @@
 /**
  * @var array $visitas
  * @var array $anfitriones
+ * @var array $oficinas
+ * @var ?int $scopeOficinaId
  * @var array $filtro
  * @var int $page
  * @var int $pages
  */
 ?>
 <?php
-$qFiltros = array_filter(['desde' => $filtro['desde'] ?? '', 'hasta' => $filtro['hasta'] ?? '', 'anfitrion' => $filtro['anfitrion_id'] ?? '']);
+$verTodas = ($scopeOficinaId ?? null) === null;
+$qFiltros = array_filter([
+    'desde'     => $filtro['desde'] ?? '',
+    'hasta'     => $filtro['hasta'] ?? '',
+    'anfitrion' => $filtro['anfitrion_id'] ?? '',
+    'oficina'   => $verTodas ? ($filtro['oficina_id'] ?? '') : '',
+]);
 $exportUrl = url('/admin/visitas/exportar') . ($qFiltros ? '?' . http_build_query($qFiltros) : '');
 ?>
 <div class="admin-head">
@@ -21,14 +29,30 @@ $exportUrl = url('/admin/visitas/exportar') . ($qFiltros ? '?' . http_build_quer
 <div class="filters-row">
     <a class="filter-tab is-active" href="<?= url('/admin/visitas') ?>">Registros</a>
     <?php if (can('visitas.gestionar')): ?>
+        <a class="filter-tab" href="<?= url('/admin/visitas/oficinas') ?>">Oficinas</a>
         <a class="filter-tab" href="<?= url('/admin/visitas/dispositivos') ?>">Dispositivos</a>
         <a class="filter-tab" href="<?= url('/admin/visitas/anfitriones') ?>">Anfitriones</a>
     <?php endif; ?>
 </div>
 
+<?php if (($scopeOficinaId ?? null) === 0): ?>
+    <p class="empty-state">Tu usuario no tiene una oficina asignada, así que no puedes ver registros.
+    Pide a un administrador que te asigne una oficina o que te dé permiso para ver todas.</p>
+<?php endif; ?>
+
 <form class="filters-row" method="get" action="<?= url('/admin/visitas') ?>">
     <input type="date" name="desde" value="<?= e($filtro['desde'] ?? '') ?>" aria-label="Desde">
     <input type="date" name="hasta" value="<?= e($filtro['hasta'] ?? '') ?>" aria-label="Hasta">
+    <?php if ($verTodas): ?>
+    <select name="oficina" aria-label="Oficina">
+        <option value="">Todas las oficinas</option>
+        <?php foreach ($oficinas as $o): ?>
+            <option value="<?= (int) $o['id'] ?>" <?= (int) ($filtro['oficina_id'] ?? 0) === (int) $o['id'] ? 'selected' : '' ?>>
+                <?= e($o['nombre']) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <?php endif; ?>
     <select name="anfitrion" aria-label="Anfitrión">
         <option value="">Todos los anfitriones</option>
         <?php foreach ($anfitriones as $a): ?>
@@ -45,7 +69,7 @@ $exportUrl = url('/admin/visitas/exportar') . ($qFiltros ? '?' . http_build_quer
 <div class="table-wrap">
     <table class="table">
         <thead>
-            <tr><th>Fecha</th><th>Visitante</th><th>Empresa</th><th>Visita a</th><th>Motivo</th><th>Pers.</th><th>Punto</th></tr>
+            <tr><th>Fecha</th><th>Visitante</th><th>Empresa</th><th>Visita a</th><th>Motivo</th><th>Pers.</th><th>Oficina</th><th>Punto</th></tr>
         </thead>
         <tbody>
         <?php foreach ($visitas as $v): ?>
@@ -62,6 +86,7 @@ $exportUrl = url('/admin/visitas/exportar') . ($qFiltros ? '?' . http_build_quer
                 </td>
                 <td><?= !empty($v['motivo']) ? e($v['motivo']) : '—' ?></td>
                 <td><?= (int) $v['num_personas'] ?></td>
+                <td><?= !empty($v['oficina_nombre']) ? e($v['oficina_nombre']) : '—' ?></td>
                 <td class="text-muted fs-sm"><?= !empty($v['dispositivo_nombre']) ? e($v['dispositivo_nombre']) : '—' ?></td>
             </tr>
         <?php endforeach; ?>

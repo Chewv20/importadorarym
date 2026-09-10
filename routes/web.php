@@ -279,6 +279,11 @@ $router->get('/admin/visitas/dispositivos', [AdminVisita::class, 'dispositivos']
 $router->post('/admin/visitas/dispositivos', [AdminVisita::class, 'guardarDispositivo']);
 $router->post('/admin/visitas/dispositivos/{id}/revocar', [AdminVisita::class, 'revocarDispositivo']);
 $router->post('/admin/visitas/dispositivos/{id}/regenerar', [AdminVisita::class, 'regenerarDispositivo']);
+$router->post('/admin/visitas/dispositivos/{id}/oficina', [AdminVisita::class, 'asignarOficinaDispositivo']);
+$router->get('/admin/visitas/oficinas', [AdminVisita::class, 'oficinas']);
+$router->post('/admin/visitas/oficinas', [AdminVisita::class, 'guardarOficina']);
+$router->post('/admin/visitas/oficinas/{id}/eliminar', [AdminVisita::class, 'eliminarOficina']);
+$router->post('/admin/visitas/oficinas/{id}', [AdminVisita::class, 'actualizarOficina']);
 $router->get('/admin/visitas/anfitriones', [AdminVisita::class, 'anfitriones']);
 $router->post('/admin/visitas/anfitriones', [AdminVisita::class, 'guardarAnfitrion']);
 $router->post('/admin/visitas/anfitriones/{id}/eliminar', [AdminVisita::class, 'eliminarAnfitrion']);

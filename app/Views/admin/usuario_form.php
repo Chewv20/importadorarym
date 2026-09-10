@@ -1,5 +1,5 @@
 <?php
-/** @var ?array $usuarioEdit @var array $roles @var array $permisosGrupos @var array $overrides
+/** @var ?array $usuarioEdit @var array $roles @var array $oficinas @var array $permisosGrupos @var array $overrides
     @var array $rolPermisoIds @var array $permisosPropios @var bool $esSiMismo */
 $u = $usuarioEdit;
 $action = $u ? url('/admin/usuarios/' . (int) $u['id']) : url('/admin/usuarios');
@@ -34,6 +34,18 @@ $propio = $esSiMismo ?? false;
         <?php if (!$propio): ?>
             <p class="text-muted fs-sm">Solo aparecen los roles cuyos permisos ya tienes.</p>
         <?php endif; ?>
+    </div>
+    <div class="field">
+        <label for="oficina_id">Oficina</label>
+        <select id="oficina_id" name="oficina_id" <?= $propio ? 'disabled' : '' ?>>
+            <option value="">— Sin oficina —</option>
+            <?php foreach ($oficinas as $of): ?>
+                <option value="<?= (int) $of['id'] ?>" <?= (int) ($u['oficina_id'] ?? 0) === (int) $of['id'] ? 'selected' : '' ?>>
+                    <?= e($of['nombre']) ?><?= (int) $of['activa'] !== 1 ? ' (inactiva)' : '' ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <p class="text-muted fs-sm">Sin el permiso «Ver la bitácora de todas las oficinas», el usuario solo verá las visitas de esta oficina.</p>
     </div>
     <div class="field">
         <label for="password"><?= $u ? 'Nueva contraseña (dejar vacío para no cambiar)' : 'Contraseña *' ?></label>

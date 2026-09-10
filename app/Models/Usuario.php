@@ -163,13 +163,14 @@ class Usuario extends Model
     /** Crea un usuario interno (staff): activo y aprobado por defecto. */
     public function crearInterno(array $data): int
     {
-        $sql = "INSERT INTO usuarios (nombre, email, password, rol_id, clave_vendedor, comision, activo, aprobado)
-                VALUES (:nombre, :email, :password, :rol_id, :clave_vendedor, :comision, 1, 1)";
+        $sql = "INSERT INTO usuarios (nombre, email, password, rol_id, oficina_id, clave_vendedor, comision, activo, aprobado)
+                VALUES (:nombre, :email, :password, :rol_id, :oficina_id, :clave_vendedor, :comision, 1, 1)";
         $this->db->prepare($sql)->execute([
             ':nombre'         => $data['nombre'],
             ':email'          => $data['email'],
             ':password'       => self::hash($data['password']),
             ':rol_id'         => (int) $data['rol_id'],
+            ':oficina_id'     => $data['oficina_id'] ?? null,
             ':clave_vendedor' => ($data['clave_vendedor'] ?? '') ?: null,
             ':comision'       => isset($data['comision']) && $data['comision'] !== '' ? (float) $data['comision'] : null,
         ]);
@@ -405,8 +406,9 @@ class Usuario extends Model
     public function internos(): array
     {
         return $this->db->query(
-            "SELECT u.*, r.nombre AS rol_nombre, r.slug AS rol_slug
+            "SELECT u.*, r.nombre AS rol_nombre, r.slug AS rol_slug, ofi.nombre AS oficina_nombre
                FROM usuarios u JOIN roles r ON r.id = u.rol_id
+               LEFT JOIN oficinas ofi ON ofi.id = u.oficina_id
               WHERE r.slug <> 'cliente' ORDER BY u.nombre"
         )->fetchAll();
     }
@@ -414,10 +416,11 @@ class Usuario extends Model
     public function actualizarInterno(int $id, array $data): void
     {
         $this->db->prepare(
-            "UPDATE usuarios SET nombre = ?, rol_id = ?, clave_vendedor = ?, comision = ?, activo = ? WHERE id = ?"
+            "UPDATE usuarios SET nombre = ?, rol_id = ?, oficina_id = ?, clave_vendedor = ?, comision = ?, activo = ? WHERE id = ?"
         )->execute([
             $data['nombre'],
             (int) $data['rol_id'],
+            $data['oficina_id'] ?? null,
             $data['clave_vendedor'] ?: null,
             $data['comision'] !== null && $data['comision'] !== '' ? (float) $data['comision'] : null,
             !empty($data['activo']) ? 1 : 0,

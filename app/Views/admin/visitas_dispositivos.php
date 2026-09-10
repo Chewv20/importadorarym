@@ -1,6 +1,7 @@
 <?php
 /**
  * @var array $dispositivos
+ * @var array $oficinas
  * @var string|null $enlace
  */
 $estado = static function (array $d): array {
@@ -13,6 +14,7 @@ $estado = static function (array $d): array {
 
 <div class="filters-row">
     <a class="filter-tab" href="<?= url('/admin/visitas') ?>">Registros</a>
+    <a class="filter-tab" href="<?= url('/admin/visitas/oficinas') ?>">Oficinas</a>
     <a class="filter-tab is-active" href="<?= url('/admin/visitas/dispositivos') ?>">Dispositivos</a>
     <a class="filter-tab" href="<?= url('/admin/visitas/anfitriones') ?>">Anfitriones</a>
 </div>
@@ -29,17 +31,39 @@ $estado = static function (array $d): array {
 <form class="filters-row" method="post" action="<?= url('/admin/visitas/dispositivos') ?>">
     <?= csrf_field() ?>
     <input type="text" name="nombre" placeholder="Nombre del dispositivo (ej. Recepción Planta)" maxlength="80" required>
+    <select name="oficina_id" aria-label="Oficina">
+        <option value="">— Sin oficina —</option>
+        <?php foreach ($oficinas as $o): ?>
+            <option value="<?= (int) $o['id'] ?>"><?= e($o['nombre']) ?></option>
+        <?php endforeach; ?>
+    </select>
     <button type="submit" class="btn btn--accent">Crear dispositivo</button>
 </form>
+
+<?php if (!$oficinas): ?>
+    <p class="text-muted fs-sm">Aún no hay oficinas. Crea al menos una en la pestaña <a href="<?= url('/admin/visitas/oficinas') ?>">Oficinas</a> para separar la bitácora.</p>
+<?php endif; ?>
 
 <?php if ($dispositivos): ?>
 <div class="table-wrap">
     <table class="table">
-        <thead><tr><th>Dispositivo</th><th>Estado</th><th>Último uso</th><th>Acciones</th></tr></thead>
+        <thead><tr><th>Dispositivo</th><th>Oficina</th><th>Estado</th><th>Último uso</th><th>Acciones</th></tr></thead>
         <tbody>
         <?php foreach ($dispositivos as $d): [$txt, $cls] = $estado($d); ?>
             <tr>
                 <td><?= e($d['nombre']) ?></td>
+                <td>
+                    <form method="post" action="<?= url('/admin/visitas/dispositivos/' . (int) $d['id'] . '/oficina') ?>" class="inline-form">
+                        <?= csrf_field() ?>
+                        <select name="oficina_id" onchange="this.form.submit()" aria-label="Oficina del dispositivo">
+                            <option value="">— Sin oficina —</option>
+                            <?php foreach ($oficinas as $o): ?>
+                                <option value="<?= (int) $o['id'] ?>" <?= (int) ($d['oficina_id'] ?? 0) === (int) $o['id'] ? 'selected' : '' ?>><?= e($o['nombre']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <noscript><button type="submit" class="btn btn--outline btn--sm">Guardar</button></noscript>
+                    </form>
+                </td>
                 <td><span class="pill <?= $cls ?>"><?= e($txt) ?></span></td>
                 <td class="text-muted fs-sm"><?= !empty($d['ultimo_uso_en']) ? e(date('d/m/Y H:i', strtotime($d['ultimo_uso_en']))) : '—' ?></td>
                 <td>

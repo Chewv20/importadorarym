@@ -224,21 +224,36 @@ if ((int) $db->query("SELECT COUNT(*) FROM pedidos_recurrentes")->fetchColumn() 
     }
 }
 
+/* ---------------------------------------------------- Oficinas ----------- */
+$ofm = new \App\Models\Oficina();
+if ((int) $db->query("SELECT COUNT(*) FROM oficinas")->fetchColumn() === 0) {
+    $ofm->crear(['nombre' => 'Matriz CDMX', 'activa' => true]);
+    $ofm->crear(['nombre' => 'Sucursal Guadalajara', 'activa' => true]);
+    echo "2 oficinas demo creadas.\n";
+}
+$oficinaIds = $db->query("SELECT id FROM oficinas ORDER BY id")->fetchAll(PDO::FETCH_COLUMN);
+
 /* ---------------------------------------------------- Anfitriones --------- */
 $anf = new Anfitrion();
 $anfitriones = [
-    ['Laura Gómez', 'laura.gomez@demo.rym', 'Dirección'],
-    ['Carlos Ruiz', 'carlos.ruiz@demo.rym', 'Compras'],
-    ['Ana Torres',  'ana.torres@demo.rym',  'Ventas'],
-    ['Miguel Ángel Díaz', 'miguel.diaz@demo.rym', 'Almacén'],
-    ['Recepción General', 'recepcion@demo.rym', 'Recepción'],
+    ['Laura Gómez', 'laura.gomez@demo.rym', 'Dirección', 0],
+    ['Carlos Ruiz', 'carlos.ruiz@demo.rym', 'Compras',   0],
+    ['Ana Torres',  'ana.torres@demo.rym',  'Ventas',    1],
+    ['Miguel Ángel Díaz', 'miguel.diaz@demo.rym', 'Almacén', 1],
+    ['Recepción General', 'recepcion@demo.rym', 'Recepción', 0],
 ];
 $anfIds = [];
-foreach ($anfitriones as [$n, $e, $a]) {
+foreach ($anfitriones as [$n, $e, $a, $ofIdx]) {
     $exist = $db->prepare("SELECT id FROM anfitriones WHERE email = ?");
     $exist->execute([$e]);
     $id = $exist->fetchColumn();
-    if (!$id) { $id = $anf->crear(['nombre' => $n, 'email' => $e, 'area' => $a, 'activo' => true]); }
+    if (!$id) {
+        $id = $anf->crear([
+            'nombre' => $n, 'email' => $e, 'area' => $a,
+            'oficina_id' => isset($oficinaIds[$ofIdx]) ? (int) $oficinaIds[$ofIdx] : null,
+            'activo' => true,
+        ]);
+    }
     $anfIds[] = (int) $id;
 }
 echo count($anfitriones) . " anfitriones demo listos.\n";
@@ -246,8 +261,8 @@ echo count($anfitriones) . " anfitriones demo listos.\n";
 /* ---------------------------------------------------- Dispositivos -------- */
 $cd = new ChecadorDispositivo();
 if ((int) $db->query("SELECT COUNT(*) FROM checador_dispositivos")->fetchColumn() === 0) {
-    $cd->crear('Recepción Planta');
-    $cd->crear('Recepción Oficinas');
+    $cd->crear('Recepción Planta', isset($oficinaIds[0]) ? (int) $oficinaIds[0] : null);
+    $cd->crear('Recepción Oficinas', isset($oficinaIds[1]) ? (int) $oficinaIds[1] : null);
     echo "2 dispositivos de visitas creados (pendientes de activar desde el panel).\n";
 }
 
@@ -269,7 +284,9 @@ if ((int) $db->query("SELECT COUNT(*) FROM visitas")->fetchColumn() === 0) {
             'nombre_visitante' => $nombre, 'empresa' => $empresa, 'telefono' => $tel,
             'num_personas' => $pers, 'motivo' => $motivo,
             'anfitrion_id' => $anfId, 'anfitrion_email' => $emailAnf,
-            'dispositivo_id' => null, 'ip' => '127.0.0.1',
+            'dispositivo_id' => null,
+            'oficina_id' => $oficinaIds[$k % max(1, count($oficinaIds))] ?? null,
+            'ip' => '127.0.0.1',
         ]);
         // Escalona las fechas hacia atrás para que el historial luzca.
         $db->exec("UPDATE visitas SET created_at = DATE_SUB(NOW(), INTERVAL {$k} DAY) ORDER BY id DESC LIMIT 1");

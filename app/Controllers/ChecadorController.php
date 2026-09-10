@@ -56,9 +56,11 @@ class ChecadorController extends Controller
         $old = $_SESSION['_old_checador'] ?? [];
         unset($_SESSION['_old_checador']);
 
+        $oficinaId = isset($disp['oficina_id']) && $disp['oficina_id'] !== null ? (int) $disp['oficina_id'] : null;
+
         $this->view('checador/registro', [
             'title'       => 'Registro de visitas — Importadora RYM',
-            'anfitriones' => (new Anfitrion())->activos(),
+            'anfitriones' => (new Anfitrion())->activosPorOficina($oficinaId),
             'dispositivo' => $disp['nombre'],
             'error'       => flash('checador_error'),
             'old'         => $old,
@@ -96,9 +98,16 @@ class ChecadorController extends Controller
         $anfitrionId = (int) ($_POST['anfitrion_id'] ?? 0);
         $anfitrion   = $anfitrionId ? (new Anfitrion())->find($anfitrionId) : null;
 
+        // El anfitrión debe existir, estar activo y pertenecer a la oficina del
+        // dispositivo (defensa ante un POST manipulado que envíe otro id).
+        $oficinaDisp = isset($disp['oficina_id']) && $disp['oficina_id'] !== null ? (int) $disp['oficina_id'] : null;
+        $anfitrionValido = $anfitrion
+            && (int) $anfitrion['activo'] === 1
+            && ($oficinaDisp === null || (int) ($anfitrion['oficina_id'] ?? 0) === $oficinaDisp);
+
         $errores = [];
         if ($nombre === '' || mb_strlen($nombre) < 2)          $errores[] = 'Escribe tu nombre.';
-        if (!$anfitrion || (int) $anfitrion['activo'] !== 1)   $errores[] = 'Selecciona a quién vas a visitar.';
+        if (!$anfitrionValido)                                 $errores[] = 'Selecciona a quién vas a visitar.';
         if ($telefono !== '' && !telefono_valido($telefono))   $errores[] = 'El teléfono no es válido.';
 
         if ($errores) {
@@ -119,6 +128,7 @@ class ChecadorController extends Controller
             'anfitrion_id'     => (int) $anfitrion['id'],
             'anfitrion_email'  => $anfitrion['email'],
             'dispositivo_id'   => (int) $disp['id'],
+            'oficina_id'       => $disp['oficina_id'] ?? null,
             'ip'               => client_ip(),
         ]);
 
@@ -135,7 +145,9 @@ class ChecadorController extends Controller
             Mailer::enviar($copia, 'Nueva visita registrada — ' . $nombre, 'visita_nueva', $datos);
         }
 
-        flash('checador_ok', $anfitrion['nombre']);
+        // La confirmación pública muestra el área, no el nombre del anfitrión.
+        $area = trim((string) ($anfitrion['area'] ?? ''));
+        flash('checador_ok', $area !== '' ? $area : $anfitrion['nombre']);
         $this->redirect('/checador');
     }
 

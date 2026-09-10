@@ -15,14 +15,21 @@ class ChecadorDispositivo extends Model
     public const ACTIVACION_HORAS = 24;
 
     /** Crea un dispositivo y devuelve el token de activación EN CLARO (para el enlace). */
-    public function crear(string $nombre): string
+    public function crear(string $nombre, ?int $oficinaId = null): string
     {
         $token = bin2hex(random_bytes(32));
         $this->db->prepare(
-            "INSERT INTO checador_dispositivos (nombre, activacion_token_hash, activacion_expira_en, activo)
-             VALUES (?, ?, DATE_ADD(NOW(), INTERVAL ? HOUR), 1)"
-        )->execute([$nombre, hash('sha256', $token), self::ACTIVACION_HORAS]);
+            "INSERT INTO checador_dispositivos (nombre, oficina_id, activacion_token_hash, activacion_expira_en, activo)
+             VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL ? HOUR), 1)"
+        )->execute([$nombre, $oficinaId, hash('sha256', $token), self::ACTIVACION_HORAS]);
         return $token;
+    }
+
+    /** Asigna (o quita, con null) la oficina de un dispositivo ya creado. */
+    public function asignarOficina(int $id, ?int $oficinaId): void
+    {
+        $this->db->prepare("UPDATE checador_dispositivos SET oficina_id = ? WHERE id = ?")
+                 ->execute([$oficinaId, $id]);
     }
 
     /**
@@ -77,7 +84,12 @@ class ChecadorDispositivo extends Model
 
     public function todos(): array
     {
-        return $this->db->query("SELECT * FROM checador_dispositivos ORDER BY created_at DESC")->fetchAll();
+        return $this->db->query(
+            "SELECT d.*, o.nombre AS oficina_nombre
+               FROM checador_dispositivos d
+               LEFT JOIN oficinas o ON o.id = d.oficina_id
+              ORDER BY d.created_at DESC"
+        )->fetchAll();
     }
 
     /** Revoca el dispositivo: invalida su cookie y lo desactiva. */

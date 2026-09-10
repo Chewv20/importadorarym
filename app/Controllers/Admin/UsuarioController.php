@@ -6,6 +6,7 @@ use App\Core\Auth;
 use App\Models\Usuario;
 use App\Models\Rol;
 use App\Models\Permiso;
+use App\Models\Oficina;
 
 class UsuarioController extends BaseController
 {
@@ -58,6 +59,7 @@ class UsuarioController extends BaseController
             'email'          => $email,
             'password'       => $password,
             'rol_id'         => $rolId,
+            'oficina_id'     => (int) ($_POST['oficina_id'] ?? 0) ?: null,
             'clave_vendedor' => $vend['clave_vendedor'],
             'comision'       => $vend['comision'],
         ]);
@@ -89,6 +91,9 @@ class UsuarioController extends BaseController
         $nombre = str_clean($_POST['nombre'] ?? '', 120);
         $rolId  = $esSiMismo ? (int) $objetivo['rol_id'] : (int) ($_POST['rol_id'] ?? 0);
         $activo = $esSiMismo ? ((int) $objetivo['activo'] === 1) : isset($_POST['activo']);
+        $oficinaId = $esSiMismo
+            ? ($objetivo['oficina_id'] !== null ? (int) $objetivo['oficina_id'] : null)
+            : ((int) ($_POST['oficina_id'] ?? 0) ?: null);
 
         if (!nombre_valido($nombre) || $rolId <= 0) {
             flash('portal_error', 'Nombre válido (solo letras, espacios y . - \') y rol son obligatorios.');
@@ -104,6 +109,7 @@ class UsuarioController extends BaseController
         $model->actualizarInterno((int) $id, [
             'nombre'         => $nombre,
             'rol_id'         => $rolId,
+            'oficina_id'     => $oficinaId,
             'clave_vendedor' => $vend['clave_vendedor'],
             'comision'       => $vend['comision'],
             'activo'         => $activo,
@@ -257,6 +263,7 @@ class UsuarioController extends BaseController
             'active'         => 'usuarios',
             'usuarioEdit'    => $usuario,
             'roles'          => $roles,
+            'oficinas'       => (new Oficina())->todas(),
             'permisosGrupos' => (new Permiso())->agrupados(),
             'overrides'      => $usuario ? (new Usuario())->overrides((int) $usuario['id']) : [],
             'rolPermisoIds'  => $rolPermisoIds,
