@@ -1,6 +1,6 @@
 <?php
 /** @var array $cot @var array $items */
-$logo = asset('assets/img/logos/importadorarym.jpg');
+$logo = asset('assets/img/logos/importadorarym.png');
 ?>
 <!DOCTYPE html>
 <html lang="es">

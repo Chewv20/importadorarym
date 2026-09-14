@@ -73,7 +73,7 @@ class Mailer
         $graphCfg = GraphMailer::configActiva();
         if ($graphCfg !== null) {
             try {
-                $logoPath = ROOT_PATH . '/public/assets/img/logos/importadorarym.jpg';
+                $logoPath = ROOT_PATH . '/public/assets/img/logos/importadorarym.png';
                 $embebidos = is_file($logoPath)
                     ? [['cid' => self::LOGO_CID, 'path' => $logoPath, 'nombre' => basename($logoPath)]]
                     : null;
@@ -108,7 +108,7 @@ class Mailer
                 $mail->Timeout = 15;
             }
 
-            $logoPath = ROOT_PATH . '/public/assets/img/logos/importadorarym.jpg';
+            $logoPath = ROOT_PATH . '/public/assets/img/logos/importadorarym.png';
             if (is_file($logoPath)) {
                 $mail->addEmbeddedImage($logoPath, self::LOGO_CID, basename($logoPath));
             }

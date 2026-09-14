@@ -2,7 +2,7 @@
 <header class="site-header">
     <div class="container site-header__inner">
         <a class="site-logo" href="<?= url('/') ?>" aria-label="Importadora RYM - Inicio">
-            <img src="<?= asset('assets/img/logos/importadorarym.jpg') ?>" alt="Importadora RYM" width="284" height="92">
+            <img src="<?= asset('assets/img/logos/importadorarym.png') ?>" alt="Importadora RYM" width="235" height="92">
         </a>
 
         <nav class="nav" id="nav">

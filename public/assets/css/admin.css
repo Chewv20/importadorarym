@@ -10,7 +10,7 @@
 }
 .admin-brand { display: flex; align-items: center; gap: .6rem; padding: var(--rym-space-6); font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); color: #fff; border-bottom: 1px solid rgba(255,255,255,.15); }
 .admin-brand:hover { color: #fff; text-decoration: none; }
-.admin-brand img { height: 34px; background: #fff; border-radius: 6px; padding: 3px 6px; }
+.admin-brand img { height: 34px; width: auto; background: #fff; border-radius: 6px; padding: 3px 6px; }
 .admin-nav { display: flex; flex-direction: column; padding: var(--rym-space-4) var(--rym-space-3); gap: 2px; overflow-y: auto; flex: 1; }
 .admin-nav__link { display: flex; align-items: center; gap: .6rem; color: rgba(255,255,255,.82); font-family: var(--rym-font-head); font-weight: var(--rym-fw-medium); font-size: var(--rym-fs-sm); padding: .65rem .9rem; border-radius: var(--rym-radius-sm); }
 .admin-nav__link:hover { color: #fff; background: rgba(255,255,255,.12); text-decoration: none; }

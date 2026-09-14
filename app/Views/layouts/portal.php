@@ -12,7 +12,7 @@ $usuario = $usuario ?? [];
     <header class="portal-header">
         <div class="container portal-header__inner">
             <a class="portal-brand" href="<?= url('/portal') ?>">
-                <img src="<?= asset('assets/img/logos/importadorarym.jpg') ?>" alt="Importadora RYM" width="284" height="92">
+                <img src="<?= asset('assets/img/logos/importadorarym.png') ?>" alt="Importadora RYM" width="235" height="92">
                 Portal de clientes
             </a>
 

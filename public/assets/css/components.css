@@ -84,7 +84,7 @@
 .cot-actions { display: flex; flex-wrap: wrap; gap: var(--rym-space-3); align-items: center; }
 
 /* ---- Alertas ------------------------------------------------------------- */
-.alert { padding: .9rem 1.1rem; border-radius: var(--rym-radius-sm); font-size: var(--rym-fs-sm); }
+.alert { padding: .9rem 1.1rem; border-radius: var(--rym-radius-sm); font-size: var(--rym-fs-sm); overflow-wrap: anywhere; }
 .alert--ok { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
 .alert--error { background: #fdecea; color: #b71c1c; border: 1px solid #f5c6cb; }
 

@@ -4,7 +4,7 @@ $old = $_SESSION['_old'] ?? [];
 unset($_SESSION['_old']);
 ?>
 <div class="auth-card auth-card--wide">
-    <img class="auth-card__logo" src="<?= asset('assets/img/logos/importadorarym.jpg') ?>" alt="Importadora RYM" width="284" height="92">
+    <img class="auth-card__logo" src="<?= asset('assets/img/logos/importadorarym.png') ?>" alt="Importadora RYM" width="235" height="92">
     <h1 class="auth-card__title">Crear cuenta</h1>
     <p class="auth-card__sub">Regístrate para pedir en línea. Tu cuenta se activará tras la aprobación de un asesor.</p>
 

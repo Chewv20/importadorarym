@@ -10,7 +10,7 @@
  * fallar en local queda sujeto al bloqueo de imágenes remotas de muchos
  * clientes de correo.
  */
-$logo = isset($logoCid) ? 'cid:' . $logoCid : asset_url('assets/img/logos/importadorarym.jpg');
+$logo = isset($logoCid) ? 'cid:' . $logoCid : asset_url('assets/img/logos/importadorarym.png');
 ?>
 <!DOCTYPE html>
 <html lang="es">

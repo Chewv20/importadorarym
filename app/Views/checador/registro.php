@@ -8,7 +8,7 @@
 ?>
 <div class="kiosco-card">
     <div class="kiosco-card__head">
-        <img src="<?= asset('assets/img/logos/importadorarym.jpg') ?>" alt="Importadora RYM" width="284" height="92">
+        <img src="<?= asset('assets/img/logos/importadorarym.png') ?>" alt="Importadora RYM" width="235" height="92">
         <h1 class="kiosco-card__title">Registro de visitas</h1>
         <p class="kiosco-card__sub">Anota tus datos y avisaremos a quien vienes a ver.</p>
     </div>

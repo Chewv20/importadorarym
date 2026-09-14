@@ -30,8 +30,9 @@
 
 /* ---- Header / nav -------------------------------------------------------- */
 .site-header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: var(--rym-shadow-sm); }
-.site-header__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .75rem; }
-.site-logo img { height: 52px; width: auto; }
+.site-header__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .75rem; }
+.site-logo { flex-shrink: 0; }
+.site-logo img { height: 60px; width: auto; }
 .nav { display: flex; align-items: center; gap: 1.75rem; }
 .nav__link {
     font-family: var(--rym-font-head); font-weight: var(--rym-fw-medium);
@@ -206,7 +207,7 @@ body.lightbox-open { overflow: hidden; }
 }
 
 /* ---- Sectores ------------------------------------------------------------ */
-.sectors { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--rym-space-4); }
+.sectors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--rym-space-4); }
 .sector { display: flex; align-items: center; gap: .75rem; background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-4) var(--rym-space-6); }
 .sector svg { width: 1.5rem; height: 1.5rem; color: var(--rym-secondary); flex: none; }
 .sector span { font-weight: var(--rym-fw-medium); }
@@ -370,17 +371,23 @@ body.lightbox-open { overflow: hidden; }
 @media (max-width: 960px) {
     .hero__inner, .split, .cta__grid, .footer__grid { grid-template-columns: 1fr; }
     .stats__grid { grid-template-columns: repeat(2, 1fr); gap: var(--rym-space-6); }
-    .sectors { grid-template-columns: repeat(2, 1fr); }
+    .sectors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .hero__card { display: none; }
     .contact-grid { grid-template-columns: 1fr; }
     .steps { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 720px) {
+/* El nav completo (6 enlaces + "Portal clientes") no cabe en una sola fila junto
+   al logo y las acciones por debajo de ~1074px (medido con el logo actual, sin
+   flex-shrink) — de ahí este breakpoint más ancho que el resto del contenido
+   "móvil" (720px), específico para el menú off-canvas. */
+@media (max-width: 1080px) {
     .nav { position: fixed; inset: 0 0 0 auto; width: min(80vw, 320px); background: #fff; flex-direction: column; align-items: flex-start; padding: var(--rym-space-16) var(--rym-space-8); gap: var(--rym-space-4); transform: translateX(100%); transition: transform var(--rym-transition); box-shadow: var(--rym-shadow-lg); z-index: 200; }
     .nav.is-open { transform: translateX(0); }
     .nav-toggle { display: block; position: relative; z-index: 210; }
     .nav-backdrop { position: fixed; inset: 0; background: rgba(15,20,50,.5); z-index: 190; opacity: 0; visibility: hidden; transition: opacity var(--rym-transition), visibility 0s linear var(--rym-transition); }
     .nav-backdrop.is-open { opacity: 1; visibility: visible; transition-delay: 0s; }
+}
+@media (max-width: 720px) {
     .topbar__group--hide-sm { display: none; }
     .section { padding-block: var(--rym-space-16); }
     .steps { grid-template-columns: 1fr; }

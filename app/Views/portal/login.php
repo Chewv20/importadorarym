@@ -5,7 +5,7 @@ $old = $_SESSION['_old'] ?? [];
 unset($_SESSION['_old']);
 ?>
 <div class="auth-card">
-    <img class="auth-card__logo" src="<?= asset('assets/img/logos/importadorarym.jpg') ?>" alt="Importadora RYM" width="284" height="92">
+    <img class="auth-card__logo" src="<?= asset('assets/img/logos/importadorarym.png') ?>" alt="Importadora RYM" width="235" height="92">
     <h1 class="auth-card__title">Portal de clientes</h1>
     <p class="auth-card__sub">Ingresa para levantar y consultar tus pedidos.</p>
 

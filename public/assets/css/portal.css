@@ -8,7 +8,7 @@
 .portal-header__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--rym-space-6); padding-block: var(--rym-space-4); flex-wrap: wrap; }
 .portal-brand { display: inline-flex; align-items: center; gap: .6rem; color: #fff; font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); }
 .portal-brand:hover { color: #fff; text-decoration: none; }
-.portal-brand img { height: 36px; width: auto; background: #fff; border-radius: 6px; padding: 3px 6px; }
+.portal-brand img { height: 56px; width: auto; background: #fff; border-radius: 6px; padding: 3px 6px; }
 .portal-nav { display: flex; align-items: center; gap: var(--rym-space-2); flex-wrap: wrap; }
 .portal-nav__link { color: rgba(255,255,255,.85); font-family: var(--rym-font-head); font-weight: var(--rym-fw-medium); font-size: var(--rym-fs-sm); padding: .5rem .9rem; border-radius: var(--rym-radius-pill); }
 .portal-nav__link:hover { color: #fff; background: rgba(255,255,255,.12); text-decoration: none; }
@@ -55,7 +55,7 @@
 .auth-card { width: 100%; max-width: 440px; background: #fff; border-radius: var(--rym-radius-lg); box-shadow: var(--rym-shadow-lg); padding: var(--rym-space-12); }
 /* Formularios más largos (registro, con dirección) necesitan más ancho para no verse angostos y alargados. */
 .auth-card--wide { max-width: 680px; }
-.auth-card__logo { display: block; height: 54px; margin: 0 auto var(--rym-space-6); }
+.auth-card__logo { display: block; height: 64px; width: auto; margin: 0 auto var(--rym-space-6); }
 .auth-card__title { text-align: center; font-size: var(--rym-fs-xl); margin-bottom: var(--rym-space-2); }
 .auth-card__sub { text-align: center; color: var(--rym-text-muted); margin-bottom: var(--rym-space-8); }
 .auth-card__foot { text-align: center; margin-top: var(--rym-space-6); color: var(--rym-text-muted); font-size: var(--rym-fs-sm); }

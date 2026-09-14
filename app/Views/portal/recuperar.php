@@ -3,7 +3,7 @@ $ok  = flash('portal_ok');
 $err = flash('portal_error');
 ?>
 <div class="auth-card">
-    <img class="auth-card__logo" src="<?= asset('assets/img/logos/importadorarym.jpg') ?>" alt="Importadora RYM" width="284" height="92">
+    <img class="auth-card__logo" src="<?= asset('assets/img/logos/importadorarym.png') ?>" alt="Importadora RYM" width="235" height="92">
     <h1 class="auth-card__title">Recuperar contraseña</h1>
     <p class="auth-card__sub">Escribe tu correo y te enviaremos un enlace para crear una nueva contraseña.</p>
 

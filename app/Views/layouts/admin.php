@@ -16,7 +16,7 @@ function admin_link(string $name, string $current): string
 <div class="admin">
     <aside class="admin-side" id="adminSide">
         <a class="admin-brand" href="<?= url('/admin') ?>" title="Administración">
-            <img src="<?= asset('assets/img/logos/importadorarym.jpg') ?>" alt="RYM" width="284" height="92">
+            <img src="<?= asset('assets/img/logos/importadorarym.png') ?>" alt="RYM" width="235" height="92">
         </a>
         <nav class="admin-nav" aria-label="Menú del panel">
             <a class="admin-nav__link <?= admin_link('dashboard', $active) ?>" href="<?= url('/admin') ?>">
