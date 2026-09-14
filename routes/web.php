@@ -27,6 +27,7 @@ use App\Controllers\Admin\ProductoController as AdminProducto;
 use App\Controllers\Admin\CategoriaController as AdminCategoria;
 use App\Controllers\Admin\UsuarioController as AdminUsuario;
 use App\Controllers\Admin\RolController as AdminRol;
+use App\Controllers\Admin\ConfiguracionCorreoController as AdminConfiguracionCorreo;
 use App\Controllers\Admin\PedidoController as AdminPedido;
 use App\Controllers\Admin\PedidoNuevoController as AdminPedidoNuevo;
 use App\Controllers\Admin\AuditoriaController as AdminAuditoria;
@@ -313,3 +314,8 @@ $router->post('/admin/errores/limpiar', [AdminAuditoria::class, 'limpiarErrores'
 $router->get('/admin/roles', [AdminRol::class, 'index']);
 $router->get('/admin/roles/{id}/editar', [AdminRol::class, 'edit']);
 $router->post('/admin/roles/{id}', [AdminRol::class, 'update']);
+
+/* Configuración de correo (Office 365) */
+$router->get('/admin/configuracion-correo', [AdminConfiguracionCorreo::class, 'edit']);
+$router->post('/admin/configuracion-correo', [AdminConfiguracionCorreo::class, 'update']);
+$router->post('/admin/configuracion-correo/probar', [AdminConfiguracionCorreo::class, 'probar']);

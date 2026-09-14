@@ -83,6 +83,12 @@ function admin_link(string $name, string $current): string
                 <span class="admin-nav__label">Roles y permisos</span>
             </a>
             <?php endif; ?>
+            <?php if (can('configuracion.correo')): ?>
+            <a class="admin-nav__link <?= admin_link('configuracion_correo', $active) ?>" href="<?= url('/admin/configuracion-correo') ?>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
+                <span class="admin-nav__label">Correo (Office 365)</span>
+            </a>
+            <?php endif; ?>
             <?php if (can('clientes_logos.gestionar')): ?>
             <a class="admin-nav__link <?= admin_link('logos_clientes', $active) ?>" href="<?= url('/admin/logos-clientes') ?>">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>

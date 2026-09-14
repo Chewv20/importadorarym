@@ -66,6 +66,26 @@ class Mailer
             return true;
         }
 
+        // Office 365 (Microsoft Graph, app-only) tiene prioridad sobre SMTP
+        // cuando hay una configuración activa en el panel. Sin fallback
+        // automático a SMTP: si Graph falla, mejor que se vea en el log a
+        // que se envíe por una vía no auditada sin que nadie se entere.
+        $graphCfg = GraphMailer::configActiva();
+        if ($graphCfg !== null) {
+            try {
+                $logoPath = ROOT_PATH . '/public/assets/img/logos/importadorarym.jpg';
+                $embebidos = is_file($logoPath)
+                    ? [['cid' => self::LOGO_CID, 'path' => $logoPath, 'nombre' => basename($logoPath)]]
+                    : null;
+                GraphMailer::enviar($graphCfg, $destinatarios, $asunto, $html, $embebidos);
+                return true;
+            } catch (\Throwable $e) {
+                self::log('ERROR Graph a ' . implode(', ', $destinatarios)
+                    . ' | asunto: ' . $asunto . ' | ' . $e->getMessage());
+                return false;
+            }
+        }
+
         try {
             self::cargarPHPMailer();
             $mail = new PHPMailer(true);
