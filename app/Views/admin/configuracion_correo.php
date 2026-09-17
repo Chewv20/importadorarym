@@ -52,7 +52,7 @@
     <p id="pruebaCorreoResultado" class="fs-sm mt-4" hidden></p>
 </form>
 
-<script>
+<script nonce="<?= e(csp_nonce()) ?>">
 (function () {
     var btn = document.getElementById('btnProbarCorreo');
     var out = document.getElementById('pruebaCorreoResultado');
