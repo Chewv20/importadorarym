@@ -43,7 +43,6 @@ use App\Core\Log;
 use App\Core\Cache;
 use App\Core\CssMin;
 use App\Core\Crypto;
-use App\Core\ErrorAlert;
 use App\Models\Producto;
 
 /* ------------------------------------------------ Mini framework -- */
@@ -480,51 +479,6 @@ grupo('Cifrado de secretos (Crypto, correo O365/Graph)', function () {
     eq('un payload que no es base64 válido no truena', null, Crypto::decrypt('***no-es-base64***'));
     eq('un payload demasiado corto no truena', null, Crypto::decrypt(base64_encode('corto')));
     eq('cadena vacía no truena', null, Crypto::decrypt(''));
-});
-
-grupo('Aviso de error 500 (ErrorAlert)', function () {
-    $linea = __LINE__ + 1;
-    $e = new \RuntimeException('Algo truena');
-
-    $datos = ErrorAlert::datosDe($e);
-    eq('captura la clase de la excepción', \RuntimeException::class, $datos['clase']);
-    eq('captura el mensaje', 'Algo truena', $datos['mensaje']);
-    eq('captura el archivo', __FILE__, $datos['archivo']);
-    eq('captura la línea exacta', $linea, $datos['linea']);
-    ok('el trace no queda vacío', $datos['trace'] !== '');
-
-    // Recursión real para generar un stack trace genuinamente largo (un
-    // mensaje largo no sirve: getTraceAsString() no incluye el mensaje).
-    $profundo = null;
-    $profundo = function (int $n) use (&$profundo): void {
-        if ($n <= 0) {
-            throw new \RuntimeException('Muy profundo');
-        }
-        $profundo($n - 1);
-    };
-    try {
-        $profundo(120);
-    } catch (\Throwable $excepcionProfunda) {
-        ok('el trace real generado supera el tope (para que la prueba sea significativa)',
-            mb_strlen($excepcionProfunda->getTraceAsString()) > 3000);
-        eq('datosDe() acota el trace a 3000 caracteres',
-            3000, mb_strlen(ErrorAlert::datosDe($excepcionProfunda)['trace']));
-    }
-
-    // firma() es pura: mismos datos de entrada (llamada dos veces) dan la
-    // misma salida — es justo la propiedad que hace útil el throttle.
-    $firma1 = ErrorAlert::firma($datos);
-    $firma2 = ErrorAlert::firma($datos);
-    eq('firma() es determinística para los mismos datos', $firma1, $firma2);
-
-    $otraLinea = new \RuntimeException('Algo truena');
-    ok('distinta línea da distinta firma', $firma1 !== ErrorAlert::firma(ErrorAlert::datosDe($otraLinea)));
-
-    // Sin MAIL_ERRORES configurado (caso por defecto en .env.example y en este
-    // entorno de pruebas), notificar() no debe intentar enviar nada ni tronar.
-    $antes = $GLOBALS['_fail'];
-    ErrorAlert::notificar($e);
-    eq('notificar() sin buzón configurado no genera fallas', $antes, $GLOBALS['_fail']);
 });
 
 /* -------------------------------------------------------- Resumen -- */

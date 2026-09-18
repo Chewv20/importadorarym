@@ -145,8 +145,6 @@ Herramienta construida; falta que el negocio cargue su inventario real con ella.
 - `public/index.php`: `dispatch` envuelto en `try/catch(\Throwable)` + `register_shutdown_function` para fatales. En `app.debug=false` registra en `storage/logs/php-error.log` y renderiza `errors/500`; en desarrollo muestra el detalle en texto. Vista `app/Views/errors/500.php`.
 - **Verificado E2E:** `/__boom` (ruta temporal) → 500 amigable sin filtrar el stack trace en prod, con detalle en dev, y registro en log.
 
-**Ampliación 2026-09-18: aviso por correo ante un error 500.** El log de errores requería que alguien lo revisara manualmente; ahora, con `MAIL_ERRORES` configurado (opcional, vacío por defecto), `App\Core\ErrorAlert` manda un correo técnico al ocurrir un 500 en producción — con throttle de 1 correo/30min por firma de error (clase+archivo+línea+mensaje) para no inundar el buzón si un mismo error se repite en cada visita. Reutiliza `Mailer`/`RateLimiter` ya existentes, sin infraestructura nueva. Ver `docs/DESPLIEGUE.md §4.6`. `tests/run.php` 142 → **152/152** (10 pruebas nuevas sobre la parte pura: `datosDe()`/`firma()`).
-
 ### 5.2 ☑ Verificación de correo — requerida para pedidos  · hecho
 - Migración 018 (`email_verificado_en`, `verificacion_token` = hash). Registro genera token y envía correo `verificar_correo`.
 - `VerificacionController`: `GET /portal/verificar/{token}` (público, un solo uso) y `POST /portal/verificar/reenviar` (con rate limit). Aviso + botón de reenvío en el dashboard del portal si no está verificado.

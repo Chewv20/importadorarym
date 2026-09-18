@@ -70,23 +70,16 @@ if (config('app.debug')) {
 /* Renderiza la página 500 (o texto plano si el propio render falla). */
 $render500 = static function (\Throwable $e): void {
     error_log('[500] ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine());
-    if (config('app.debug')) {
-        if (!headers_sent()) {
-            http_response_code(500);
-            header('Content-Type: text/plain; charset=UTF-8');
-            echo "500 — " . $e->getMessage() . "\n\n" . $e->getFile() . ':' . $e->getLine()
-                . "\n\n" . $e->getTraceAsString();
-        }
-        return;
-    }
-    // Aviso por correo al buzón técnico (MAIL_ERRORES) — solo en producción,
-    // nunca en desarrollo. No bloquea ni condiciona el render de la página al
-    // visitante: corre después y nunca lanza (ver App\Core\ErrorAlert).
-    App\Core\ErrorAlert::notificar($e);
     if (headers_sent()) {
         return;
     }
     http_response_code(500);
+    if (config('app.debug')) {
+        header('Content-Type: text/plain; charset=UTF-8');
+        echo "500 — " . $e->getMessage() . "\n\n" . $e->getFile() . ':' . $e->getLine()
+            . "\n\n" . $e->getTraceAsString();
+        return;
+    }
     try {
         App\Core\View::render('errors/500', ['title' => 'Error interno', 'robots' => 'noindex']);
     } catch (\Throwable $inner) {
