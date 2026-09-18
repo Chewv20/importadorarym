@@ -163,6 +163,7 @@ GA_MEASUREMENT_ID=G-XXXXXXXXXX
 DB_USERNAME=rym_app         # usuario dedicado, NO root
 DB_PASSWORD=<contraseña fuerte>
 TRUSTED_PROXY_CIDR=98.129.229.200   # ver "Proxy de confianza" arriba — verificar contra REMOTE_ADDR real
+MAIL_ERRORES=soporte@importadorarym.com   # opcional — ver §4.6, buzón técnico de errores 500
 ```
 
 ## 4. Base de datos
@@ -294,6 +295,24 @@ TRUSTED_PROXY_CIDR=98.129.229.200   # ver "Proxy de confianza" arriba — verifi
   desaparece de ese kiosco hasta que se le asigne oficina manualmente. No hacerlo deja
   al personal de recepción sin poder anunciar la visita de ese anfitrión.
 
+## 4.6 Aviso por correo ante un error 500 (opcional)
+- Sin nada que configurar, un error 500 en producción solo queda en
+  `storage/logs/php-error.log` (nadie se entera hasta que alguien lo revise).
+  Con `MAIL_ERRORES=alguien@dominio.com` en el `.env`, además se manda un
+  correo técnico (mensaje, archivo:línea, URL solicitada, IP, stack trace) al
+  ocurrir el error — pensado para quien da soporte técnico, no para ventas
+  (puede ser un buzón distinto a `MAIL_LEADS`).
+- **No inunda el buzón**: un mismo error (misma clase+archivo+línea+mensaje)
+  manda como máximo un correo cada 30 min, sin importar cuántas veces se
+  repita mientras tanto — sigue quedando registrado en el log en cada
+  ocurrencia, solo el correo se limita (`App\Core\ErrorAlert`, mismo mecanismo
+  de throttle por archivo que ya usa `RateLimiter` en el resto del sitio).
+- Vacío por defecto (`MAIL_ERRORES=`) = desactivado, cero cambio de
+  comportamiento respecto a hoy. Solo se dispara en producción
+  (`APP_DEBUG=false`); en desarrollo nunca manda correo aunque se configure.
+- Usa el mismo `MAIL_MAILER` ya definido (SMTP u Office 365/Graph, ver §4.4)
+  — no requiere configuración de correo aparte.
+
 ## 5. SSL / HTTPS (BLOQUEANTE para el portal)
 - Instalar el certificado (Let's Encrypt u otro).
 - Poner `FORCE_HTTPS=true` → redirige http→https y activa HSTS.
@@ -313,6 +332,9 @@ TRUSTED_PROXY_CIDR=98.129.229.200   # ver "Proxy de confianza" arriba — verifi
       correo de prueba" del panel funciona.
 - [ ] Si se activan oficinas en visitas: cada dispositivo del checador y cada
       anfitrión activo tiene su oficina asignada (ver §4.5) antes de dejarlos en uso.
+- [ ] (Opcional) `MAIL_ERRORES` capturado en el `.env` si se quiere aviso por
+      correo ante un error 500 (ver §4.6) — sin él, el sitio funciona igual,
+      solo que hay que revisar `storage/logs/php-error.log` manualmente.
 
 ## 7. Al publicar cambios de CSS/JS
 

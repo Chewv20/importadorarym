@@ -61,6 +61,7 @@ return [
         'from_name'    => env('MAIL_FROM_NAME', 'Importadora RYM'),
         'reply_to'     => env('MAIL_REPLY_TO', ''),
         'leads'        => env('MAIL_LEADS', ''),         // buzón interno de avisos
+        'errores'      => env('MAIL_ERRORES', ''),       // buzón técnico: aviso ante un error 500 (vacío = desactivado)
     ],
 
     // Valores por defecto para la exportación a Aspel SAE (opcionales).
