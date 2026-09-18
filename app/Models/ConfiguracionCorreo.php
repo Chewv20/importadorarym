@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Crypto;
 use App\Core\Model;
 
 class ConfiguracionCorreo extends Model
@@ -75,6 +76,7 @@ class ConfiguracionCorreo extends Model
         return (int) $this->db->lastInsertId();
     }
 
+    /** El token se guarda cifrado (defensa en profundidad: es de vida corta, ~60-90 min). */
     public function guardarTokenCache(int $id, string $token, int $ttlSegundos): void
     {
         $st = $this->db->prepare(
@@ -82,6 +84,6 @@ class ConfiguracionCorreo extends Model
                 SET token_cache = ?, token_expira_en = DATE_ADD(NOW(), INTERVAL ? SECOND)
               WHERE id = ?"
         );
-        $st->execute([$token, $ttlSegundos, $id]);
+        $st->execute([Crypto::encrypt($token), $ttlSegundos, $id]);
     }
 }

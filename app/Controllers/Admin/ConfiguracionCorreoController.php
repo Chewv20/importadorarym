@@ -7,6 +7,7 @@ use App\Core\Auth;
 use App\Core\Crypto;
 use App\Core\GraphMailer;
 use App\Core\Mailer;
+use App\Core\RateLimiter;
 use App\Models\ConfiguracionCorreo;
 
 class ConfiguracionCorreoController extends BaseController
@@ -89,6 +90,10 @@ class ConfiguracionCorreoController extends BaseController
         Auth::authorize('configuracion.correo');
         if (!csrf_verify($_POST['_csrf'] ?? null)) {
             $this->json(['ok' => false, 'mensaje' => 'La sesión expiró, recarga la página.'], 419);
+        }
+
+        if (!RateLimiter::attempt('correo-prueba:' . (int) $this->usuario['id'], 5, 600)) {
+            $this->json(['ok' => false, 'mensaje' => 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.'], 429);
         }
 
         if (GraphMailer::configActiva() === null) {

@@ -46,9 +46,11 @@ Pantone oficiales convertidos a sRGB (Coated) para web.
 
 ## Uso del logo
 
-- Archivo header: `public/assets/img/logos/importadorarym.jpg` (versión horizontal,
-  284×92 px, fondo blanco). Conviene generar una versión **SVG o PNG @2x** para
-  pantallas retina.
+- Archivo header: `public/assets/img/logos/importadorarym.png` (versión horizontal,
+  2032×796 px, fondo transparente — reemplazó al `.jpg` original el 2026-09-14 por
+  distorsión/desborde en el layout, ver `docs/AUDITORIA.md`). Se sirve a 235×92 px
+  en pantalla; al ya venir a resolución alta, cubre retina sin necesitar una versión
+  @2x aparte. Conviene generar también una versión **SVG** a futuro.
 - **Área de protección:** mínimo `1x` perimetral libre alrededor de la identidad
   (Manual pág. 13), donde `x` = alto de la "I" de IMPORTADORA.
 - **Usos incorrectos** (Manual pág. 15): no deformar, no recolorear, no fragmentar,

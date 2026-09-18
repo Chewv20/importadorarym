@@ -86,12 +86,15 @@ class GraphMailer
         }
     }
 
-    /** Token vigente (de caché en BD) o uno nuevo si venció/no existe. */
+    /** Token vigente (de caché en BD, cifrado) o uno nuevo si venció/no existe. */
     private static function obtenerToken(array $cfg): string
     {
         $expira = !empty($cfg['token_expira_en']) ? strtotime((string) $cfg['token_expira_en']) : 0;
         if (!empty($cfg['token_cache']) && $expira > time() + self::MARGEN_SEGS) {
-            return $cfg['token_cache'];
+            $token = Crypto::decrypt($cfg['token_cache']);
+            if ($token !== null) {
+                return $token;
+            }
         }
         return self::solicitarToken($cfg);
     }

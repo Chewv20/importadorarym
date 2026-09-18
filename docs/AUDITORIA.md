@@ -911,3 +911,82 @@ Verificado: `tests/run.php` 135/135, `php -l` limpio, `curl` directo contra
 403, confirmando ese bloqueante de Fase 0 resuelto), contra el bundle real ya sirviendo
 (confirmado con el fix del footer presente byte a byte), y en local confirmando que
 `app.debug=true` sigue sirviendo las hojas sueltas sin cambios de comportamiento.
+
+## Auditoría — 17/09/2026
+
+Cobertura: los 4 commits agregados desde la auditoría final del 01/09/2026 —
+correo saliente vía Microsoft Graph/Office 365, separación de la bitácora de
+visitas por oficinas, y el fix de logo/layout del header. Tres frentes en
+paralelo: seguridad, calidad de código y preparación para producción. Estado de
+partida: `tests/run.php` 135/135.
+
+### Seguridad — sin hallazgos explotables
+
+`App\Core\Crypto` cifra el `client_secret` con AES-256-GCM (IV aleatorio, tag
+autenticado), clave derivada de `APP_KEY` — mismo patrón ya aceptado para
+`captcha_secret()`. Las 3 rutas de `ConfiguracionCorreoController` exigen el
+permiso `configuracion.correo` (solo rol `admin`); el secreto nunca llega al
+HTML; el botón de prueba solo envía al correo del propio admin autenticado (no
+es vector de SSRF/spam a terceros). El scope por oficina
+(`BaseController::oficinaScope()`) se aplica siempre server-side sin importar
+el filtro de query string, y `ChecadorController` valida que el anfitrión
+pertenezca a la oficina del dispositivo autenticado — sin IDOR entre oficinas.
+Barrido general del resto del sitio sin hallazgos nuevos.
+
+### F1 · `Mailer::enviar()` podía romper TODO el envío de correo del sitio — ALTA
+
+> **✔ Aplicado.**
+
+`GraphMailer::configActiva()` se llamaba en `app/Core/Mailer.php` **fuera de
+cualquier try/catch**, antes de decidir si usar Graph o SMTP. Si esa consulta
+fallaba (tabla `configuracion_correo` sin migrar todavía en algún entorno, o un
+hipo momentáneo de la base de datos), la excepción se propagaba sin capturar y
+tumbaba el envío de contraseñas, cotizaciones, pedidos y notificaciones de
+visitas — contradiciendo el propio contrato documentado de la clase ("nunca
+lanza excepción hacia el flujo del usuario"). Especialmente delicado en
+`ChecadorController`, donde la visita ya queda guardada en BD antes de llamar a
+`Mailer::enviar()`: el visitante vería un error 500 aunque su registro sí se
+guardó.
+
+**Corrección**: la llamada a `GraphMailer::configActiva()` ahora está dentro de
+su propio try/catch; si falla, se registra en `mail.log` y se trata como "sin
+Graph activo", cayendo al camino de SMTP existente en vez de propagar la
+excepción.
+
+### F2 · Endpoint de "correo de prueba" sin rate-limit — BAJA
+
+> **✔ Aplicado.**
+
+`ConfiguracionCorreoController::probar()` no limitaba intentos, a diferencia
+del resto de endpoints sensibles del proyecto (`checador`, `cotizar`,
+`pwreset`, etc.). No era una desviación explotable por sí sola (ya requiere
+sesión de admin con el permiso), pero permitía golpear repetidamente el
+endpoint de token de Microsoft. Se agregó `RateLimiter::attempt()` (5 intentos
+/ 10 min, por usuario).
+
+### F3 · Token de Graph cacheado en texto plano — BAJA (endurecimiento)
+
+> **✔ Aplicado.**
+
+`configuracion_correo.token_cache` guardaba el access_token de Graph (vida
+~60-90 min) sin cifrar, a diferencia del `client_secret` de la misma tabla. No
+era explotable por sí solo, pero por defensa en profundidad ahora se cifra y
+descifra con `App\Core\Crypto`, igual que el secreto.
+
+### F4 · Documentación desactualizada — MEDIA
+
+> **✔ Aplicado.**
+
+`docs/DESPLIEGUE.md`, `docs/ROADMAP.md` y este documento no se habían tocado
+en los 3 commits de funcionalidad nueva. Se agregó `docs/DESPLIEGUE.md §4.4`
+(correo O365, incluida la guía paso a paso para registrar la app en Azure
+AD/Entra ID con permiso `Mail.Send` app-only — paso obligatorio fuera del
+sitio que antes no estaba documentado en ningún lado) y `§4.5` (oficinas, con
+la advertencia operativa de que un anfitrión sin oficina asignada desaparece
+del kiosco en cuanto su dispositivo sí tiene una oficina asignada); dos ítems
+nuevos en el checklist de verificación post-deploy (§6); y `docs/ROADMAP.md`
+registra ambas features en el backlog completado.
+
+Verificado: `tests/run.php` 135/135 antes y después de las correcciones,
+`php -l` limpio en los archivos tocados (`Mailer.php`, `GraphMailer.php`,
+`ConfiguracionCorreo.php`, `ConfiguracionCorreoController.php`).

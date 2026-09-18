@@ -70,7 +70,15 @@ class Mailer
         // cuando hay una configuración activa en el panel. Sin fallback
         // automático a SMTP: si Graph falla, mejor que se vea en el log a
         // que se envíe por una vía no auditada sin que nadie se entere.
-        $graphCfg = GraphMailer::configActiva();
+        // Si ni siquiera se puede consultar la configuración (tabla aún sin
+        // migrar, BD caída momentáneamente), se trata como "sin Graph activo"
+        // y se sigue de largo a SMTP: no debe tumbar TODO el correo del sitio.
+        try {
+            $graphCfg = GraphMailer::configActiva();
+        } catch (\Throwable $e) {
+            self::log('ERROR al leer configuración de Graph | ' . $e->getMessage());
+            $graphCfg = null;
+        }
         if ($graphCfg !== null) {
             try {
                 $logoPath = ROOT_PATH . '/public/assets/img/logos/importadorarym.png';

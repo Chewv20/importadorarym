@@ -251,6 +251,49 @@ TRUSTED_PROXY_CIDR=98.129.229.200   # ver "Proxy de confianza" arriba — verifi
   invocan por HTTP responden `404` y no ejecutan nada. Es defensa en profundidad y
   **no depende** de que `.htaccess`/`AllowOverride` estén bien configurados.
 
+## 4.4 Correo saliente vía Office 365 (Microsoft Graph)
+- Alternativa a SMTP para el envío de correo transaccional, configurable **desde el
+  panel** (`/admin/configuracion-correo`, permiso `configuracion.correo` — solo rol
+  `admin` tras correr la migración `053`) en vez de variables de entorno. Si hay una
+  configuración activa, tiene prioridad sobre `MAIL_MAILER=smtp` del `.env`; sin
+  configuración activa, el sitio sigue enviando por SMTP exactamente como antes.
+- **No requiere variables nuevas en `.env`**: las credenciales se cifran con
+  `App\Core\Crypto` usando `APP_KEY` (la misma que ya existe). Si `APP_KEY` cambia,
+  hay que volver a capturar el Client Secret desde el panel.
+- **Paso previo obligatorio, fuera del sitio** — registrar una app en Azure AD /
+  Microsoft Entra ID (lo hace quien administre el Microsoft 365 de la empresa):
+  1. portal.azure.com → **Microsoft Entra ID** → **Registros de aplicaciones** →
+     **Nuevo registro** (cualquier nombre, ej. "RYM - Correo saliente").
+  2. En el registro creado, anotar el **Id. de aplicación (cliente)** y el
+     **Id. de directorio (inquilino)** — son el `client_id` y `tenant_id` del panel.
+  3. **Certificados y secretos** → **Nuevo secreto de cliente** → copiar el **valor**
+     del secreto en cuanto se genera (no se vuelve a mostrar) — es el `client_secret`.
+  4. **Permisos de API** → **Agregar un permiso** → **Microsoft Graph** →
+     **Permisos de aplicación** (no "delegados") → buscar y marcar **Mail.Send**.
+  5. En la misma pantalla, botón **"Conceder consentimiento de administrador"** (lo
+     debe hacer un Administrador global o de aplicaciones del tenant) — sin este paso,
+     el envío falla con error de autorización aunque las credenciales sean correctas.
+  6. El **mailbox** capturado en el panel debe ser un buzón real de ese Microsoft 365
+     (ej. `no-responder@importadorarym.com`) — con permisos de aplicación, Graph puede
+     enviar como cualquier buzón del tenant sin necesitar licencia dedicada extra.
+- Tras capturar los 4 datos y **activar** la configuración, usar el botón "Enviar
+  correo de prueba" del panel (se manda al correo del admin que lo prueba, con límite
+  de 5 intentos / 10 min) antes de darlo por bueno.
+- Si `configuracion_correo` no tiene fila activa o la tabla aún no existe (migración
+  no corrida), el sitio no falla: cae de vuelta a SMTP/log automáticamente.
+
+## 4.5 Bitácora de visitas por oficinas
+- Migraciones `051`/`052` agregan `oficinas` y `oficina_id` en dispositivos del
+  checador, anfitriones, visitas y usuarios — retrocompatible (`oficina_id = NULL`
+  se comporta igual que antes de esta función).
+- **Paso manual tras migrar en el sitio real**: crear las oficinas reales desde
+  `/admin/visitas/oficinas` y asignarlas a los anfitriones y dispositivos existentes.
+  **En cuanto un dispositivo del checador (tablet de recepción) tenga una oficina
+  asignada, ese kiosco deja de mostrar automáticamente a los anfitriones que NO
+  tengan esa misma oficina asignada** — un anfitrión migrado con `oficina_id = NULL`
+  desaparece de ese kiosco hasta que se le asigne oficina manualmente. No hacerlo deja
+  al personal de recepción sin poder anunciar la visita de ese anfitrión.
+
 ## 5. SSL / HTTPS (BLOQUEANTE para el portal)
 - Instalar el certificado (Let's Encrypt u otro).
 - Poner `FORCE_HTTPS=true` → redirige http→https y activa HSTS.
@@ -265,6 +308,11 @@ TRUSTED_PROXY_CIDR=98.129.229.200   # ver "Proxy de confianza" arriba — verifi
 - [ ] Registro → aprobación → login → crear pedido funciona.
 - [ ] Rich Results Test (Google) valida el JSON-LD; Sharing Debugger valida la imagen OG.
 - [ ] La PWA es instalable (Service Worker activo).
+- [ ] Si se activa correo por Office 365: el rol `admin` tiene el permiso
+      `configuracion.correo` (lo asigna la migración `053` sola) y el botón "Enviar
+      correo de prueba" del panel funciona.
+- [ ] Si se activan oficinas en visitas: cada dispositivo del checador y cada
+      anfitrión activo tiene su oficina asignada (ver §4.5) antes de dejarlos en uso.
 
 ## 7. Al publicar cambios de CSS/JS
 
