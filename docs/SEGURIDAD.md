@@ -57,7 +57,23 @@ Resumen de las protecciones implementadas y su ubicación.
 
 ## CSRF
 - Token por sesión (`csrf_field()` / `csrf_verify()`) en **todos** los POST,
-  incluido el logout.
+  incluido el logout. **Excepción a propósito**: el endpoint máquina-a-máquina
+  de abajo no usa sesión ni CSRF — su autenticación es un token fijo, no una
+  sesión de navegador que un CSRF pudiera secuestrar.
+
+## Autenticación máquina-a-máquina (primer caso: sync de disponibilidad SAE)
+- `POST /integraciones/sae/disponibilidad` (`App\Controllers\Integraciones\
+  SaeDisponibilidadController`) recibe la sincronización de existencias desde
+  un script externo en la oficina del cliente (ver `integraciones/sae/`).
+- **Auth por token fijo**: header `Authorization: Bearer <token>`, comparado
+  con `hash_equals()` contra `SAE_SYNC_TOKEN` (`.env`, vacío por defecto =
+  endpoint cerrado, no "abierto sin auth"). Es el primer endpoint del proyecto
+  con este patrón — cualquier integración externa futura debería seguir el
+  mismo esquema (token de 32 bytes vía `.env`, `hash_equals()`, nunca
+  comparación directa con `===`).
+- **Rate limit antes de validar el token** (`RateLimiter`, 20/10min por IP):
+  así un token equivocado repetido también queda acotado, no solo el abuso
+  con un token válido que se llegara a filtrar.
 
 ## Cabeceras (`public/index.php` + `public/.htaccess`)
 - `Content-Security-Policy` (con nonce; permite GA, Google Fonts y Google Maps).

@@ -221,10 +221,10 @@ class Producto extends Model
     {
         $sql = "INSERT INTO productos (categoria_id, nombre, slug, descripcion, sku, clave_sae,
                                       esquema_impuestos, unidad, piezas_por_presentacion, piezas_minimas,
-                                      destacado, personalizable, activo, orden)
+                                      disponibilidad_manual, destacado, personalizable, activo, orden)
                 VALUES (:categoria_id, :nombre, :slug, :descripcion, :sku, :clave_sae,
                         :esquema_impuestos, :unidad, :piezas_por_presentacion, :piezas_minimas,
-                        :destacado, :personalizable, :activo, :orden)";
+                        :disponibilidad_manual, :destacado, :personalizable, :activo, :orden)";
         $this->db->prepare($sql)->execute([
             ':categoria_id' => ($data['categoria_id'] ?? null) ?: null,
             ':nombre'       => $data['nombre'],
@@ -236,6 +236,7 @@ class Producto extends Model
             ':unidad'       => $data['unidad'] ?? null,
             ':piezas_por_presentacion' => self::piezasPorPresentacion($data['piezas_por_presentacion'] ?? null),
             ':piezas_minimas' => self::piezasMinimas($data['piezas_minimas'] ?? null),
+            ':disponibilidad_manual' => self::disponibilidadManual($data['disponibilidad_manual'] ?? null),
             ':destacado'    => !empty($data['destacado']) ? 1 : 0,
             ':personalizable' => !empty($data['personalizable']) ? 1 : 0,
             ':activo'       => isset($data['activo']) ? (int) (bool) $data['activo'] : 1,
@@ -250,6 +251,7 @@ class Producto extends Model
                     descripcion = :descripcion, sku = :sku, clave_sae = :clave_sae,
                     esquema_impuestos = :esquema_impuestos, unidad = :unidad,
                     piezas_por_presentacion = :piezas_por_presentacion, piezas_minimas = :piezas_minimas,
+                    disponibilidad_manual = :disponibilidad_manual,
                     destacado = :destacado, personalizable = :personalizable, activo = :activo, orden = :orden
                 WHERE id = :id";
         $this->db->prepare($sql)->execute([
@@ -263,6 +265,7 @@ class Producto extends Model
             ':unidad'       => $data['unidad'] ?? null,
             ':piezas_por_presentacion' => self::piezasPorPresentacion($data['piezas_por_presentacion'] ?? null),
             ':piezas_minimas' => self::piezasMinimas($data['piezas_minimas'] ?? null),
+            ':disponibilidad_manual' => self::disponibilidadManual($data['disponibilidad_manual'] ?? null),
             ':destacado'    => !empty($data['destacado']) ? 1 : 0,
             ':personalizable' => !empty($data['personalizable']) ? 1 : 0,
             ':activo'       => isset($data['activo']) ? (int) (bool) $data['activo'] : 1,
@@ -359,6 +362,46 @@ class Producto extends Model
     public function eliminar(int $id): void
     {
         $this->db->prepare("DELETE FROM productos WHERE id = ?")->execute([$id]);
+    }
+
+    /* --------------------------- Disponibilidad (sync SAE) ----------- */
+
+    public const DISPONIBILIDADES = ['disponible', 'agotado', 'bajo_pedido'];
+
+    /**
+     * Override manual de disponibilidad: uno de DISPONIBILIDADES, o null si
+     * viene vacío o no es un valor reconocido. NULL = automático, según
+     * existencia_sae (ver estadoDisponibilidad()).
+     */
+    public static function disponibilidadManual($valor): ?string
+    {
+        $v = trim((string) ($valor ?? ''));
+        return in_array($v, self::DISPONIBILIDADES, true) ? $v : null;
+    }
+
+    /**
+     * Estado efectivo a mostrar, o null si no hay nada que mostrar (producto
+     * nunca sincronizado y sin override manual = comportamiento de siempre,
+     * sin aviso). Pura, sin BD — el override manual siempre gana.
+     */
+    public static function estadoDisponibilidad(array $producto): ?string
+    {
+        $manual = $producto['disponibilidad_manual'] ?? null;
+        if ($manual !== null) {
+            return $manual;
+        }
+        if (!array_key_exists('existencia_sae', $producto) || $producto['existencia_sae'] === null) {
+            return null;
+        }
+        return ((int) $producto['existencia_sae']) > 0 ? 'disponible' : 'agotado';
+    }
+
+    /** Actualiza la existencia sincronizada desde SAE (App\Core\DisponibilidadSync). */
+    public function actualizarExistencia(int $id, int $existencia): void
+    {
+        $this->db->prepare(
+            "UPDATE productos SET existencia_sae = ?, existencia_actualizada_en = NOW() WHERE id = ?"
+        )->execute([$existencia, $id]);
     }
 
     /* --------------------------------- Imágenes (galería) ------------ */

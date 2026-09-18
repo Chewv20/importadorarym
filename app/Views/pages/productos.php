@@ -107,6 +107,11 @@ require APP_PATH . '/Views/partials/page_hero.php';
                         <?php if (!empty($p['personalizable'])): ?>
                             <span class="badge-personalizable">Personalizable</span>
                         <?php endif; ?>
+                        <?php if (($p['disponibilidad'] ?? null) === 'agotado'): ?>
+                            <span class="badge-agotado">Agotado</span>
+                        <?php elseif (($p['disponibilidad'] ?? null) === 'bajo_pedido'): ?>
+                            <span class="badge-bajopedido">Bajo pedido</span>
+                        <?php endif; ?>
                         <div class="prod-card__name"><?= e($p['nombre']) ?></div>
                         <?php if (!empty($p['unidad'])): ?>
                             <div class="prod-card__meta"><?= e($p['unidad']) ?></div>

@@ -40,6 +40,7 @@ class CarritoPedido
             [$piezas, $minimo] = Producto::loteDesdeFila($p);
             $p['minimo_efectivo'] = ($piezas !== null || $minimo !== null)
                 ? Producto::cantidadValida(1, $piezas, $minimo) : null;
+            $p['disponibilidad'] = Producto::estadoDisponibilidad($p);
         }
         unset($p);
 

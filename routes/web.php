@@ -43,6 +43,7 @@ use App\Controllers\Admin\ListaProductosController as AdminListaProductos;
 use App\Controllers\Admin\ZonaController as AdminZona;
 use App\Controllers\Admin\SaeSerieController as AdminSaeSerie;
 use App\Controllers\RepartoController;
+use App\Controllers\Integraciones\SaeDisponibilidadController;
 
 /* Landing */
 $router->get('/', [HomeController::class, 'index']);
@@ -56,6 +57,9 @@ $router->get('/productos/{slug}', [ProductoController::class, 'categoria']);
 
 /* Autocompletar de dirección por código postal (registro y perfil) */
 $router->get('/codigo-postal/{cp}/buscar', [CodigoPostalController::class, 'buscar']);
+
+/* Sincronización de existencias desde Aspel SAE (auth por token, ver integraciones/sae/) */
+$router->post('/integraciones/sae/disponibilidad', [SaeDisponibilidadController::class, 'sincronizar']);
 
 /* Páginas de contenido */
 $router->get('/nosotros', [PageController::class, 'nosotros']);

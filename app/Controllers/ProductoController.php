@@ -51,6 +51,10 @@ class ProductoController extends Controller
         $offset = ($page - 1) * self::POR_PAGINA;
         $productos = $productoModel->activosFiltrado(self::POR_PAGINA, $offset, $categoriaIds, $q);
         $imagenesPorProducto = $productoModel->imagenesPorProductos(array_column($productos, 'id'));
+        foreach ($productos as &$p) {
+            $p['disponibilidad'] = Producto::estadoDisponibilidad($p);
+        }
+        unset($p);
 
         $breadcrumb = [
             ['label' => 'Inicio', 'url' => url('/')],

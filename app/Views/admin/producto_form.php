@@ -93,6 +93,29 @@ $action = $p ? url('/admin/productos/' . (int) $p['id']) : url('/admin/productos
                 Vacío = sin mínimo adicional (solo aplica la presentación).
             </p>
         </div>
+        <div class="field">
+            <label for="disponibilidad_manual">Disponibilidad</label>
+            <select id="disponibilidad_manual" name="disponibilidad_manual">
+                <option value="" <?= empty($p['disponibilidad_manual']) ? 'selected' : '' ?>>Automático (según SAE)</option>
+                <option value="disponible" <?= ($p['disponibilidad_manual'] ?? '') === 'disponible' ? 'selected' : '' ?>>Disponible</option>
+                <option value="agotado" <?= ($p['disponibilidad_manual'] ?? '') === 'agotado' ? 'selected' : '' ?>>Agotado</option>
+                <option value="bajo_pedido" <?= ($p['disponibilidad_manual'] ?? '') === 'bajo_pedido' ? 'selected' : '' ?>>Bajo pedido</option>
+            </select>
+            <p class="text-muted fs-sm">
+                "Automático" refleja la existencia sincronizada desde SAE (mayor a 0 = disponible,
+                0 o menos = agotado). Forzar un valor aquí lo deja fijo hasta que lo regreses a
+                "Automático" — útil para marcar "Bajo pedido" en un artículo sin stock que igual se
+                puede producir.
+                <?php if (($p['existencia_sae'] ?? null) !== null): ?>
+                    Existencia según SAE: <strong><?= (int) $p['existencia_sae'] ?></strong>
+                    <?php if (!empty($p['existencia_actualizada_en'])): ?>
+                        (actualizado el <?= e(date('d/m/Y H:i', strtotime((string) $p['existencia_actualizada_en']))) ?>).
+                    <?php endif; ?>
+                <?php elseif ($p): ?>
+                    Sin sincronizar todavía.
+                <?php endif; ?>
+            </p>
+        </div>
     </div>
 
     <div class="form-section">

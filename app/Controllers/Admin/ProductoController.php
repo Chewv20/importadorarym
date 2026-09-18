@@ -269,6 +269,7 @@ class ProductoController extends BaseController
             'unidad'       => str_clean($_POST['unidad'] ?? '', 40) ?: null,
             'piezas_por_presentacion' => Producto::piezasPorPresentacion($_POST['piezas_por_presentacion'] ?? null),
             'piezas_minimas' => Producto::piezasMinimas($_POST['piezas_minimas'] ?? null),
+            'disponibilidad_manual' => Producto::disponibilidadManual($_POST['disponibilidad_manual'] ?? null),
             'destacado'    => isset($_POST['destacado']),
             'personalizable' => isset($_POST['personalizable']),
             'activo'       => isset($_POST['activo']),
