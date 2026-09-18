@@ -44,7 +44,6 @@ use App\Core\Cache;
 use App\Core\CssMin;
 use App\Core\Crypto;
 use App\Core\ErrorAlert;
-use App\Core\DisponibilidadSync;
 use App\Models\Producto;
 
 /* ------------------------------------------------ Mini framework -- */
@@ -526,43 +525,6 @@ grupo('Aviso de error 500 (ErrorAlert)', function () {
     $antes = $GLOBALS['_fail'];
     ErrorAlert::notificar($e);
     eq('notificar() sin buzón configurado no genera fallas', $antes, $GLOBALS['_fail']);
-});
-
-grupo('Disponibilidad de productos (sincronización SAE)', function () {
-    eq('valor reconocido se conserva', 'agotado', Producto::disponibilidadManual('agotado'));
-    eq('valor no reconocido cae a null', null, Producto::disponibilidadManual('en-oferta'));
-    eq('vacío es automático (null)', null, Producto::disponibilidadManual(''));
-    eq('null es automático (null)', null, Producto::disponibilidadManual(null));
-
-    // El override manual siempre gana, sin importar existencia_sae.
-    eq('manual "bajo_pedido" gana aunque haya existencia', 'bajo_pedido',
-        Producto::estadoDisponibilidad(['disponibilidad_manual' => 'bajo_pedido', 'existencia_sae' => 50]));
-    eq('manual "agotado" gana aunque existencia_sae sea positiva', 'agotado',
-        Producto::estadoDisponibilidad(['disponibilidad_manual' => 'agotado', 'existencia_sae' => 50]));
-
-    // Sin override: se deriva de existencia_sae.
-    eq('sin manual, existencia positiva = disponible', 'disponible',
-        Producto::estadoDisponibilidad(['disponibilidad_manual' => null, 'existencia_sae' => 12]));
-    eq('sin manual, existencia 0 = agotado', 'agotado',
-        Producto::estadoDisponibilidad(['disponibilidad_manual' => null, 'existencia_sae' => 0]));
-    eq('sin manual, existencia negativa = agotado', 'agotado',
-        Producto::estadoDisponibilidad(['disponibilidad_manual' => null, 'existencia_sae' => -3]));
-
-    // Nunca sincronizado y sin override: null = sin aviso, comportamiento de siempre.
-    eq('sin manual y sin sincronizar = null (sin aviso)', null,
-        Producto::estadoDisponibilidad(['disponibilidad_manual' => null, 'existencia_sae' => null]));
-    eq('fila sin la columna existencia_sae tampoco truena', null,
-        Producto::estadoDisponibilidad(['disponibilidad_manual' => null]));
-
-    // DisponibilidadSync::filaValida() — validación pura de una fila entrante.
-    eq('fila válida se normaliza', ['clave_sae' => 'ART001', 'existencia' => 12],
-        DisponibilidadSync::filaValida(['clave_sae' => 'ART001', 'existencia' => 12]));
-    eq('existencia como string numérico también es válida', ['clave_sae' => 'ART001', 'existencia' => 5],
-        DisponibilidadSync::filaValida(['clave_sae' => 'ART001', 'existencia' => '5']));
-    eq('clave_sae vacía es inválida', null, DisponibilidadSync::filaValida(['clave_sae' => '', 'existencia' => 5]));
-    eq('existencia no numérica es inválida', null, DisponibilidadSync::filaValida(['clave_sae' => 'ART001', 'existencia' => 'muchas']));
-    eq('fila sin existencia es inválida', null, DisponibilidadSync::filaValida(['clave_sae' => 'ART001']));
-    eq('algo que no es un arreglo es inválido', null, DisponibilidadSync::filaValida('ART001'));
 });
 
 /* -------------------------------------------------------- Resumen -- */

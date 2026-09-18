@@ -29,10 +29,6 @@
 # Dependencias (por si se usa Composer más adelante)
 /vendor/
 
-# Script de sincronización con SAE: credenciales de Firebird + token del sitio.
-/integraciones/sae/config.local.ps1
-/integraciones/sae/sync_disponibilidad.log
-
 # Sistema
 .DS_Store
 Thumbs.db

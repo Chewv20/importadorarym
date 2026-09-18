@@ -313,27 +313,6 @@ MAIL_ERRORES=soporte@importadorarym.com   # opcional — ver §4.6, buzón técn
 - Usa el mismo `MAIL_MAILER` ya definido (SMTP u Office 365/Graph, ver §4.4)
   — no requiere configuración de correo aparte.
 
-## 4.7 Sincronización de existencias desde Aspel SAE (opcional)
-- Endpoint `POST /integraciones/sae/disponibilidad`: recibe la existencia por
-  artículo (columnas `CVE_ART`/`EXIST` de la tabla `INVE03` en el Firebird de
-  SAE) desde un script que corre en la PC de la oficina — ver
-  `integraciones/sae/README.md` para la puesta en marcha completa del lado del
-  cliente (cadena de conexión ODBC, Programador de tareas de Windows).
-- **Variable `SAE_SYNC_TOKEN`** en el `.env`: autentica ese script (header
-  `Authorization: Bearer <token>`). Generar con el mismo comando que `APP_KEY`:
-  `php -r "echo bin2hex(random_bytes(32));"`. **Vacío = endpoint desactivado**
-  (responde 401 a cualquier petición) — no requiere nada más para dejarlo
-  inerte si todavía no se activa esta integración.
-- Es el primer endpoint del proyecto con autenticación por token en vez de
-  sesión/CSRF — documentado como precedente en `docs/SEGURIDAD.md`.
-- Un producto sin `clave_sae` capturada, o que la sincronización nunca ha
-  tocado, no muestra ningún aviso de disponibilidad — cero cambio de
-  comportamiento hasta que se active esta integración.
-- El admin puede forzar manualmente "Disponible"/"Agotado"/"Bajo pedido" desde
-  la ficha del producto (`disponibilidad_manual`) — ese valor manual siempre
-  gana sobre lo que diga la sincronización, hasta que se regrese a
-  "Automático".
-
 ## 5. SSL / HTTPS (BLOQUEANTE para el portal)
 - Instalar el certificado (Let's Encrypt u otro).
 - Poner `FORCE_HTTPS=true` → redirige http→https y activa HSTS.
@@ -356,10 +335,6 @@ MAIL_ERRORES=soporte@importadorarym.com   # opcional — ver §4.6, buzón técn
 - [ ] (Opcional) `MAIL_ERRORES` capturado en el `.env` si se quiere aviso por
       correo ante un error 500 (ver §4.6) — sin él, el sitio funciona igual,
       solo que hay que revisar `storage/logs/php-error.log` manualmente.
-- [ ] (Opcional) `SAE_SYNC_TOKEN` capturado en el `.env` y el script de
-      `integraciones/sae/` puesto en marcha en la oficina si se quiere
-      disponibilidad automática desde SAE (ver §4.7) — sin él, el catálogo
-      funciona igual, sin avisos de "Agotado"/"Bajo pedido".
 
 ## 7. Al publicar cambios de CSS/JS
 

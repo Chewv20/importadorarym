@@ -152,10 +152,6 @@ body.lightbox-open { overflow: hidden; }
    (secundario, no el carmín de Destacado) para que ambos se distingan cuando
    un producto tiene los dos. */
 .badge-personalizable { display:inline-block; background: var(--rym-secondary); color:#fff; font-size: var(--rym-fs-xs); font-weight: var(--rym-fw-semibold); padding: .2rem .6rem; border-radius: var(--rym-radius-pill); margin-bottom: .5rem; margin-left: .35rem; }
-/* Disponibilidad sincronizada desde SAE (o forzada a mano en el panel). Tonos
-   distintos del carmín de Destacado para no confundirse entre sí. */
-.badge-agotado { display:inline-block; background:#7A7D82; color:#fff; font-size: var(--rym-fs-xs); font-weight: var(--rym-fw-semibold); padding: .2rem .6rem; border-radius: var(--rym-radius-pill); margin-bottom: .5rem; }
-.badge-bajopedido { display:inline-block; background: var(--rym-highlight); color:#3D4300; font-size: var(--rym-fs-xs); font-weight: var(--rym-fw-semibold); padding: .2rem .6rem; border-radius: var(--rym-radius-pill); margin-bottom: .5rem; }
 
 /* Filtros del catálogo público */
 .catalog-search { display: flex; flex-wrap: wrap; gap: var(--rym-space-2); align-items: center; max-width: 640px; margin: 0 auto var(--rym-space-6); }

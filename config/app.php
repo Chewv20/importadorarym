@@ -73,11 +73,4 @@ return [
         'serie_pedidos'     => env('ERP_SERIE_PEDIDOS', 'PA'),
         'longitud_clave'    => (int) env('ERP_LONGITUD_CLAVE', 10),
     ],
-
-    // Integraciones máquina-a-máquina (ver App\Controllers\Integraciones).
-    'integraciones' => [
-        // Token del endpoint de sincronización de existencias desde Aspel SAE
-        // (vacío = endpoint desactivado/cerrado, ver docs/DESPLIEGUE.md §4.7).
-        'sae_sync_token' => env('SAE_SYNC_TOKEN', ''),
-    ],
 ];

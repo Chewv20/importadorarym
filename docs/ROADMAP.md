@@ -170,62 +170,9 @@ Identificadas al revisar el estado actual del proyecto (catálogo aún en datos 
 core ya sólido). Tres quedan **pausadas por decisión del negocio** — no se descartan, se
 retoman cuando el catálogo real esté cargado y haya definición de negocio para cada una:
 
-- ⏸ **Listas de precios por cliente** — sigue pausado.
-- ⏸ **Importador general de precios/existencias desde SAE** — sigue pausado (distinto del
-  sync automático de solo-existencias de 6.2, ver abajo).
-
-### 6.2 ☑ Inventario / disponibilidad · hecho (2026-09-18)
-
-Retomada a petición del usuario tras una revisión de estado general del proyecto — de
-las 3 pausadas de Fase 6, es la única que se reactivó; las otras dos siguen en pausa.
-Decisiones de negocio confirmadas antes de construir: la fuente de verdad es **Aspel
-SAE** (Firebird 2.5, tabla `INVE03`, columnas `CVE_ART`/`EXIST`) — el sitio refleja la
-existencia, no lleva su propio conteo; "Agotado" **no bloquea** el pedido, solo muestra
-un aviso (mismo espíritu que "Bajo pedido": el negocio sigue tomando pedidos sin stock
-inmediato); y la sincronización es **automática** (un script en la oficina, no un
-importador de archivo manual), aprovechando que ya tienen ODBC funcionando contra esa
-Firebird para reportes en Excel.
-
-**Esquema** (migración `054`): `productos.existencia_sae` (última existencia
-sincronizada, `NULL` = nunca sincronizado → sin aviso, cero cambio de comportamiento),
-`existencia_actualizada_en` (informativo, para notar si la sincronización dejó de
-correr) y `disponibilidad_manual` (override que **siempre gana** sobre lo automático —
-para forzar "Bajo pedido" en un artículo sin stock que igual se puede producir, sin que
-la siguiente sincronización lo revierta). `Producto::estadoDisponibilidad()` es la
-función pura que resuelve el estado efectivo (manual > automático > sin aviso).
-
-**Endpoint nuevo** `POST /integraciones/sae/disponibilidad`
-(`App\Controllers\Integraciones\SaeDisponibilidadController`) — primer caso de
-autenticación por token del proyecto (header `Bearer`, `.env` `SAE_SYNC_TOKEN`, vacío =
-desactivado), con rate-limit ANTES de validar el token (así un token equivocado
-repetido también queda acotado). `App\Core\DisponibilidadSync` es clase hermana de
-`CatalogoImport`, no una extensión: solo toca `existencia_sae`, nunca crea productos ni
-toca el resto de sus campos — un artículo de SAE sin equivalente en el catálogo del
-sitio simplemente cuenta como "no encontrado". Documentado como precedente de auth
-máquina-a-máquina en `docs/SEGURIDAD.md`.
-
-**Entregable para la oficina**: `integraciones/sae/` (script de PowerShell +
-`config.example.ps1` + `README.md`) — consulta Firebird por el mismo ODBC que ya usan
-para Excel, arma el JSON a mano por fila (evita un problema conocido de PowerShell 5.1
-que "aplana" un arreglo de un solo elemento) y lo manda al endpoint. Las credenciales
-reales viven en `config.local.ps1`, gitignored, nunca en el repo. Pensado para
-Programador de tareas de Windows, cada 1-2 horas.
-
-**UI**: badge "Agotado"/"Bajo pedido" en el catálogo público (`pages/productos.php`,
-solo si el estado no es "disponible" — sin badge = normal) y el mismo aviso en el
-`order-item__meta` del flujo de pedido (portal y panel), sin bloquear el `qty-form`.
-Select "Disponibilidad" en la ficha del producto para el override manual, con la
-existencia sincronizada mostrada de solo lectura.
-
-Verificado con `curl` contra un servidor local real (no solo revisión estática): sin
-token → 401; token incorrecto repetido → 429 tras 20 intentos (confirma el orden
-rate-limit-antes-que-auth); token correcto con filas válidas/inexistentes/inválidas →
-`actualizados`/`no_encontrados`/`omitidos` correctos, `existencia_sae` actualizada en la
-BD real, log escrito. El script de PowerShell no pudo probarse de extremo a extremo (sin
-acceso a la Firebird real de la oficina) — revisado por sintaxis, a validar en su primera
-corrida real. `tests/run.php` 152 → **169/169** (17 pruebas nuevas, todas puras: 4 sobre
-`Producto::disponibilidadManual()`, 6 sobre `Producto::estadoDisponibilidad()`, 6 sobre
-`DisponibilidadSync::filaValida()`).
+- ⏸ **Listas de precios por cliente** — pausado.
+- ⏸ **Importador de precios/existencias desde SAE** — pausado.
+- ⏸ **Inventario / disponibilidad** — pausado (depende de si SAE ya lo controla).
 
 ### 6.1 ☑ Pedidos recurrentes  · hecho (2026-07-28)
 - **Objetivo:** un cliente con compra regular (p. ej. vasos y servilletas cada mes) programa
@@ -1121,8 +1068,8 @@ Tras la auditoría de seguridad/performance y su endurecimiento (guardia CLI, ma
 
 - ☑ **Repetir pedido** — hecho: botón "Volver a pedir" en el detalle del pedido del portal recarga las partidas (productos activos) en el carrito.
 - ☑ **Panel de vendedor** — hecho: el admin se filtra por vendedor asignado con el permiso `ventas.solo_asignados` (clientes/pedidos/cotizaciones + dashboard), con blindaje IDOR en detalle/acciones y bloqueo de la exportación por lote.
-- ☐ **Listas de precios por cliente** — precios diferenciados por cliente (B2B). Pausado.
-- ☑ **Inventario / disponibilidad** — hecho (2026-09-18), ver Fase 6.2 arriba.
+- ☐ **Listas de precios por cliente** — precios diferenciados por cliente (B2B).
+- ☐ **Inventario / disponibilidad** — stock o estado (disponible / bajo pedido / agotado) por producto.
 - ☑ **Reportes exportables** — hecho: sección `/admin/reportes` (permiso `reportes.ver`, admin+ventas) con 4 reportes en Excel por rango de fechas — pedidos, cotizaciones/leads, productos más pedidos y clientes por ventas; respeta el alcance de vendedor.
 - ☑ **WhatsApp click-to-chat** — hecho: número centralizado en `.env` (`WHATSAPP_NUMERO`) + helper `whatsapp_url()`, botón flotante en el sitio público, y enlaces con mensaje prellenado en el catálogo (por producto) y en el detalle de pedido del portal (con folio).
 - ☑ **Encuesta de experiencia de pedido** — hecho: el cliente califica el proceso desde el detalle de su pedido (satisfacción 1-5, facilidad 1-5, NPS 0-10, comentario; una respuesta por pedido, estados enviado/en_proceso/sincronizado); panel `/admin/encuestas` con promedios, NPS, distribución y export a Excel (permiso `encuestas.ver`).

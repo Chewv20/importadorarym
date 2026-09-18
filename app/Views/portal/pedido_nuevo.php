@@ -18,7 +18,7 @@ $carrito   = $carrito ?? [];
                         <div class="order-item__info">
                             <div class="order-item__name"><?= e($p['nombre']) ?></div>
                             <div class="order-item__meta">
-                                <?= e($p['categoria'] ?? '') ?><?= !empty($p['unidad']) ? ' · ' . e($p['unidad']) : '' ?><?= !empty($p['minimo_efectivo']) ? ' · mín. ' . (int) $p['minimo_efectivo'] . ' pzas' : '' ?><?= !empty($p['disponibilidad']) && $p['disponibilidad'] !== 'disponible' ? ' · ' . e(match ($p['disponibilidad']) { 'agotado' => 'Agotado', 'bajo_pedido' => 'Bajo pedido', default => '' }) : '' ?>
+                                <?= e($p['categoria'] ?? '') ?><?= !empty($p['unidad']) ? ' · ' . e($p['unidad']) : '' ?><?= !empty($p['minimo_efectivo']) ? ' · mín. ' . (int) $p['minimo_efectivo'] . ' pzas' : '' ?>
                             </div>
                         </div>
                     </div>
