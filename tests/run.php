@@ -42,6 +42,7 @@ use App\Core\SaeExport;
 use App\Core\Log;
 use App\Core\Cache;
 use App\Core\CssMin;
+use App\Core\Crypto;
 use App\Models\Producto;
 
 /* ------------------------------------------------ Mini framework -- */
@@ -456,6 +457,28 @@ grupo('Mínimo de piezas independiente de la presentación (7.10, ajuste)', func
     eq('loteDesdeFila extrae ambos campos', [50, 100],
         Producto::loteDesdeFila(['piezas_por_presentacion' => '50', 'piezas_minimas' => '100']));
     eq('loteDesdeFila con campos ausentes da [null,null]', [null, null], Producto::loteDesdeFila([]));
+});
+
+grupo('Cifrado de secretos (Crypto, correo O365/Graph)', function () {
+    $plano = 'un-secreto-de-prueba-con-ñ-y-emoji-🔑';
+
+    $cifrado = Crypto::encrypt($plano);
+    eq('descifra exactamente lo cifrado', $plano, Crypto::decrypt($cifrado));
+
+    ok('el texto cifrado no contiene el secreto en claro', !str_contains($cifrado, $plano));
+    ok('cada cifrado usa un IV distinto (mismo texto, salida distinta)',
+        Crypto::encrypt($plano) !== Crypto::encrypt($plano));
+
+    // AES-GCM es autenticado: alterar un solo byte del payload debe invalidar
+    // el tag y hacer que el descifrado falle, no que devuelva basura silenciosa.
+    $bytes = base64_decode($cifrado, true);
+    $bytes[strlen($bytes) - 1] = chr(ord($bytes[strlen($bytes) - 1]) ^ 0xFF);
+    $manipulado = base64_encode($bytes);
+    eq('un payload manipulado no se descifra', null, Crypto::decrypt($manipulado));
+
+    eq('un payload que no es base64 válido no truena', null, Crypto::decrypt('***no-es-base64***'));
+    eq('un payload demasiado corto no truena', null, Crypto::decrypt(base64_encode('corto')));
+    eq('cadena vacía no truena', null, Crypto::decrypt(''));
 });
 
 /* -------------------------------------------------------- Resumen -- */

@@ -990,3 +990,22 @@ registra ambas features en el backlog completado.
 Verificado: `tests/run.php` 135/135 antes y después de las correcciones,
 `php -l` limpio en los archivos tocados (`Mailer.php`, `GraphMailer.php`,
 `ConfiguracionCorreo.php`, `ConfiguracionCorreoController.php`).
+
+### F5 · Sin cobertura de pruebas para el código de esta ronda — BAJA
+
+> **✔ Aplicado.**
+
+Ni `Crypto` ni el resto del código nuevo tenían pruebas puras en
+`tests/run.php` (el archivo seguía en 135/135, idéntico a la auditoría del
+01/09). De los módulos nuevos, `Crypto` es el único con lógica pura sin BD/red
+que valga la pena cubrir — `Oficina` es CRUD puro sobre BD (fuera del alcance
+de este archivo, que a propósito evita depender de base de datos) y
+`GraphMailer` no expone funciones puras públicas (todo pasa por BD o HTTP a
+Microsoft). Se agregó el grupo "Cifrado de secretos (Crypto, correo
+O365/Graph)": round-trip cifra/descifra, el texto cifrado nunca contiene el
+secreto en claro, dos cifrados del mismo texto dan salidas distintas (IV
+aleatorio), un payload manipulado un solo byte no se descifra (confirma que el
+tag de autenticación de GCM sí protege contra manipulación, no solo confidencia),
+y payloads inválidos (no base64, demasiado corto, vacío) no truenan.
+
+Verificado: `tests/run.php` 135 → **142/142**, `php -l` limpio en `tests/run.php`.
