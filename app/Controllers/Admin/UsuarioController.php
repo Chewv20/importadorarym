@@ -13,10 +13,14 @@ class UsuarioController extends BaseController
     public function index(): void
     {
         Auth::authorize('usuarios.ver');
+        $usuarioModel = new Usuario();
+        $pg = $this->paginar($usuarioModel->contarInternos(), 20);
         $this->render('admin/usuarios', [
             'title'    => 'Usuarios internos — Panel RYM',
             'active'   => 'usuarios',
-            'usuarios' => (new Usuario())->internos(),
+            'usuarios' => $usuarioModel->internosPaginados($pg['perPage'], $pg['offset']),
+            'page'     => $pg['page'],
+            'pages'    => $pg['pages'],
         ]);
     }
 

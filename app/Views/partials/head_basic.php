@@ -6,6 +6,8 @@ $t = $title ?? 'Portal — Importadora RYM';
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($t) ?></title>
 <meta name="robots" content="noindex, nofollow">
+<?php // noindex: no es por SEO, sino para la vista previa al compartir el enlace (p. ej. el login por WhatsApp). ?>
+<meta name="description" content="<?= e($metaDescription ?? 'Portal de clientes de Importadora RYM: solicita cotizaciones, levanta pedidos y da seguimiento a tus entregas.') ?>">
 
 <link rel="icon" href="<?= asset('assets/img/logos/favicon.ico') ?>" sizes="any">
 <meta name="theme-color" content="#2A3A8F">

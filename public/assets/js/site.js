@@ -215,7 +215,7 @@
         var lbCerrar = function () {
             lightbox.hidden = true;
             document.body.classList.remove('lightbox-open');
-            lbImg.src = '';
+            lbImg.removeAttribute('src'); // src="" hace que el navegador pida la página actual como imagen
             if (lbTrigger) { lbTrigger.focus(); lbTrigger = null; }
         };
 

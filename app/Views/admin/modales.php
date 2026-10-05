@@ -32,6 +32,7 @@
         </tbody>
     </table>
 </div>
+<?php $baseUrl = url('/admin/modales'); require APP_PATH . '/Views/partials/pagination.php'; ?>
 <?php else: ?>
     <p class="empty-state">Aún no hay modales. <a href="<?= url('/admin/modales/nuevo') ?>">Crea el primero</a>.</p>
 <?php endif; ?>

@@ -22,6 +22,54 @@
         if (document.readyState === 'complete') { enfocar(); } else { window.addEventListener('load', enfocar); }
     }
 
+    /* ---- Selector de archivos en español --------------------------------- */
+    // El control nativo muestra "Choose File / No file chosen" según el idioma del
+    // NAVEGADOR, no del sitio, y no se puede traducir. Se pone un botón y un texto
+    // propios; el input real queda oculto pero sigue haciendo todo (envío,
+    // validación required, <label for>, change del simulador de logo). Sin JS se
+    // ve el control nativo con sus estilos de siempre.
+    document.querySelectorAll('input[type="file"]').forEach(function (input, n) {
+        if (input.closest('.file-ui')) { return; }
+        var ui = document.createElement('span');
+        ui.className = 'file-ui';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn--outline btn--sm';
+        btn.textContent = input.multiple ? 'Elegir archivos' : 'Elegir archivo';
+        var nombre = document.createElement('span');
+        nombre.className = 'file-ui__nombre';
+        nombre.id = 'file-ui-' + n;
+        var vacio = 'Ningún archivo seleccionado';
+        nombre.textContent = vacio;
+
+        // Nombre accesible del botón = el de su <label> (o aria-label) del input.
+        var etiqueta = input.getAttribute('aria-label')
+            || (input.id && document.querySelector('label[for="' + input.id + '"]') || {}).textContent || '';
+        if (etiqueta.trim()) { btn.setAttribute('aria-label', etiqueta.trim() + ': elegir archivo'); }
+        btn.setAttribute('aria-describedby', nombre.id);
+
+        input.parentNode.insertBefore(ui, input);
+        ui.appendChild(input);
+        ui.appendChild(btn);
+        ui.appendChild(nombre);
+        input.classList.add('file-ui__nativo');
+        input.setAttribute('tabindex', '-1');
+
+        btn.addEventListener('click', function () { input.click(); });
+        // En el siguiente tick: otros scripts (p. ej. el simulador de logo) pueden
+        // vaciar el input en su propio "change" si el archivo no es válido.
+        input.addEventListener('change', function () {
+            setTimeout(function () {
+                var f = input.files || [];
+                nombre.textContent = f.length === 0 ? vacio
+                    : (f.length === 1 ? f[0].name : f.length + ' archivos seleccionados');
+            }, 0);
+        });
+        // Si el formulario se limpia (reset) o el script del simulador vacía el input.
+        var form = input.form;
+        if (form) { form.addEventListener('reset', function () { setTimeout(function () { nombre.textContent = vacio; }, 0); }); }
+    });
+
     /* ---- Evitar el doble envío ------------------------------------------ */
     // Un doble toque en "Enviar" creaba registros y correos duplicados. No se usa
     // el atributo disabled en el botón: un botón deshabilitado en el momento del

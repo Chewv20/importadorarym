@@ -1028,11 +1028,11 @@ axe-core: sin violaciones críticas. Solo quedan `region` (la topbar fuera de un
 landmark) y un `link-in-text-block` en el aviso de privacidad. Los hallazgos de
 esta ronda son de diseño y flujo, no de cumplimiento automático.
 
-Estado: **U1–U16 aplicados (05/10/2026)**, además de los bugs N1–N4 y 11
-ajustes de accesibilidad y maquetación encontrados con sesión real (ver
-"Segunda ronda" y "Tercera ronda" al final). Siguen pendientes solo los bajos
-U17–U21. U15 queda resuelto en lo que toca al código; las fotos reales de
-producto son contenido.
+Estado: **los 21 hallazgos (U1–U21) quedaron atendidos el 05/10/2026**,
+además de los bugs N1–N4 y los ajustes encontrados con sesión real (ver las
+rondas al final). U15 está resuelto en lo que toca al código; las fotos reales
+de producto son contenido. U21 se aplicó donde el listado crece; en dos
+listados se descartó con su justificación.
 
 ### Críticos — rompen la interacción
 
@@ -1360,6 +1360,46 @@ Verificado:
   la cantidad inicial (U13).
 - SW `rym-v55`.
 
-### Pendiente de revisar en vivo
+### Cuarta ronda (05/10/2026) — bajos U17–U21
 
-Resuelto en la tercera ronda: portal, panel y reparto se recorrieron con sesión real.
+- **U17 ✔ Selector de archivos en español.** El texto nativo ("Choose File /
+  No file chosen") lo pone el idioma del navegador y no se puede traducir.
+  - `forms.js` añade a cada `input[type=file]` un botón propio ("Elegir
+    archivo/s") y el nombre del archivo elegido (o "N archivos
+    seleccionados").
+  - El botón toma su nombre accesible del `<label>`.
+  - El input real queda oculto y fuera del Tab, pero hace todo lo de antes:
+    envío, validación `required` (verificado: el CV obligatorio sigue
+    bloqueando el envío), `<label for>` y el `change` del simulador de logo.
+  - El nombre se actualiza en el siguiente tick: si el simulador rechaza el
+    archivo y vacía el input, vuelve a "Ningún archivo seleccionado".
+  - Sin JS se ve el control nativo con sus estilos de siempre.
+  - Aplica a los 12 selectores del sitio, el portal y el panel.
+- **U18 ✔** `lightbox.php` sin `src=""`, y al cerrar se hace
+  `removeAttribute('src')` en vez de `src = ''`. Verificado: el navegador ya no
+  pide la página actual como si fuera una imagen.
+- **U19 ✔** La topbar pasa a `<aside aria-label="Datos de contacto">`
+  (landmark) y los enlaces de `.prose` se subrayan. Sitio público: axe de 26 a
+  **0**.
+- **U20 ✔** `meta description` en `head_basic.php` (portal, panel, kiosco y
+  reparto) con un texto por defecto sobrescribible con `$metaDescription`. Esas
+  páginas son `noindex`, así que no es para buscadores sino para la vista
+  previa al compartir el enlace (por ejemplo, el login por WhatsApp).
+- **U21 ✔ (donde aplica)** Paginación de 20 en Usuarios internos, Vacantes y
+  Modales: son listados que crecen con el tiempo. Se agregaron métodos nuevos
+  (`internosPaginados`, `paginadas` y `paginados`, más sus `contar*`) sin
+  tocar los existentes, que siguen alimentando selectores que necesitan la
+  lista completa.
+  - **Categorías no se pagina**: es un árbol, y paginarlo partiría la
+    jerarquía padre/hijos.
+  - **Zonas tampoco**: es un catálogo de configuración de pocas filas.
+
+Descartado como falso positivo: en una pasada axe marcó contraste en las
+tarjetas de `/productos`, pero era la medición a mitad del fundido de `.reveal`
+(opacidad 0.09). Con la página asentada hay 0 violaciones.
+
+Verificado con usuarios desechables recreados para la ronda y eliminados al
+terminar:
+- 138 pantallas (34 públicas y 104 con sesión): **axe 0, desbordes 0,
+  errores de JS 0, errores de PHP 0 y 5xx 0**.
+- `tests/run.php` 158/158, `php -l` limpio y SW `rym-v56`.

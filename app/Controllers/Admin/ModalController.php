@@ -12,10 +12,14 @@ class ModalController extends BaseController
     public function index(): void
     {
         Auth::authorize('modales.gestionar');
+        $model = new Modal();
+        $pg = $this->paginar($model->contar(), 20);
         $this->render('admin/modales', [
             'title'   => 'Modales del sitio — Panel RYM',
             'active'  => 'modales',
-            'modales' => (new Modal())->todos(),
+            'modales' => $model->paginados($pg['perPage'], $pg['offset']),
+            'page'    => $pg['page'],
+            'pages'   => $pg['pages'],
         ]);
     }
 

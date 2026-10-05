@@ -426,6 +426,27 @@ class Usuario extends Model
         )->fetchAll();
     }
 
+    public function internosPaginados(int $limit, int $offset): array
+    {
+        $st = $this->db->prepare(
+            "SELECT u.*, r.nombre AS rol_nombre, r.slug AS rol_slug, ofi.nombre AS oficina_nombre
+               FROM usuarios u JOIN roles r ON r.id = u.rol_id
+               LEFT JOIN oficinas ofi ON ofi.id = u.oficina_id
+              WHERE r.slug <> 'cliente' ORDER BY u.nombre LIMIT :lim OFFSET :off"
+        );
+        $st->bindValue(':lim', $limit, PDO::PARAM_INT);
+        $st->bindValue(':off', $offset, PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetchAll();
+    }
+
+    public function contarInternos(): int
+    {
+        return (int) $this->db->query(
+            "SELECT COUNT(*) FROM usuarios u JOIN roles r ON r.id = u.rol_id WHERE r.slug <> 'cliente'"
+        )->fetchColumn();
+    }
+
     public function actualizarInterno(int $id, array $data): void
     {
         $this->db->prepare(

@@ -11,10 +11,14 @@ class VacanteController extends BaseController
     public function index(): void
     {
         Auth::authorize('vacantes.gestionar');
+        $model = new Vacante();
+        $pg = $this->paginar($model->contar(), 20);
         $this->render('admin/vacantes', [
             'title'    => 'Vacantes — Panel RYM',
             'active'   => 'vacantes',
-            'vacantes' => (new Vacante())->todas(),
+            'vacantes' => $model->paginadas($pg['perPage'], $pg['offset']),
+            'page'     => $pg['page'],
+            'pages'    => $pg['pages'],
             'tipos'    => Vacante::TIPOS,
         ]);
     }

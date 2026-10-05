@@ -80,6 +80,11 @@
     transition: background var(--rym-transition), color var(--rym-transition);
 }
 .field input[type="file"]::file-selector-button:hover { background: var(--rym-secondary); color: #fff; }
+/* Selector de archivos propio (forms.js): botón y nombre en español; el input
+   nativo queda debajo del botón, invisible, para anclar el aviso de "required". */
+.file-ui { position: relative; display: inline-flex; align-items: center; flex-wrap: wrap; gap: .75rem; max-width: 100%; }
+.file-ui__nativo { position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.file-ui__nombre { font-size: var(--rym-fs-sm); color: var(--rym-text-muted); overflow-wrap: anywhere; min-width: 0; }
 
 /* Reto anti-bot: se distingue del resto con un fondo tenue. */
 .captcha { background: var(--rym-bg-soft); border: 1px solid var(--rym-border); border-radius: var(--rym-radius-sm); padding: var(--rym-space-3); }

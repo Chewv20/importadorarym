@@ -264,6 +264,7 @@ body.lightbox-open { overflow: hidden; }
 .prose p, .prose li { color: var(--rym-text); line-height: var(--rym-lh-base); }
 .prose ul { padding-left: 1.25rem; display: grid; gap: .5rem; }
 .prose ul li { list-style: disc; }
+.prose a { text-decoration: underline; text-underline-offset: 2px; } /* no depender solo del color (WCAG 1.4.1) */
 
 /* ---- Contacto ------------------------------------------------------------ */
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rym-space-12); align-items: start; }

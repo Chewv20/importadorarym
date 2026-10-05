@@ -39,6 +39,7 @@
         </tbody>
     </table>
 </div>
+<?php $baseUrl = url('/admin/vacantes'); require APP_PATH . '/Views/partials/pagination.php'; ?>
 <?php else: ?>
     <p class="empty-state">Aún no hay vacantes. Crea la primera con "Nueva vacante".</p>
 <?php endif; ?>

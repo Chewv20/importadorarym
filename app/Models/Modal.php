@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Model;
+use PDO;
 use App\Core\Cache;
 
 class Modal extends Model
@@ -37,6 +38,20 @@ class Modal extends Model
     public function todos(): array
     {
         return $this->db->query("SELECT * FROM modales ORDER BY orden, id DESC")->fetchAll();
+    }
+
+    public function paginados(int $limit, int $offset): array
+    {
+        $st = $this->db->prepare("SELECT * FROM modales ORDER BY orden, id DESC LIMIT :lim OFFSET :off");
+        $st->bindValue(':lim', $limit, PDO::PARAM_INT);
+        $st->bindValue(':off', $offset, PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetchAll();
+    }
+
+    public function contar(): int
+    {
+        return (int) $this->db->query("SELECT COUNT(*) FROM modales")->fetchColumn();
     }
 
     public function find(int $id): ?array

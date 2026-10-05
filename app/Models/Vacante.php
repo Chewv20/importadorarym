@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Core\Model;
+use PDO;
 
 class Vacante extends Model
 {
@@ -35,6 +36,24 @@ class Vacante extends Model
             "SELECT v.*, (SELECT COUNT(*) FROM postulaciones WHERE vacante_id = v.id) AS num_postulaciones
                FROM vacantes v ORDER BY v.created_at DESC"
         )->fetchAll();
+    }
+
+    /** Listado del panel, paginado (todas() sigue completo para el filtro de postulaciones). */
+    public function paginadas(int $limit, int $offset): array
+    {
+        $st = $this->db->prepare(
+            "SELECT v.*, (SELECT COUNT(*) FROM postulaciones WHERE vacante_id = v.id) AS num_postulaciones
+               FROM vacantes v ORDER BY v.created_at DESC LIMIT :lim OFFSET :off"
+        );
+        $st->bindValue(':lim', $limit, PDO::PARAM_INT);
+        $st->bindValue(':off', $offset, PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetchAll();
+    }
+
+    public function contar(): int
+    {
+        return (int) $this->db->query("SELECT COUNT(*) FROM vacantes")->fetchColumn();
     }
 
     public function find(int $id): ?array

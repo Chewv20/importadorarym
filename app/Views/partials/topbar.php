@@ -1,5 +1,5 @@
 <?php $active = $active ?? ''; ?>
-<div class="topbar">
+<aside class="topbar" aria-label="Datos de contacto">
     <div class="container topbar__inner">
         <div class="topbar__group">
             <a class="topbar__item" href="tel:5556121612">
@@ -18,4 +18,4 @@
             </span>
         </div>
     </div>
-</div>
+</aside>

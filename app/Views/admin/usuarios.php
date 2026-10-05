@@ -27,6 +27,7 @@
         </tbody>
     </table>
 </div>
+<?php $baseUrl = url('/admin/usuarios'); require APP_PATH . '/Views/partials/pagination.php'; ?>
 <?php else: ?>
     <p class="empty-state">No hay usuarios internos. <a href="<?= url('/admin/usuarios/nuevo') ?>">Crea el primero</a>.</p>
 <?php endif; ?>
