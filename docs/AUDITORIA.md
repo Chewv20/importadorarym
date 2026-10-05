@@ -1009,3 +1009,167 @@ tag de autenticación de GCM sí protege contra manipulación, no solo confidenc
 y payloads inválidos (no base64, demasiado corto, vacío) no truenan.
 
 Verificado: `tests/run.php` 135 → **142/142**, `php -l` limpio en `tests/run.php`.
+
+---
+
+## Auditoría de vistas y UX — 05/10/2026
+
+Revisión con énfasis en vistas y experiencia de usuario. **Sitio público y
+pantallas sin sesión** (17 rutas: home, catálogo, nosotros, personalización,
+reciclaje, contacto, aviso, bolsa, solicitud, 404, login, registro, recuperar,
+restablecer, checador) auditadas en navegador real con Playwright: desktop
+1440×900 y móvil 390×844, axe-core (WCAG 2.2 AA + best-practice), consola,
+desbordes, objetivos táctiles, alto del header en 14 anchos (320–1920),
+navegación por teclado del menú móvil, envío vacío de formularios, login
+inválido y página sin JavaScript. **Portal, panel y reparto** se revisaron por
+código: no se usaron credenciales reales ni se crearon cuentas de prueba.
+
+axe-core: sin violaciones críticas. Solo quedan `region` (la topbar fuera de un
+landmark) y un `link-in-text-block` en el aviso de privacidad. Los hallazgos de
+esta ronda son de diseño y flujo, no de cumplimiento automático.
+
+Estado: **U1 y U2 aplicados (05/10/2026)**; U3–U21 pendientes de decidir.
+
+### Críticos — rompen la interacción
+
+**U1 · El widget de WhatsApp bloquea toques en la mitad de la pantalla del celular — CRÍTICA.**
+`.wa-widget` (fijo, `site.css:404`) contiene el panel de chat aun cerrado. El
+panel usa `visibility:hidden`, pero sigue ocupando espacio dentro del
+contenedor, que mide 320×515 px. Ese contenedor transparente captura los toques:
+bloquea el **48.5 % del viewport en 390 px** y el 12.7 % en 1440. Se midió con
+`elementFromPoint` sobre una cuadrícula de 10 px. Afecta a todas las páginas
+públicas: tarjetas del catálogo, botón "Enviar solicitud" y enlaces del footer
+que caen abajo a la derecha no responden. Corrección:
+`.wa-widget{pointer-events:none}` + `.wa-fab, .wa-widget.is-open .wa-panel{pointer-events:auto}`.
+
+> **✔ Aplicado.** Así quedó, en `site.css`. Verificado con Playwright: zona
+> bloqueada de 48.5 % a **0 %** (390 px) y de 12.7 % a **0 %** (1440). El
+> lightbox del catálogo y "Enviar solicitud" responden a un clic normal, sin
+> forzarlo. El widget sigue abriendo, sus opciones reciben el clic y se cierra al
+> tocar fuera.
+
+**U2 · Header partido en dos filas en móvil y en desktop común — ALTA.**
+`.site-header__inner` usa `flex-wrap:wrap`. Logo + 6 enlaces + "Portal clientes"
++ "Cotiza ahora" no caben en el contenedor, así que "Cotiza ahora" baja a una
+segunda fila. Medido: header de **147 px en ≥1280 y en ≤414** (solo cabe en 84 px
+entre 721 y 1024). En móvil, sumado a la topbar, el header fijo ocupa **~185 px
+(22 % de la pantalla)** de forma permanente. En el menú abierto, la "×" queda
+flotando en medio del panel, a la altura de "Nosotros". En 320 px hay además
+2 px de desborde horizontal.
+
+> **✔ Aplicado.** En `site.css`:
+> - Se quitó `flex-wrap` de `.site-header__inner`, se agregó `white-space:nowrap`
+>   en enlaces y botones del header y el espacio del nav bajó de 1.75rem a 1.25rem.
+> - Medido de nuevo, el header necesita 1 106 px útiles, así que el menú
+>   desplegable pasa de `max-width:1080px` a **1160px** (el comentario documenta
+>   la medida para volver a medir si se agrega un enlace).
+> - Con `≤480px`, logo de 46 px y CTA compacto; con `≤359px`, logo de 36 px.
+> - De paso se corrigieron los desbordes de 320 px: footer y contacto con
+>   `minmax(0,1fr)` + `overflow-wrap:anywhere` en los correos largos, y sectores
+>   a 1 columna.
+>
+> Verificado en 22 anchos (320–1920): header **siempre en una fila**, de 84 px
+> en desktop y tablet (antes 147), 62 px en móvil (antes 147) y 52 px en
+> ≤359 px. Sin desborde horizontal en home, nosotros, productos ni contacto a
+> 320 px. La "×" del menú queda en la esquina del panel.
+>
+> Bundle reconstruido (`php build/assets.php`, `--check` al día), SW `rym-v53`,
+> `tests/run.php` 142/142.
+
+### Altos — fricción en flujos de conversión y operación
+
+**U3 · Agregar al carrito o a la cotización pierde búsqueda, categoría y página.**
+`PedidoController::agregar`, `PortalCotizacionController::agregar` y
+`Admin\PedidoNuevoController::agregar` redirigen a la ruta "pelona". Tras cada
+"Agregar", el cliente o el vendedor vuelve a la página 1 sin filtro. Armar un
+pedido de 10 productos obliga a repetir la búsqueda 10 veces.
+
+**U4 · El cliente ve estados internos del sistema.** El portal muestra
+`ucfirst(str_replace('_',' ',$estado))`: "Borrador", "Sincronizado", "Parcial",
+"En proceso". También muestra "Folio ERP". "Sincronizado" no le dice al cliente
+que su pedido ya está en preparación. Falta un mapa de etiquetas para el cliente
+y una línea de progreso como la del panel. El mismo patrón está repetido en 5
+vistas, así que conviene un helper central.
+
+**U5 · Formularios de acceso con tarjeta dentro de tarjeta.** `.form`
+(`components.css:50`) trae padding y sombra propios y se anida en `.auth-card`,
+que a su vez está dentro de `.auth-shell`. En móvil quedan ~112 px de relleno por
+lado y campos de ~165 px en una pantalla de 390. Afecta registro, login,
+recuperar y restablecer.
+
+**U6 · Registro: orden y mensaje desactualizados.** El código postal va después
+de colonia, municipio y estado, aunque es el campo que los autocompleta
+(`direccion.js`), así que debería ir primero. El subtítulo dice "Tu cuenta se
+activará tras la aprobación de un asesor", pero desde jul-2026 el cliente entra
+de inmediato y puede cotizar; la aprobación solo limita los pedidos.
+
+**U7 · Errores de formulario genéricos.** El envío vacío del formulario de
+cotización devuelve un solo bloque de texto: *"Resuelve correctamente la
+comprobación anti-bot. El nombre solo puede contener letras, espacios y . - '.
+Captura un correo válido."* Con el nombre vacío, el mensaje es engañoso (debería
+decir que es obligatorio). No hay error por campo (`aria-invalid`,
+`aria-describedby`) y el foco no se mueve al resumen. Además, los formularios
+públicos usan `novalidate` sin validación en cliente, así que cada error cuesta
+una recarga completa.
+
+**U8 · Sin protección contra doble envío.** Ningún bundle JS deshabilita el
+botón al enviar. Un doble toque en "Enviar solicitud" (cotización pública,
+postulación, solicitud de empleo) crea registros duplicados y manda correos
+duplicados a ventas, RRHH y al cliente.
+
+**U9 · Panel: Clientes, Productos y Cotizaciones sin buscador.** Pedidos sí
+tiene búsqueda por folio o cliente. En los otros tres, encontrar un registro
+obliga a paginar a mano. Para capturar la clave SAE de un cliente específico,
+por ejemplo, hay que recorrer todo el listado.
+
+### Medios
+
+- **U10 · Sin `autocomplete`.** Ninguno de los 27 campos públicos lo tiene (2 de
+  54 en el portal; registro, login y perfil sin `name`, `email`, `tel`,
+  `postal-code`, `new-password` ni `current-password`). Se pierde el
+  autollenado del navegador y del gestor de contraseñas; el impacto es mayor en
+  el registro de 17 campos. Tampoco se usa `inputmode="numeric"` en CP ni en el
+  captcha.
+- **U11 · Contenido invisible sin JS.** `.reveal{opacity:0}` se aplica sin
+  esperar a que el JS cargue. Sin JS (o si `site.js` falla), **42 bloques de la
+  home quedan invisibles**. Debe condicionarse a una clase `.js` en `<html>`.
+- **U12 · Menú móvil sin gestión de foco.** Al abrirlo, el foco no entra al
+  panel, y con Tab se recorre el contenido de atrás del backdrop. Al menú
+  también le faltan "Bolsa de trabajo" (solo está en el footer) y "Cotiza
+  ahora".
+- **U13 · Cantidad inicial 1 con mínimos mayores.** En `portal/pedido_nuevo.php`
+  el input arranca en `value="1" min="1"` aunque el producto diga "mín. 50 pzas".
+  El servidor ajusta en silencio y avisa con un flash. Conviene arrancar en el
+  mínimo con `step` igual a la presentación.
+- **U14 · Detalle de pedido (portal): jerarquía invertida.** "Volver a pedir" y
+  "Programar como recurrente" aparecen antes de los productos y se muestran
+  también en pedidos cancelados o en borrador.
+- **U15 · Catálogo y home sin fotos reales.** De los productos destacados, solo
+  uno tiene imagen; el resto muestra un ícono de marcador. Las 5 categorías de
+  la home son bloques azules sin imagen, y la quinta queda sola en la segunda
+  fila. Es un tema de contenido, no de código, pero es lo que más pesa en la
+  confianza del visitante.
+- **U16 · CTA de WhatsApp compitiendo con "Cotizar".** En cada tarjeta del
+  catálogo, el botón verde sólido "Consultar por WhatsApp" (en 2 líneas) domina
+  visualmente sobre la acción principal "Cotizar", que va en outline.
+
+### Bajos
+
+- U17 · El simulador de logo usa el `<input type=file>` nativo, que muestra
+  "Choose File / No file chosen" según el idioma del navegador; conviene una
+  etiqueta propia en español.
+- U18 · `<img id="lightboxImg" src="">` vacío en todas las páginas públicas: el
+  navegador lo resuelve contra la URL actual. Mejor omitir el `src` hasta abrir
+  el lightbox.
+- U19 · La topbar queda fuera de un landmark (axe `region`), y hay un enlace del
+  aviso de privacidad sin distinguir del texto (`link-in-text-block`).
+- U20 · Las páginas del portal (login, registro, recuperar) no tienen
+  `meta description`.
+- U21 · Panel: Usuarios, Categorías, Zonas, Vacantes y Modales sin paginación.
+  Hoy no importa por el volumen, pero conviene tenerlo en cuenta si crecen.
+
+### Pendiente de revisar en vivo
+
+Portal autenticado, panel y reparto solo se revisaron por código. Para
+recorrerlos en navegador (capturas, axe y flujos completos) hace falta una
+sesión de prueba proporcionada por el usuario.

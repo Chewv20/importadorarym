@@ -30,17 +30,21 @@
 
 /* ---- Header / nav -------------------------------------------------------- */
 .site-header { position: sticky; top: 0; z-index: 50; background: #fff; box-shadow: var(--rym-shadow-sm); }
-.site-header__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .75rem; }
+/* Sin flex-wrap a propósito: si algo no cabe, el header NO debe partirse en dos filas
+   (el CTA caía debajo del logo y el header fijo crecía a ~147px). Los breakpoints de
+   abajo garantizan que siempre quepa en una fila. */
+.site-header__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .75rem; }
 .site-logo { flex-shrink: 0; }
 .site-logo img { height: 60px; width: auto; }
-.nav { display: flex; align-items: center; gap: 1.75rem; }
+.nav { display: flex; align-items: center; gap: 1.25rem; }
 .nav__link {
     font-family: var(--rym-font-head); font-weight: var(--rym-fw-medium);
     color: var(--rym-text); font-size: var(--rym-fs-base); padding-block: .25rem;
-    border-bottom: 2px solid transparent;
+    border-bottom: 2px solid transparent; white-space: nowrap;
 }
 .nav__link:hover, .nav__link.is-active { color: var(--rym-secondary); border-color: var(--rym-secondary); text-decoration: none; }
-.nav__actions { display: flex; align-items: center; gap: .75rem; }
+.nav__actions { display: flex; align-items: center; gap: .75rem; flex-shrink: 0; }
+.nav__actions .btn, .nav .btn { white-space: nowrap; }
 .nav-toggle { display: none; background: none; border: 0; cursor: pointer; padding: .4rem; }
 .nav-toggle svg { width: 1.75rem; height: 1.75rem; color: var(--rym-primary); }
 .nav-toggle svg line { transform-box: fill-box; transform-origin: center; transition: transform var(--rym-transition), opacity var(--rym-transition); }
@@ -229,7 +233,7 @@ body.lightbox-open { overflow: hidden; }
 .footer__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--rym-space-12); padding-block: var(--rym-space-16); }
 .footer__title { color: #fff; font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); margin-bottom: var(--rym-space-4); }
 .footer__list { list-style: none; display: grid; gap: .6rem; }
-.footer__contact { display: grid; gap: .6rem; }
+.footer__contact { display: grid; gap: .6rem; overflow-wrap: anywhere; }
 .footer__contact div { display: flex; align-items: flex-start; gap: .6rem; }
 .footer__contact svg { width: 1.15rem; height: 1.15rem; color: var(--rym-highlight); flex: none; margin-top: .15rem; }
 .footer__bottom { border-top: 1px solid rgba(255,255,255,.15); padding-block: var(--rym-space-6); text-align: center; font-size: var(--rym-fs-sm); color: rgba(255,255,255,.6); }
@@ -260,7 +264,7 @@ body.lightbox-open { overflow: hidden; }
 .info-item { display: flex; gap: .85rem; align-items: flex-start; }
 .info-item svg { width: 1.4rem; height: 1.4rem; color: var(--rym-secondary); flex: none; margin-top: .15rem; }
 .info-item__label { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); }
-.info-item__value { color: var(--rym-text-muted); }
+.info-item__value { color: var(--rym-text-muted); overflow-wrap: anywhere; }
 .info-item__value a { color: var(--rym-secondary); text-decoration: underline; text-underline-offset: 2px; }
 
 /* ---- Pasos numerados (personalización) ---------------------------------- */
@@ -369,18 +373,18 @@ body.lightbox-open { overflow: hidden; }
 
 /* ---- Responsive ---------------------------------------------------------- */
 @media (max-width: 960px) {
-    .hero__inner, .split, .cta__grid, .footer__grid { grid-template-columns: 1fr; }
+    .hero__inner, .split, .cta__grid, .footer__grid { grid-template-columns: minmax(0, 1fr); }
     .stats__grid { grid-template-columns: repeat(2, 1fr); gap: var(--rym-space-6); }
     .sectors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .hero__card { display: none; }
-    .contact-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: minmax(0, 1fr); }
     .steps { grid-template-columns: repeat(2, 1fr); }
 }
-/* El nav completo (6 enlaces + "Portal clientes") no cabe en una sola fila junto
-   al logo y las acciones por debajo de ~1074px (medido con el logo actual, sin
-   flex-shrink) — de ahí este breakpoint más ancho que el resto del contenido
-   "móvil" (720px), específico para el menú off-canvas. */
-@media (max-width: 1080px) {
+/* El nav completo (6 enlaces + "Portal clientes") junto al logo y "Cotiza ahora"
+   necesita ~1106px útiles (medido 2026-10-05), es decir una pantalla de ≥1154px —
+   de ahí este breakpoint más ancho que el resto del contenido "móvil" (720px),
+   específico para el menú off-canvas. Si se agrega un enlace al nav, volver a medir. */
+@media (max-width: 1160px) {
     .nav { position: fixed; inset: 0 0 0 auto; width: min(80vw, 320px); background: #fff; flex-direction: column; align-items: flex-start; padding: var(--rym-space-16) var(--rym-space-8); gap: var(--rym-space-4); transform: translateX(100%); transition: transform var(--rym-transition); box-shadow: var(--rym-shadow-lg); z-index: 200; }
     .nav.is-open { transform: translateX(0); }
     .nav-toggle { display: block; position: relative; z-index: 210; }
@@ -393,6 +397,21 @@ body.lightbox-open { overflow: hidden; }
     .steps { grid-template-columns: 1fr; }
     .page-hero__title { font-size: var(--rym-fs-2xl); }
 }
+/* Header en una sola fila en celulares: logo + "Cotiza ahora" + hamburguesa no
+   cabían en 342px útiles (390px de pantalla) y el CTA bajaba a una segunda fila. */
+@media (max-width: 480px) {
+    .site-header__inner { gap: .5rem; padding-block: .5rem; }
+    .site-logo img { height: 46px; }
+    .nav__actions { gap: .25rem; }
+    .nav__actions .btn { padding: .55rem 1rem; font-size: var(--rym-fs-sm); }
+    .sector { padding: var(--rym-space-4); }
+}
+@media (max-width: 359px) {
+    .site-logo img { height: 36px; }
+    .nav__actions .btn { padding: .5rem .75rem; }
+    .nav-toggle { padding: .2rem; }
+    .sectors { grid-template-columns: minmax(0, 1fr); }
+}
 @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
     .print-cup, .print-chip { animation: none !important; }
@@ -401,10 +420,15 @@ body.lightbox-open { overflow: hidden; }
 }
 
 /* Widget de chat de WhatsApp (sitio público) */
+/* El contenedor mide lo que el panel (aun cerrado, porque visibility:hidden conserva
+   su caja): sin pointer-events:none bloqueaba los toques en ~48% de la pantalla del
+   celular. Solo el botón y el panel abierto reciben clics. */
 .wa-widget {
     position: fixed; right: 20px; bottom: 20px; z-index: 900;
     display: flex; flex-direction: column; align-items: flex-end; gap: 14px;
+    pointer-events: none;
 }
+.wa-fab, .wa-widget.is-open .wa-panel { pointer-events: auto; }
 
 /* Botón flotante (toggle) */
 .wa-fab {

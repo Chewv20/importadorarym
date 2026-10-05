@@ -7,7 +7,7 @@
    Sube el número de versión para forzar la actualización del caché.
    ========================================================================== */
 
-const VERSION  = 'rym-v52';
+const VERSION  = 'rym-v53';
 const SCOPE    = self.registration.scope;          // .../importadorarym/public/
 const PRECACHE = 'precache-' + VERSION;
 const RUNTIME  = 'runtime-'  + VERSION;
