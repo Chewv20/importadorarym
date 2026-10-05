@@ -51,6 +51,7 @@ $usuario = $usuario ?? [];
     </main>
 
     <script src="<?= asset('assets/js/portal.js') ?>" defer></script>
+    <script src="<?= asset('assets/js/forms.js') ?>" defer></script>
     <script src="<?= asset('assets/js/direccion.js') ?>" defer></script>
     <script src="<?= asset('assets/js/pwa.js') ?>" defer></script>
 </body>

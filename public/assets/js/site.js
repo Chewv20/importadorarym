@@ -64,34 +64,35 @@
     var revealEls = document.querySelectorAll('.reveal');
     var counters = document.querySelectorAll('[data-count]');
 
+    // if/else y no un "return" temprano: el return cortaba también la galería y
+    // el lightbox del catálogo (más abajo en esta función) para quien tiene
+    // activado "reducir movimiento".
     if (!('IntersectionObserver' in window) || reduceMotion) {
         revealEls.forEach(function (el) { el.classList.add('is-visible'); });
         counters.forEach(animateCount);
-        return;
+    } else {
+        var revealObserver = new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        revealEls.forEach(function (el) { revealObserver.observe(el); });
+
+        var countObserver = new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    animateCount(entry.target);
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.6 });
+        counters.forEach(function (el) { countObserver.observe(el); });
     }
 
-    var revealObserver = new IntersectionObserver(function (entries, obs) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                obs.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-    revealEls.forEach(function (el) { revealObserver.observe(el); });
-
-    var countObserver = new IntersectionObserver(function (entries, obs) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                animateCount(entry.target);
-                obs.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.6 });
-    counters.forEach(function (el) { countObserver.observe(el); });
-
     /* --- Pasarela de imágenes de producto (avanza al pasar el cursor) --- */
-    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.querySelectorAll('[data-gallery]').forEach(function (g) {
         var imgs = g.querySelectorAll('.prod-gallery__img');
         var dots = g.querySelectorAll('.prod-gallery__dot');

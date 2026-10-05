@@ -11,7 +11,7 @@ $prodInteres = $old['producto_interes'] ?? trim($_GET['producto'] ?? '');
     <div class="container contact-grid">
 
         <!-- Formulario -->
-        <form class="form" id="form" method="post" action="<?= url('/cotizar') ?>" enctype="multipart/form-data" novalidate>
+        <form class="form" id="form" method="post" action="<?= url('/cotizar') ?>" enctype="multipart/form-data">
             <?= csrf_field() ?>
             <?= honeypot_field() ?>
             <input type="hidden" name="origen" value="contacto">
@@ -22,27 +22,27 @@ $prodInteres = $old['producto_interes'] ?? trim($_GET['producto'] ?? '');
                 <div class="alert alert--ok"><?= e($okMsg) ?></div>
             <?php endif; ?>
             <?php if ($errMsg): ?>
-                <div class="alert alert--error"><?= e($errMsg) ?></div>
+                <div class="alert alert--error"><?= mensajes_html($errMsg) ?></div>
             <?php endif; ?>
 
             <div class="form__row">
                 <div class="field">
                     <label for="nombre">Nombre *</label>
-                    <input type="text" id="nombre" name="nombre" value="<?= e($old['nombre'] ?? '') ?>" required>
+                    <input autocomplete="name" type="text" id="nombre" name="nombre" value="<?= e($old['nombre'] ?? '') ?>" required>
                 </div>
                 <div class="field">
                     <label for="empresa">Empresa</label>
-                    <input type="text" id="empresa" name="empresa" value="<?= e($old['empresa'] ?? '') ?>">
+                    <input autocomplete="organization" type="text" id="empresa" name="empresa" value="<?= e($old['empresa'] ?? '') ?>">
                 </div>
             </div>
             <div class="form__row">
                 <div class="field">
                     <label for="email">Correo *</label>
-                    <input type="email" id="email" name="email" value="<?= e($old['email'] ?? '') ?>" required>
+                    <input autocomplete="email" type="email" id="email" name="email" value="<?= e($old['email'] ?? '') ?>" required>
                 </div>
                 <div class="field">
                     <label for="telefono">Teléfono</label>
-                    <input type="tel" id="telefono" name="telefono" value="<?= e($old['telefono'] ?? '') ?>">
+                    <input autocomplete="tel" type="tel" id="telefono" name="telefono" value="<?= e($old['telefono'] ?? '') ?>">
                 </div>
             </div>
             <div class="field">

@@ -109,7 +109,7 @@ class PasswordResetController extends Controller
             $errores[] = 'Las contraseñas no coinciden.';
         }
         if ($errores) {
-            flash('portal_error', implode(' ', $errores));
+            flash('portal_error', implode("\n", $errores));
             $this->redirect('/portal/restablecer/' . $token);
         }
 

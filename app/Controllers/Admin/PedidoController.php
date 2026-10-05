@@ -287,14 +287,7 @@ class PedidoController extends BaseController
         if (!$pedido || empty($pedido['cliente_email'])) {
             return;
         }
-        $labels = [
-            'enviado'      => 'recibido',
-            'en_proceso'   => 'en preparación',
-            'parcial'      => 'parcialmente procesado',
-            'sincronizado' => 'procesado',
-            'cancelado'    => 'cancelado',
-        ];
-        $label = $labels[$estado] ?? $estado;
+        $label = mb_strtolower(Pedido::etiquetaCliente($estado));
         \App\Core\Mailer::enviar(
             $pedido['cliente_email'],
             'Tu pedido ' . ($pedido['folio'] ?? '') . ': ' . $label,

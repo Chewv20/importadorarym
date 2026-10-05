@@ -140,7 +140,7 @@ class PedidoNuevoController extends BaseController
         } else {
             flash('portal_ok', 'Producto agregado.');
         }
-        $this->redirect('/admin/pedidos/nuevo');
+        $this->redirect('/admin/pedidos/nuevo' . catalogo_qs($_POST));
     }
 
     /**
@@ -149,7 +149,7 @@ class PedidoNuevoController extends BaseController
      */
     public function quitar(): void
     {
-        $back = ($_POST['origen'] ?? '') === 'confirmar' ? '/admin/pedidos/nuevo/confirmar' : '/admin/pedidos/nuevo';
+        $back = ($_POST['origen'] ?? '') === 'confirmar' ? '/admin/pedidos/nuevo/confirmar' : '/admin/pedidos/nuevo' . catalogo_qs($_POST);
         $this->guardCsrf($back);
         $this->exigirCliente();
         $this->carrito()->quitar((int) ($_POST['producto_id'] ?? 0));

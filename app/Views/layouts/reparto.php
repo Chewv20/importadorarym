@@ -29,5 +29,6 @@ $usuario = $usuario ?? [];
         <?= $content ?? '' ?>
     </main>
     <script src="<?= asset('assets/js/reparto.js') ?>" defer></script>
+    <script src="<?= asset('assets/js/forms.js') ?>" defer></script>
 </body>
 </html>

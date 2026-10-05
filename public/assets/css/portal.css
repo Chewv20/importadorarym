@@ -60,6 +60,13 @@
 .auth-card__sub { text-align: center; color: var(--rym-text-muted); margin-bottom: var(--rym-space-8); }
 .auth-card__foot { text-align: center; margin-top: var(--rym-space-6); color: var(--rym-text-muted); font-size: var(--rym-fs-sm); }
 .auth-card__foot a { text-decoration: underline; text-underline-offset: 2px; }
+/* .form trae su propia tarjeta (padding + sombra, components.css); dentro de
+   .auth-card se duplicaba y en móvil dejaba campos de ~165px en una pantalla de 390. */
+.auth-card .form { padding: 0; background: none; box-shadow: none; border-radius: 0; }
+@media (max-width: 480px) {
+    .auth-shell { padding: var(--rym-space-4); }
+    .auth-card { padding: var(--rym-space-8) var(--rym-space-6); }
+}
 
 /* Tarjeta de métrica del panel del cliente */
 .tile-num { font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); font-size: var(--rym-fs-2xl); color: var(--rym-primary); }

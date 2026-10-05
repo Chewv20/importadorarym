@@ -64,7 +64,7 @@ class ConfiguracionCorreoController extends BaseController
         }
 
         if ($errores) {
-            flash('portal_error', implode(' ', $errores));
+            flash('portal_error', implode("\n", $errores));
             $this->redirect('/admin/configuracion-correo');
         }
 

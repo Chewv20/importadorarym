@@ -92,7 +92,7 @@ class CarreraController extends Controller
                 'area_interes' => $areaInteres, 'sueldo_deseado' => $sueldoDeseado,
                 'disponibilidad' => $disponibilidad, 'escolaridad' => $escolaridad, 'mensaje' => $mensaje,
             ];
-            flash('bolsa_error', implode(' ', $errores));
+            flash('bolsa_error', implode("\n", $errores));
             $this->redirect($back);
         }
 
@@ -133,7 +133,7 @@ class CarreraController extends Controller
                 Upload::borrarDocumento('cvs', $cv['nombre']); // no dejar CV huérfano
             }
             $_SESSION['_old_bolsa'] = ['nombre' => $nombre, 'email' => $email, 'telefono' => $telefono, 'mensaje' => $mensaje];
-            flash('bolsa_error', implode(' ', $errores));
+            flash('bolsa_error', implode("\n", $errores));
             $this->redirect($back);
         }
 
@@ -170,7 +170,7 @@ class CarreraController extends Controller
     private function erroresComunes(string $nombre, string $email, string $telefono): array
     {
         $errores = [];
-        if (!captcha_valido())                                $errores[] = 'Resuelve correctamente la comprobación anti-bot.';
+        if (!captcha_valido())                                $errores[] = 'El resultado de la suma anti-bot no es correcto; revisa la operación.';
         if (!nombre_valido($nombre))                          $errores[] = 'Captura tu nombre (solo letras).';
         if (!filter_var($email, FILTER_VALIDATE_EMAIL))       $errores[] = 'Captura un correo válido.';
         if ($telefono !== '' && !telefono_valido($telefono))  $errores[] = 'El teléfono no es válido.';

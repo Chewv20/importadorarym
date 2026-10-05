@@ -9,35 +9,42 @@ $stars = static function (int $n): string {
 <p class="mb-4"><a href="<?= url('/portal/pedidos') ?>">← Volver a mis pedidos</a></p>
 <h1 class="portal-title">Pedido <?= e($pedido['folio']) ?></h1>
 
-<div class="flex flex-wrap gap-4 items-center mb-8">
-    <span class="status status--<?= e($pedido['estado']) ?>"><?= e(ucfirst(str_replace('_', ' ', $pedido['estado']))) ?></span>
+<?php
+$estado = $pedido['estado'];
+$cancelado = $estado === 'cancelado';
+$flujo = \App\Models\Pedido::FLUJO_CLIENTE;
+// 'parcial' se ve como "En preparación" en la línea de progreso; el pill de arriba sí lo distingue.
+$idx = array_search($estado === 'parcial' ? 'en_proceso' : $estado, $flujo, true);
+?>
+<div class="flex flex-wrap gap-4 items-center mb-4">
+    <span class="status status--<?= e($estado) ?>"><?= e(\App\Models\Pedido::etiquetaCliente($estado)) ?></span>
     <span class="text-muted fs-sm">Creado el <?= e(date('d/m/Y H:i', strtotime($pedido['created_at']))) ?></span>
     <?php if (!empty($pedido['referencia_cliente'])): ?>
         <span class="text-muted fs-sm">· Tu referencia: <strong><?= e($pedido['referencia_cliente']) ?></strong></span>
     <?php endif; ?>
     <?php if (!empty($pedido['erp_folio'])): ?>
-        <span class="text-muted fs-sm">· Folio ERP: <strong><?= e($pedido['erp_folio']) ?></strong></span>
+        <span class="text-muted fs-sm">· Folio de venta: <strong><?= e($pedido['erp_folio']) ?></strong></span>
     <?php endif; ?>
 </div>
 
-<form method="post" action="<?= url('/portal/pedidos/' . (int) $pedido['id'] . '/repetir') ?>" class="mb-8">
-    <?= csrf_field() ?>
-    <button type="submit" class="btn btn--primary">↻ Volver a pedir</button>
-    <span class="text-muted fs-sm ml-2">Carga estos productos en tu carrito para pedirlos de nuevo.</span>
-</form>
-
-<form method="post" action="<?= url('/portal/pedidos/' . (int) $pedido['id'] . '/recurrente') ?>" class="form form--inline mb-8">
-    <?= csrf_field() ?>
-    <div class="field">
-        <label for="frecuencia_dias">Recordarme repetirlo cada</label>
-        <select id="frecuencia_dias" name="frecuencia_dias">
-            <?php foreach (\App\Models\PedidoRecurrente::FRECUENCIAS as $f): ?>
-                <option value="<?= $f ?>" <?= $f === 30 ? 'selected' : '' ?>><?= $f ?> días</option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    <button type="submit" class="btn btn--outline btn--sm">Programar como recurrente</button>
-</form>
+<?php if ($idx !== false && !$cancelado): ?>
+    <ol class="pipeline" aria-label="Progreso del pedido">
+        <?php foreach ($flujo as $i => $paso):
+            $cls = $i < $idx ? 'is-done' : ($i === $idx ? 'is-current' : '');
+        ?>
+            <li class="pipeline__step <?= $cls ?>" <?= $i === $idx ? 'aria-current="step"' : '' ?>>
+                <div class="pipeline__dot" aria-hidden="true">
+                    <?php if ($cls === 'is-done'): ?>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+                    <?php else: ?>
+                        <?= $i + 1 ?>
+                    <?php endif; ?>
+                </div>
+                <div class="pipeline__label"><?= e(\App\Models\Pedido::etiquetaCliente($paso)) ?></div>
+            </li>
+        <?php endforeach; ?>
+    </ol>
+<?php endif; ?>
 
 <h2 class="portal-subtitle">Productos solicitados</h2>
 <div class="table-wrap mb-8">
@@ -59,6 +66,26 @@ $stars = static function (int $n): string {
     <h2 class="portal-subtitle">Notas</h2>
     <p class="measure mb-8"><?= nl2br(e($pedido['notas'])) ?></p>
 <?php endif; ?>
+
+<h2 class="portal-subtitle">¿Lo necesitas otra vez?</h2>
+<form method="post" action="<?= url('/portal/pedidos/' . (int) $pedido['id'] . '/repetir') ?>" class="mb-8">
+    <?= csrf_field() ?>
+    <button type="submit" class="btn btn--primary">↻ Volver a pedir</button>
+    <span class="text-muted fs-sm ml-2">Carga estos productos en tu carrito para pedirlos de nuevo.</span>
+</form>
+
+<form method="post" action="<?= url('/portal/pedidos/' . (int) $pedido['id'] . '/recurrente') ?>" class="form form--inline mb-8">
+    <?= csrf_field() ?>
+    <div class="field">
+        <label for="frecuencia_dias">Recordarme repetirlo cada</label>
+        <select id="frecuencia_dias" name="frecuencia_dias">
+            <?php foreach (\App\Models\PedidoRecurrente::FRECUENCIAS as $f): ?>
+                <option value="<?= $f ?>" <?= $f === 30 ? 'selected' : '' ?>><?= $f ?> días</option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <button type="submit" class="btn btn--outline btn--sm">Programar como recurrente</button>
+</form>
 
 <?php
 /** @var array $envios @var string|null $encuestaEntregaError @var array $facturasPorEnvio */
@@ -101,7 +128,7 @@ $statsMap = ['en_ruta' => 'en_proceso', 'entregado' => 'sincronizado'];
             <?php else: ?>
                 <h3 class="fs-lg fw-semibold mb-2">¿Cómo te fue con esta entrega?</h3>
                 <?php if (!empty($encuestaEntregaError)): ?>
-                    <div class="alert alert--error"><?= e($encuestaEntregaError) ?></div>
+                    <div class="alert alert--error"><?= mensajes_html($encuestaEntregaError) ?></div>
                 <?php endif; ?>
                 <form method="post" action="<?= url('/portal/pedidos/' . (int) $pedido['id'] . '/envios/' . (int) $en['id'] . '/encuesta') ?>">
                     <?= csrf_field() ?>
@@ -167,7 +194,7 @@ $pid = (int) $pedido['id'];
         <h2 class="portal-subtitle">¿Cómo fue tu experiencia?</h2>
         <p class="text-muted">Tu opinión sobre el proceso de este pedido nos ayuda a mejorar.</p>
         <?php if (!empty($encuestaError)): ?>
-            <div class="alert alert--error"><?= e($encuestaError) ?></div>
+            <div class="alert alert--error"><?= mensajes_html($encuestaError) ?></div>
         <?php endif; ?>
         <form method="post" action="<?= url('/portal/pedidos/' . $pid . '/encuesta') ?>">
             <?= csrf_field() ?>

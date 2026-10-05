@@ -14,7 +14,7 @@
     </div>
     <div class="kiosco-card__body">
         <?php if ($error): ?>
-            <div class="kiosco-alert"><?= e($error) ?></div>
+            <div class="kiosco-alert"><?= mensajes_html($error) ?></div>
         <?php endif; ?>
 
         <?php if (!$anfitriones): ?>

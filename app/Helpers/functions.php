@@ -556,3 +556,58 @@ if (!function_exists('nav_active')) {
         return $name === $current ? 'is-active' : '';
     }
 }
+
+if (!function_exists('catalogo_qs')) {
+    /**
+     * Query string de vuelta al catálogo del portal/panel (búsqueda, categoría y
+     * página) a partir de un arreglo de entrada ($_GET o $_POST). Solo deja pasar
+     * esas tres claves, validadas, para que "Agregar"/"Quitar" regresen al mismo
+     * listado en vez de a la página 1 sin filtro. Devuelve '' o '?…'.
+     */
+    function catalogo_qs(array $src): string
+    {
+        $qs = [];
+        $q = str_clean($src['q'] ?? '', 60);
+        if ($q !== '') {
+            $qs['q'] = $q;
+        }
+        $cat = (string) ($src['categoria'] ?? '');
+        if ($cat !== '' && preg_match('/^[a-z0-9-]{1,180}$/', $cat)) {
+            $qs['categoria'] = $cat;
+        }
+        $page = (int) ($src['page'] ?? 1);
+        if ($page > 1) {
+            $qs['page'] = min($page, 10000);
+        }
+        return $qs ? '?' . http_build_query($qs) : '';
+    }
+}
+
+if (!function_exists('catalogo_campos')) {
+    /** Campos ocultos con los filtros actuales del catálogo (ver catalogo_qs()). */
+    function catalogo_campos(): string
+    {
+        parse_str(ltrim(catalogo_qs($_GET), '?'), $qs);
+        $html = '';
+        foreach ($qs as $k => $v) {
+            $html .= '<input type="hidden" name="' . e($k) . '" value="' . e($v) . '">';
+        }
+        return $html;
+    }
+}
+
+if (!function_exists('mensajes_html')) {
+    /**
+     * Mensaje de aviso escapado. Los controladores juntan varios errores de
+     * validación con "\n"; con más de uno se muestran como lista en vez de un
+     * párrafo corrido difícil de leer.
+     */
+    function mensajes_html(?string $msg): string
+    {
+        $lineas = array_values(array_filter(array_map('trim', explode("\n", (string) $msg)), 'strlen'));
+        if (count($lineas) <= 1) {
+            return e($lineas[0] ?? '');
+        }
+        return '<ul class="alert__list"><li>' . implode('</li><li>', array_map('e', $lineas)) . '</li></ul>';
+    }
+}

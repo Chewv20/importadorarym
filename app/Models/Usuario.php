@@ -187,11 +187,29 @@ class Usuario extends Model
 
     /* --------------------------------- Admin: clientes --------------- */
 
-    public function clientesPaginado(int $limit, int $offset, bool $soloPendientes = false, ?int $vendedorId = null): array
+    /**
+     * WHERE del listado de clientes del panel. $q busca en nombre, empresa, correo
+     * y clave SAE — un marcador por LIKE: con prepares nativos repetir uno da HY093.
+     * @return array{0:string,1:array<string,mixed>}
+     */
+    private function clientesWhere(bool $soloPendientes, ?int $vendedorId, ?string $q): array
     {
-        $where = "r.slug = 'cliente'"
-            . ($soloPendientes ? ' AND u.aprobado = 0' : '')
-            . ($vendedorId !== null ? ' AND u.vendedor_id = :vend' : '');
+        $where = "r.slug = 'cliente'" . ($soloPendientes ? ' AND u.aprobado = 0' : '');
+        $params = [];
+        if ($vendedorId !== null) {
+            $where .= ' AND u.vendedor_id = :vend';
+            $params[':vend'] = $vendedorId;
+        }
+        if ($q !== null && $q !== '') {
+            $where .= ' AND (u.nombre LIKE :q1 OR u.empresa LIKE :q2 OR u.email LIKE :q3 OR u.clave_sae LIKE :q4)';
+            $params[':q1'] = $params[':q2'] = $params[':q3'] = $params[':q4'] = '%' . $q . '%';
+        }
+        return [$where, $params];
+    }
+
+    public function clientesPaginado(int $limit, int $offset, bool $soloPendientes = false, ?int $vendedorId = null, ?string $q = null): array
+    {
+        [$where, $params] = $this->clientesWhere($soloPendientes, $vendedorId, $q);
         // sin_acceso_portal: en una sola consulta (sin N+1), para pintar el pill en el listado.
         $sql = "SELECT u.*, lp.nombre AS lista_productos_nombre,
                        EXISTS(
@@ -202,8 +220,8 @@ class Usuario extends Model
                   LEFT JOIN listas_productos lp ON lp.id = u.lista_productos_id
                  WHERE {$where} ORDER BY u.created_at DESC LIMIT :lim OFFSET :off";
         $st = $this->db->prepare($sql);
-        if ($vendedorId !== null) {
-            $st->bindValue(':vend', $vendedorId, PDO::PARAM_INT);
+        foreach ($params as $k => $v) {
+            $st->bindValue($k, $v, is_int($v) ? PDO::PARAM_INT : PDO::PARAM_STR);
         }
         $st->bindValue(':lim', $limit, PDO::PARAM_INT);
         $st->bindValue(':off', $offset, PDO::PARAM_INT);
@@ -211,18 +229,13 @@ class Usuario extends Model
         return $st->fetchAll();
     }
 
-    public function contarClientes(bool $soloPendientes = false, ?int $vendedorId = null): int
+    public function contarClientes(bool $soloPendientes = false, ?int $vendedorId = null, ?string $q = null): int
     {
-        $where = "r.slug = 'cliente'"
-            . ($soloPendientes ? ' AND u.aprobado = 0' : '')
-            . ($vendedorId !== null ? ' AND u.vendedor_id = :vend' : '');
+        [$where, $params] = $this->clientesWhere($soloPendientes, $vendedorId, $q);
         $st = $this->db->prepare(
             "SELECT COUNT(*) FROM usuarios u JOIN roles r ON r.id = u.rol_id WHERE {$where}"
         );
-        if ($vendedorId !== null) {
-            $st->bindValue(':vend', $vendedorId, PDO::PARAM_INT);
-        }
-        $st->execute();
+        $st->execute($params);
         return (int) $st->fetchColumn();
     }
 

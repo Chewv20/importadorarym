@@ -77,6 +77,7 @@ $_locale = config('app.locale', 'es_MX');
     <?php require APP_PATH . '/Views/partials/lightbox.php'; ?>
 
     <script src="<?= asset('assets/js/site.js') ?>" defer></script>
+    <script src="<?= asset('assets/js/forms.js') ?>" defer></script>
     <script src="<?= asset('assets/js/whatsapp.js') ?>" defer></script>
     <script src="<?= asset('assets/js/logo-simulator.js') ?>" defer></script>
     <script src="<?= asset('assets/js/pwa.js') ?>" defer></script>

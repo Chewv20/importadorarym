@@ -13,7 +13,7 @@ $pedidos = $pedidos ?? [];
                 <tr>
                     <td><?= e($p['folio']) ?></td>
                     <td><?= e(date('d/m/Y', strtotime($p['created_at']))) ?></td>
-                    <td><span class="status status--<?= e($p['estado']) ?>"><?= e(ucfirst(str_replace('_', ' ', $p['estado']))) ?></span></td>
+                    <td><span class="status status--<?= e($p['estado']) ?>"><?= e(\App\Models\Pedido::etiquetaCliente($p['estado'])) ?></span></td>
                     <td><?= !empty($p['erp_folio']) ? e($p['erp_folio']) : '—' ?></td>
                     <td><a class="btn btn--outline btn--sm" href="<?= url('/portal/pedidos/' . (int) $p['id']) ?>">Ver detalle</a></td>
                 </tr>

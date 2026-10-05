@@ -59,15 +59,17 @@ class CotizacionController extends Controller
         ];
 
         $errores = [];
-        if (!captcha_valido())                                  $errores[] = 'Resuelve correctamente la comprobación anti-bot.';
-        if (!nombre_valido($nombre))                            $errores[] = 'El nombre solo puede contener letras, espacios y . - \'.';
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL))         $errores[] = 'Captura un correo válido.';
+        if (!captcha_valido())                                  $errores[] = 'El resultado de la suma anti-bot no es correcto; revisa la operación.';
+        if ($nombre === '')                                     $errores[] = 'Escribe tu nombre.';
+        elseif (!nombre_valido($nombre))                        $errores[] = 'El nombre solo puede contener letras, espacios y . - \'.';
+        if ($email === '')                                      $errores[] = 'Escribe tu correo.';
+        elseif (!filter_var($email, FILTER_VALIDATE_EMAIL))     $errores[] = 'El correo no es válido (ej. nombre@empresa.com).';
         if ($empresa !== '' && !empresa_valida($empresa))       $errores[] = 'La empresa contiene caracteres no permitidos.';
         if ($telefono !== '' && !telefono_valido($telefono))    $errores[] = 'El teléfono solo admite dígitos y + - ( ).';
 
         if ($errores) {
             $_SESSION['_old'] = $old;
-            flash('cotizacion_error', implode(' ', $errores));
+            flash('cotizacion_error', implode("\n", $errores));
             $this->redirect($back);
         }
 

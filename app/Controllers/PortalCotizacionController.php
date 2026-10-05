@@ -73,14 +73,14 @@ class PortalCotizacionController extends PortalBaseController
         } else {
             flash('portal_error', 'Ese producto no está disponible.');
         }
-        $this->redirect('/portal/cotizar');
+        $this->redirect('/portal/cotizar' . catalogo_qs($_POST));
     }
 
     public function quitar(): void
     {
         $this->guardCsrf();
         unset($_SESSION['cot_cart'][(int) ($_POST['producto_id'] ?? 0)]);
-        $this->redirect('/portal/cotizar');
+        $this->redirect('/portal/cotizar' . catalogo_qs($_POST));
     }
 
     public function enviar(): void

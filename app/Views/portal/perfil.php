@@ -2,11 +2,11 @@
 <h1 class="portal-title">Mi perfil</h1>
 
 <div class="measure">
-    <form class="form" method="post" action="<?= url('/portal/perfil') ?>" novalidate data-cp-form>
+    <form class="form" method="post" action="<?= url('/portal/perfil') ?>" data-cp-form>
         <?= csrf_field() ?>
         <div class="field">
             <label for="nombre">Nombre completo *</label>
-            <input type="text" id="nombre" name="nombre" value="<?= e($usuario['nombre']) ?>" required>
+            <input autocomplete="name" type="text" id="nombre" name="nombre" value="<?= e($usuario['nombre']) ?>" required>
         </div>
         <div class="field">
             <label for="email">Correo</label>
@@ -14,12 +14,12 @@
         </div>
         <div class="field">
             <label for="empresa">Empresa</label>
-            <input type="text" id="empresa" name="empresa" value="<?= e($usuario['empresa'] ?? '') ?>">
+            <input autocomplete="organization" type="text" id="empresa" name="empresa" value="<?= e($usuario['empresa'] ?? '') ?>">
         </div>
         <div class="form__row">
             <div class="field">
                 <label for="telefono">Teléfono</label>
-                <input type="tel" id="telefono" name="telefono" value="<?= e($usuario['telefono'] ?? '') ?>">
+                <input autocomplete="tel" type="tel" id="telefono" name="telefono" value="<?= e($usuario['telefono'] ?? '') ?>">
             </div>
             <div class="field">
                 <label for="rfc">RFC</label>
@@ -30,8 +30,32 @@
         <p class="fw-semibold mt-6 mb-2">Dirección de entrega</p>
         <div class="form__row">
             <div class="field">
+                <label for="codigo_postal">Código postal *</label>
+                <input autocomplete="postal-code" type="text" id="codigo_postal" name="codigo_postal" value="<?= e($usuario['codigo_postal'] ?? '') ?>" inputmode="numeric" pattern="\d{5}" maxlength="5" required aria-describedby="cp_ayuda">
+                <p class="text-muted fs-sm">Al capturarlo, sugerimos la colonia y llenamos delegación/municipio y estado.</p>
+                <small class="field__note" id="cp_ayuda">Escríbelo primero: completamos colonia, municipio y estado.</small>
+            </div>
+            <div class="field colonia-picker" data-colonia-picker>
+                <label for="colonia">Colonia *</label>
+                <input type="text" id="colonia" name="colonia" value="<?= e($usuario['colonia'] ?? '') ?>" autocomplete="off" required>
+                <div class="colonia-picker__resultados" data-colonia-resultados hidden></div>
+            </div>
+        </div>
+        <div class="form__row">
+            <div class="field">
+                <label for="delegacion_municipio">Delegación o Municipio *</label>
+                <input autocomplete="address-level2" type="text" id="delegacion_municipio" name="delegacion_municipio" value="<?= e($usuario['delegacion_municipio'] ?? '') ?>" required>
+                <p class="text-muted fs-sm">Se completa con tu código postal; para corregirlo, cambia el código postal.</p>
+            </div>
+            <div class="field">
+                <label for="estado_direccion">Estado *</label>
+                <input autocomplete="address-level1" type="text" id="estado_direccion" name="estado_direccion" value="<?= e($usuario['estado_direccion'] ?? '') ?>" required>
+            </div>
+        </div>
+        <div class="form__row">
+            <div class="field">
                 <label for="calle">Calle *</label>
-                <input type="text" id="calle" name="calle" value="<?= e($usuario['calle'] ?? '') ?>" required>
+                <input autocomplete="address-line1" type="text" id="calle" name="calle" value="<?= e($usuario['calle'] ?? '') ?>" required>
             </div>
             <div class="field">
                 <label for="numero_ext">Número *</label>
@@ -43,31 +67,10 @@
                 <label for="numero_int">Número interior</label>
                 <input type="text" id="numero_int" name="numero_int" value="<?= e($usuario['numero_int'] ?? '') ?>">
             </div>
-            <div class="field colonia-picker" data-colonia-picker>
-                <label for="colonia">Colonia *</label>
-                <input type="text" id="colonia" name="colonia" value="<?= e($usuario['colonia'] ?? '') ?>" autocomplete="off" required>
-                <div class="colonia-picker__resultados" data-colonia-resultados hidden></div>
-            </div>
-        </div>
-        <div class="form__row">
             <div class="field">
-                <label for="codigo_postal">Código postal *</label>
-                <input type="text" id="codigo_postal" name="codigo_postal" value="<?= e($usuario['codigo_postal'] ?? '') ?>" inputmode="numeric" pattern="\d{5}" maxlength="5" required>
-                <p class="text-muted fs-sm">Al capturarlo, sugerimos la colonia y llenamos delegación/municipio y estado.</p>
+                <label for="referencias">Referencias (opcional)</label>
+                <input type="text" id="referencias" name="referencias" value="<?= e($usuario['referencias'] ?? '') ?>" placeholder="Entre calles, color de fachada, etc.">
             </div>
-            <div class="field">
-                <label for="delegacion_municipio">Delegación o Municipio *</label>
-                <input type="text" id="delegacion_municipio" name="delegacion_municipio" value="<?= e($usuario['delegacion_municipio'] ?? '') ?>" required>
-                <p class="text-muted fs-sm">Se completa con tu código postal; para corregirlo, cambia el código postal.</p>
-            </div>
-        </div>
-        <div class="field">
-            <label for="estado_direccion">Estado *</label>
-            <input type="text" id="estado_direccion" name="estado_direccion" value="<?= e($usuario['estado_direccion'] ?? '') ?>" required>
-        </div>
-        <div class="field">
-            <label for="referencias">Referencias (opcional)</label>
-            <input type="text" id="referencias" name="referencias" value="<?= e($usuario['referencias'] ?? '') ?>" placeholder="Entre calles, color de fachada, etc.">
         </div>
 
         <div class="mb-6" data-mapa-preview>

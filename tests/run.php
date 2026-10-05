@@ -481,6 +481,29 @@ grupo('Cifrado de secretos (Crypto, correo O365/Graph)', function () {
     eq('cadena vacía no truena', null, Crypto::decrypt(''));
 });
 
+grupo('Vuelta al catálogo con filtros (UX U3)', function () {
+    eq('sin filtros no agrega query string', '', catalogo_qs([]));
+    eq('página 1 se omite', '', catalogo_qs(['page' => '1']));
+    eq('conserva búsqueda, categoría y página', '?q=vaso+12&categoria=biodegradables&page=3',
+        catalogo_qs(['q' => '  vaso 12 ', 'categoria' => 'biodegradables', 'page' => '3']));
+    eq('ignora claves ajenas (no reinyecta producto_id, csrf, etc.)', '?q=x',
+        catalogo_qs(['q' => 'x', 'producto_id' => '9', '_csrf' => 'abc', 'cantidad' => '5']));
+    eq('rechaza categoría con caracteres fuera de slug', '',
+        catalogo_qs(['categoria' => '../admin?x=1']));
+    eq('página negativa o basura se omite', '', catalogo_qs(['page' => '-4']));
+    eq('búsqueda se recorta a 60 caracteres', 60, mb_strlen(urldecode(substr(catalogo_qs(['q' => str_repeat('a', 200)]), 3))));
+});
+
+grupo('Estados de pedido vistos por el cliente (UX U4)', function () {
+    foreach (\App\Models\Pedido::ESTADOS as $estado) {
+        ok("'$estado' tiene etiqueta para el cliente", isset(\App\Models\Pedido::ETIQUETAS_CLIENTE[$estado]));
+    }
+    eq('sincronizado no se muestra con el nombre interno', 'Procesado', \App\Models\Pedido::etiquetaCliente('sincronizado'));
+    eq('estado desconocido no truena', 'Otro estado', \App\Models\Pedido::etiquetaCliente('otro_estado'));
+    ok('la línea de progreso usa solo estados existentes',
+        !array_diff(\App\Models\Pedido::FLUJO_CLIENTE, \App\Models\Pedido::ESTADOS));
+});
+
 /* -------------------------------------------------------- Resumen -- */
 
 $total = $GLOBALS['_pass'] + $GLOBALS['_fail'];

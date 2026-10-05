@@ -1,5 +1,6 @@
 <?php
-/** @var array $cotizaciones @var array $estados @var ?string $estado */
+/** @var array $cotizaciones @var array $estados @var ?string $estado @var ?string $busqueda */
+$busqueda = $busqueda ?? null;
 $pill = [
     'nueva'      => ['Nueva', 'pill--warn'],
     'cotizada'   => ['Cotizada', 'pill--ok'],
@@ -14,12 +15,15 @@ $pill = [
     <p class="text-muted fs-sm mb-4">👤 Mostrando solo las cotizaciones de tus clientes asignados.</p>
 <?php endif; ?>
 
-<div class="filters-row">
+<form class="filters-row" method="get" action="<?= url('/admin/cotizaciones') ?>">
     <a class="filter-tab <?= $estado === null ? 'is-active' : '' ?>" href="<?= url('/admin/cotizaciones') ?>">Todas</a>
     <?php foreach ($estados as $e): ?>
         <a class="filter-tab <?= $estado === $e ? 'is-active' : '' ?>" href="<?= url('/admin/cotizaciones?estado=' . $e) ?>"><?= e(ucfirst($e)) ?></a>
     <?php endforeach; ?>
-</div>
+    <?php if ($estado): ?><input type="hidden" name="estado" value="<?= e($estado) ?>"><?php endif; ?>
+    <input type="search" name="q" value="<?= e($busqueda ?? '') ?>" placeholder="Buscar folio, nombre, empresa o correo…" class="filter-search" aria-label="Buscar cotizaciones">
+    <button class="btn btn--primary btn--sm" type="submit">Buscar</button>
+</form>
 
 <?php if ($cotizaciones): ?>
 <div class="table-wrap">
@@ -44,9 +48,10 @@ $pill = [
     </table>
 </div>
 <?php
-$baseUrl = url('/admin/cotizaciones') . ($estado ? '?estado=' . $estado : '');
+$qs = http_build_query(array_filter(['estado' => $estado ?? '', 'q' => $busqueda ?? '']));
+$baseUrl = url('/admin/cotizaciones') . ($qs ? '?' . $qs : '');
 require APP_PATH . '/Views/partials/pagination.php';
 ?>
 <?php else: ?>
-    <p class="empty-state">No hay cotizaciones<?= $estado ? ' con estado «' . e($estado) . '»' : '' ?>.</p>
+    <p class="empty-state"><?= $busqueda ? 'Ninguna cotización coincide con «' . e($busqueda) . '».' : 'No hay cotizaciones' . ($estado ? ' con estado «' . e($estado) . '»' : '') . '.' ?></p>
 <?php endif; ?>

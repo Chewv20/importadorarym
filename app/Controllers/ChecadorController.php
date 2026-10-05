@@ -115,7 +115,7 @@ class ChecadorController extends Controller
                 'nombre' => $nombre, 'empresa' => $empresa, 'telefono' => $telefono,
                 'motivo' => $motivo, 'num_personas' => $personas, 'anfitrion_id' => $anfitrionId,
             ];
-            flash('checador_error', implode(' ', $errores));
+            flash('checador_error', implode("\n", $errores));
             $this->redirect('/checador');
         }
 

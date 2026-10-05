@@ -12,7 +12,7 @@ require APP_PATH . '/Views/partials/page_hero.php';
 
 <section class="section">
     <div class="container container--narrow">
-        <form class="form vacancy-form" method="post" action="<?= url('/bolsa-de-trabajo/solicitud') ?>" enctype="multipart/form-data" novalidate>
+        <form class="form vacancy-form" method="post" action="<?= url('/bolsa-de-trabajo/solicitud') ?>" enctype="multipart/form-data">
             <?= csrf_field() ?>
             <?= honeypot_field() ?>
 
@@ -20,23 +20,23 @@ require APP_PATH . '/Views/partials/page_hero.php';
                 <div class="alert alert--ok"><?= e($exito) ?></div>
             <?php endif; ?>
             <?php if ($error): ?>
-                <div class="alert alert--error"><?= e($error) ?></div>
+                <div class="alert alert--error"><?= mensajes_html($error) ?></div>
             <?php endif; ?>
 
             <div class="form__row">
                 <div class="field">
                     <label for="nombre">Nombre completo *</label>
-                    <input type="text" id="nombre" name="nombre" value="<?= e($old['nombre'] ?? '') ?>" required>
+                    <input autocomplete="name" type="text" id="nombre" name="nombre" value="<?= e($old['nombre'] ?? '') ?>" required>
                 </div>
                 <div class="field">
                     <label for="email">Correo *</label>
-                    <input type="email" id="email" name="email" value="<?= e($old['email'] ?? '') ?>" required>
+                    <input autocomplete="email" type="email" id="email" name="email" value="<?= e($old['email'] ?? '') ?>" required>
                 </div>
             </div>
             <div class="form__row">
                 <div class="field">
                     <label for="telefono">Teléfono</label>
-                    <input type="tel" id="telefono" name="telefono" value="<?= e($old['telefono'] ?? '') ?>">
+                    <input autocomplete="tel" type="tel" id="telefono" name="telefono" value="<?= e($old['telefono'] ?? '') ?>">
                 </div>
                 <div class="field">
                     <label for="area_interes">Puesto o área de tu interés *</label>

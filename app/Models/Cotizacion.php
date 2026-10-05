@@ -183,14 +183,34 @@ class Cotizacion extends Model
             : '';
     }
 
-    public function paginado(int $limit, int $offset, ?string $estado = null, ?int $vendedorId = null): array
+    /**
+     * WHERE del listado del panel: estado + búsqueda en folio, nombre, empresa y
+     * correo (un marcador por LIKE: con prepares nativos repetir uno da HY093).
+     * @return array{0:string,1:array<string,mixed>}
+     */
+    private function filtrosPanel(?string $estado, ?string $q): array
+    {
+        $cond = [];
+        $params = [];
+        if ($estado !== null) {
+            $cond[] = 'c.estado = :estado';
+            $params[':estado'] = $estado;
+        }
+        if ($q !== null && $q !== '') {
+            $cond[] = '(c.folio LIKE :q1 OR c.nombre LIKE :q2 OR c.empresa LIKE :q3 OR c.email LIKE :q4)';
+            $params[':q1'] = $params[':q2'] = $params[':q3'] = $params[':q4'] = '%' . $q . '%';
+        }
+        return [$cond ? 'WHERE ' . implode(' AND ', $cond) : '', $params];
+    }
+
+    public function paginado(int $limit, int $offset, ?string $estado = null, ?int $vendedorId = null, ?string $q = null): array
     {
         $join = $this->joinVendedor($vendedorId);
-        $where = $estado !== null ? 'WHERE c.estado = :estado' : '';
+        [$where, $params] = $this->filtrosPanel($estado, $q);
         $sql = "SELECT c.* FROM cotizaciones c {$join} {$where} ORDER BY c.created_at DESC LIMIT :lim OFFSET :off";
         $st = $this->db->prepare($sql);
-        if ($estado !== null) {
-            $st->bindValue(':estado', $estado);
+        foreach ($params as $k => $v) {
+            $st->bindValue($k, $v);
         }
         if ($vendedorId !== null) {
             $st->bindValue(':vend', $vendedorId, PDO::PARAM_INT);
@@ -201,13 +221,13 @@ class Cotizacion extends Model
         return $st->fetchAll();
     }
 
-    public function contar(?string $estado = null, ?int $vendedorId = null): int
+    public function contar(?string $estado = null, ?int $vendedorId = null, ?string $q = null): int
     {
         $join = $this->joinVendedor($vendedorId);
-        $where = $estado !== null ? 'WHERE c.estado = :estado' : '';
+        [$where, $params] = $this->filtrosPanel($estado, $q);
         $st = $this->db->prepare("SELECT COUNT(*) FROM cotizaciones c {$join} {$where}");
-        if ($estado !== null) {
-            $st->bindValue(':estado', $estado);
+        foreach ($params as $k => $v) {
+            $st->bindValue($k, $v);
         }
         if ($vendedorId !== null) {
             $st->bindValue(':vend', $vendedorId, PDO::PARAM_INT);

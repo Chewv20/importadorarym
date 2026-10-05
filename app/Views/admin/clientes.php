@@ -1,6 +1,7 @@
 <?php
-/** @var array $clientes @var bool $pend @var int $totalPend */
+/** @var array $clientes @var bool $pend @var int $totalPend @var ?string $busqueda */
 $puedeAprobar = can('clientes.aprobar');
+$busqueda = $busqueda ?? null;
 ?>
 <div class="admin-head">
     <h1>Clientes</h1>
@@ -10,12 +11,15 @@ $puedeAprobar = can('clientes.aprobar');
     <p class="text-muted fs-sm mb-4">👤 Mostrando solo los clientes asignados a ti.</p>
 <?php endif; ?>
 
-<div class="filters-row">
+<form class="filters-row" method="get" action="<?= url('/admin/clientes') ?>">
     <a class="filter-tab <?= !$pend ? 'is-active' : '' ?>" href="<?= url('/admin/clientes') ?>">Todos</a>
     <a class="filter-tab <?= $pend ? 'is-active' : '' ?>" href="<?= url('/admin/clientes?filtro=pendientes') ?>">
         Pendientes<?= $totalPend > 0 ? ' (' . (int) $totalPend . ')' : '' ?>
     </a>
-</div>
+    <?php if ($pend): ?><input type="hidden" name="filtro" value="pendientes"><?php endif; ?>
+    <input type="search" name="q" value="<?= e($busqueda ?? '') ?>" placeholder="Buscar nombre, empresa, correo o clave SAE…" class="filter-search" aria-label="Buscar clientes">
+    <button class="btn btn--primary btn--sm" type="submit">Buscar</button>
+</form>
 
 <?php if ($clientes): ?>
 <div class="table-wrap">
@@ -114,9 +118,10 @@ $puedeAprobar = can('clientes.aprobar');
     </table>
 </div>
 <?php
-$baseUrl = url('/admin/clientes') . ($pend ? '?filtro=pendientes' : '');
+$qs = http_build_query(array_filter(['filtro' => $pend ? 'pendientes' : '', 'q' => $busqueda ?? '']));
+$baseUrl = url('/admin/clientes') . ($qs ? '?' . $qs : '');
 require APP_PATH . '/Views/partials/pagination.php';
 ?>
 <?php else: ?>
-    <p class="empty-state">No hay clientes<?= $pend ? ' pendientes de aprobación' : '' ?>.</p>
+    <p class="empty-state"><?= $busqueda ? 'Ningún cliente coincide con «' . e($busqueda) . '».' : 'No hay clientes' . ($pend ? ' pendientes de aprobación' : '') . '.' ?></p>
 <?php endif; ?>

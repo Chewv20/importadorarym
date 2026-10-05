@@ -10,5 +10,6 @@
         <?= $content ?? '' ?>
     </main>
     <script src="<?= asset('assets/js/kiosco.js') ?>" defer></script>
+    <script src="<?= asset('assets/js/forms.js') ?>" defer></script>
 </body>
 </html>

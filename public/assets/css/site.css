@@ -185,7 +185,6 @@ body.lightbox-open { overflow: hidden; }
 .check-inline input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: var(--rym-secondary); flex: none; }
 .field--reveal { border-left: 3px solid var(--rym-highlight); padding-left: var(--rym-space-4); }
 .field--reveal[hidden] { display: none; }
-.field__note { color: var(--rym-text-muted); font-size: var(--rym-fs-xs); margin: 0; }
 
 /* ---- Marcas -------------------------------------------------------------- */
 .brands { display: flex; flex-wrap: wrap; gap: var(--rym-space-4); justify-content: center; }

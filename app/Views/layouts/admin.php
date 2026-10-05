@@ -173,6 +173,7 @@ function admin_link(string $name, string $current): string
 </div>
 
 <script src="<?= asset('assets/js/admin.js') ?>" defer></script>
+<script src="<?= asset('assets/js/forms.js') ?>" defer></script>
 <script src="<?= asset('assets/js/pwa.js') ?>" defer></script>
 </body>
 </html>

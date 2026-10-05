@@ -1028,7 +1028,9 @@ axe-core: sin violaciones críticas. Solo quedan `region` (la topbar fuera de un
 landmark) y un `link-in-text-block` en el aviso de privacidad. Los hallazgos de
 esta ronda son de diseño y flujo, no de cumplimiento automático.
 
-Estado: **U1 y U2 aplicados (05/10/2026)**; U3–U21 pendientes de decidir.
+Estado: **U1–U10 y U14 aplicados (05/10/2026)**, además de 2 bugs encontrados
+en el camino (N1, N2; ver "Segunda ronda de correcciones" al final). U11–U13 y
+U15–U21 siguen pendientes.
 
 ### Críticos — rompen la interacción
 
@@ -1167,6 +1169,78 @@ por ejemplo, hay que recorrer todo el listado.
   `meta description`.
 - U21 · Panel: Usuarios, Categorías, Zonas, Vacantes y Modales sin paginación.
   Hoy no importa por el volumen, pero conviene tenerlo en cuenta si crecen.
+
+### Segunda ronda de correcciones (05/10/2026) — altos U3–U9 + U10, U14
+
+- **U3 ✔**: los helpers `catalogo_qs()` y `catalogo_campos()` (en `functions.php`)
+  reenvían solo `q`, `categoria` y `page`, validados (la categoría debe tener
+  forma de slug y la página es un entero). Los formularios Agregar/Quitar de
+  los tres catálogos (pedido y cotización del portal, pedido del vendedor)
+  llevan esos campos ocultos, y los tres controladores redirigen conservándolos.
+- **U4 ✔**: `Pedido::ETIQUETAS_CLIENTE`, `FLUJO_CLIENTE` y `etiquetaCliente()`
+  usan las mismas palabras que ya tenía el correo de estado (Recibido, En
+  preparación, Parcialmente procesado, Procesado), y el correo ahora lee de ahí.
+  El detalle de pedido del portal muestra una línea de progreso. El CSS de
+  `.pipeline` se movió de `admin.css` a `components.css` para reutilizarlo sin
+  duplicarlo. "Folio ERP" pasó a llamarse "Folio de venta".
+- **U5 ✔**: `.auth-card .form` sin tarjeta propia y relleno reducido en
+  ≤480 px. Los campos de registro y login en 390 px miden **310 px (antes ~165)**.
+- **U6 ✔**: en registro y perfil el CP va primero, con una nota de que
+  autocompleta colonia, municipio y estado (`field__note` se movió a
+  `components.css`, porque el portal no carga `site.css`). Subtítulo
+  corregido según el flujo real.
+- **U7 ✔**:
+  - Se quitó `novalidate` de los 9 formularios públicos y del portal: un envío
+    vacío ya no sale del navegador (verificado: 0 POST, foco en el primer
+    campo). Los del panel conservan `novalidate`.
+  - Los errores del servidor se unen con `\n` y `mensajes_html()` los muestra
+    como lista (9 controladores, 12 vistas).
+  - Se distingue un campo vacío de uno inválido (nombre y correo) y el mensaje
+    del captcha es más claro.
+  - `forms.js` enfoca el aviso de error y lo centra en pantalla después del
+    `load`. Antes no funcionaba porque el salto del navegador al ancla
+    (`/#cotiza`) le quitaba el foco, y con `scroll-behavior:smooth` el scroll
+    animado pisaba el `scrollIntoView`.
+- **U8 ✔**: `forms.js` (nuevo, incluido en los 6 layouts) bloquea el reenvío
+  de cualquier POST. Marca el formulario de forma síncrona y lo libera si otro
+  listener cancela (`data-confirm`), a los 8 s (descargas que no navegan) o al
+  volver con "atrás" (bfcache). No usa el atributo `disabled` para no perder el
+  name/value del botón. Verificado: 3 clics en el mismo instante → **1 POST**;
+  confirmación cancelada → el formulario no queda bloqueado.
+- **U9 ✔**: Clientes (nombre, empresa, correo, clave SAE), Productos (nombre,
+  SKU, clave SAE) y Cotizaciones (folio, nombre, empresa, correo) tienen
+  buscador. La búsqueda respeta la pestaña activa, la paginación la conserva y
+  el estado vacío indica que no hubo coincidencias. Se usa un marcador distinto
+  por cada LIKE.
+- **U10 ✔**: `autocomplete` en los formularios públicos y del portal (`name`,
+  `organization`, `email`, `tel`, `postal-code`, `address-*`; `username` y
+  `current-password` en login; `new-password` en registro y restablecer).
+  Corrección al informe: el captcha **ya tenía** `inputmode="numeric"` y
+  `autocomplete="off"`.
+- **U14 ✔**: "Volver a pedir" y "Recurrente" se movieron debajo de productos y
+  notas, bajo "¿Lo necesitas otra vez?".
+
+**N1 · La búsqueda de Pedidos del panel daba error 500 — ALTA (bug nuevo).**
+`Pedido::filtros()` repetía `:q` tres veces y, con `EMULATE_PREPARES=false`, eso
+lanza `SQLSTATE[HY093]`: cualquier búsqueda en `/admin/pedidos` tronaba. Se
+reprodujo contra la BD real y se corrigió con `:q1/:q2/:q3`. Un escaneo de
+`app/` no encontró otros marcadores repetidos.
+
+**N2 · El lightbox y la galería del catálogo no funcionaban con "reducir movimiento" — MEDIA (bug nuevo).**
+`site.js` hacía `return` en la rama de reduce-motion de las animaciones al
+hacer scroll, y eso cortaba toda la función, incluidos la galería y el lightbox
+que van después. En Windows esa preferencia se activa sola con el ahorro de
+batería. Reproducido con Playwright (`reducedMotion:'reduce'`: antes no abría,
+ahora sí) y corregido con `if/else`.
+
+Verificado:
+- `tests/run.php` 142 → **158/158** (grupos nuevos: vuelta al catálogo y
+  etiquetas de estado) y `php -l` limpio en todo lo tocado.
+- Las vistas del panel y del portal que se modificaron se renderizaron desde
+  CLI con datos reales: detalle de pedido en cada estado, listados con y sin
+  búsqueda y con alcance de vendedor, registro y perfil.
+- Las rutas públicas responden 200/302/403/404 según corresponde.
+- Bundles reconstruidos y SW `rym-v54`.
 
 ### Pendiente de revisar en vivo
 

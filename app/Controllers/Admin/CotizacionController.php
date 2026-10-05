@@ -19,12 +19,14 @@ class CotizacionController extends BaseController
         $model  = new Cotizacion();
         $scope  = $this->vendedorScope();
         $estado = in_array($_GET['estado'] ?? '', Cotizacion::ESTADOS, true) ? $_GET['estado'] : null;
-        $pg     = $this->paginar($model->contar($estado, $scope), 20);
+        $q      = str_clean($_GET['q'] ?? '', 60) ?: null;
+        $pg     = $this->paginar($model->contar($estado, $scope, $q), 20);
 
         $this->render('admin/cotizaciones', [
             'title'         => 'Cotizaciones — Panel RYM',
             'active'        => 'cotizaciones',
-            'cotizaciones'  => $model->paginado($pg['perPage'], $pg['offset'], $estado, $scope),
+            'cotizaciones'  => $model->paginado($pg['perPage'], $pg['offset'], $estado, $scope, $q),
+            'busqueda'      => $q,
             'estado'        => $estado,
             'estados'       => Cotizacion::ESTADOS,
             'soloAsignados' => $scope !== null,

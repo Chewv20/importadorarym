@@ -71,6 +71,7 @@ $clientes  = $clientes ?? [];
                         </div>
                         <form class="qty-form" method="post" action="<?= url('/admin/pedidos/nuevo/carrito/agregar') ?>">
                             <?= csrf_field() ?>
+                            <?= catalogo_campos() ?>
                             <input type="hidden" name="producto_id" value="<?= (int) $p['id'] ?>">
                             <input type="number" name="cantidad" value="1" min="1" aria-label="Cantidad de <?= e($p['nombre']) ?>">
                             <button class="btn btn--primary btn--sm" type="submit">Agregar</button>
@@ -104,6 +105,7 @@ $clientes  = $clientes ?? [];
                         </div>
                         <form method="post" action="<?= url('/admin/pedidos/nuevo/carrito/quitar') ?>">
                             <?= csrf_field() ?>
+                            <?= catalogo_campos() ?>
                             <input type="hidden" name="producto_id" value="<?= (int) $c['id'] ?>">
                             <button class="btn btn--outline btn--sm" type="submit" aria-label="Quitar <?= e($c['nombre']) ?>">Quitar</button>
                         </form>

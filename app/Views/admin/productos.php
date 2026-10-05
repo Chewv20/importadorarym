@@ -1,4 +1,4 @@
-<?php /** @var array $productos */ ?>
+<?php /** @var array $productos @var ?string $busqueda */ $busqueda = $busqueda ?? null; ?>
 <div class="admin-head">
     <h1>Productos</h1>
     <?php if (can('productos.crear')): ?>
@@ -8,6 +8,12 @@
         </div>
     <?php endif; ?>
 </div>
+
+<form class="filters-row" method="get" action="<?= url('/admin/productos') ?>">
+    <input type="search" name="q" value="<?= e($busqueda ?? '') ?>" placeholder="Buscar nombre, SKU o clave SAE…" class="filter-search" aria-label="Buscar productos">
+    <button class="btn btn--primary btn--sm" type="submit">Buscar</button>
+    <?php if ($busqueda): ?><a class="btn btn--outline btn--sm" href="<?= url('/admin/productos') ?>">Limpiar</a><?php endif; ?>
+</form>
 
 <?php if ($productos): ?>
 <div class="table-wrap">
@@ -49,7 +55,11 @@
         </tbody>
     </table>
 </div>
-<?php $baseUrl = url('/admin/productos'); require APP_PATH . '/Views/partials/pagination.php'; ?>
+<?php $baseUrl = url('/admin/productos') . ($busqueda ? '?' . http_build_query(['q' => $busqueda]) : ''); require APP_PATH . '/Views/partials/pagination.php'; ?>
 <?php else: ?>
-    <p class="empty-state">No hay productos. <a href="<?= url('/admin/productos/nuevo') ?>">Crea el primero</a>.</p>
+    <?php if ($busqueda): ?>
+        <p class="empty-state">Ningún producto coincide con «<?= e($busqueda) ?>».</p>
+    <?php else: ?>
+        <p class="empty-state">No hay productos. <a href="<?= url('/admin/productos/nuevo') ?>">Crea el primero</a>.</p>
+    <?php endif; ?>
 <?php endif; ?>

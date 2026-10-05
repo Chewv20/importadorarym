@@ -123,8 +123,9 @@ class AuthController extends Controller
         $usuarioModel = new Usuario();
         $errores = [];
 
-        if (!captcha_valido())                                   $errores[] = 'Resuelve correctamente la comprobación anti-bot.';
-        if (!nombre_valido($data['nombre']))                     $errores[] = 'El nombre solo puede contener letras, espacios y . - \'.';
+        if (!captcha_valido())                                   $errores[] = 'El resultado de la suma anti-bot no es correcto; revisa la operación.';
+        if ($data['nombre'] === '')                              $errores[] = 'Escribe tu nombre.';
+        elseif (!nombre_valido($data['nombre']))                 $errores[] = 'El nombre solo puede contener letras, espacios y . - \'.';
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL))  $errores[] = 'Captura un correo válido.';
         elseif ($usuarioModel->emailExiste($data['email']))      $errores[] = 'Ese correo ya está registrado.';
         if ($data['empresa'] !== '' && !empresa_valida($data['empresa'])) $errores[] = 'La empresa contiene caracteres no permitidos.';
@@ -141,7 +142,7 @@ class AuthController extends Controller
 
         if ($errores) {
             $_SESSION['_old'] = $data;
-            flash('portal_error', implode(' ', $errores));
+            flash('portal_error', implode("\n", $errores));
             $this->redirect('/portal/registro');
         }
 

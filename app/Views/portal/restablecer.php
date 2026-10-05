@@ -7,18 +7,18 @@ $err = flash('portal_error');
     <h1 class="auth-card__title">Nueva contraseña</h1>
     <p class="auth-card__sub">Elige una contraseña segura para tu cuenta.</p>
 
-    <?php if ($err): ?><div class="alert alert--error mb-6"><?= e($err) ?></div><?php endif; ?>
+    <?php if ($err): ?><div class="alert alert--error mb-6"><?= mensajes_html($err) ?></div><?php endif; ?>
 
-    <form class="form" method="post" action="<?= url('/portal/restablecer') ?>" novalidate>
+    <form class="form" method="post" action="<?= url('/portal/restablecer') ?>">
         <?= csrf_field() ?>
         <input type="hidden" name="token" value="<?= e($token) ?>">
         <div class="field">
             <label for="password">Nueva contraseña</label>
-            <input type="password" id="password" name="password" required minlength="8" autofocus>
+            <input type="password" id="password" name="password" required minlength="8" autofocus autocomplete="new-password">
         </div>
         <div class="field">
             <label for="password_confirm">Confirmar contraseña</label>
-            <input type="password" id="password_confirm" name="password_confirm" required minlength="8">
+            <input type="password" id="password_confirm" name="password_confirm" required minlength="8" autocomplete="new-password">
         </div>
         <p class="text-muted fs-sm">Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo (ej. ! @ # $).</p>
         <button type="submit" class="btn btn--accent btn--lg btn--block">Guardar contraseña</button>

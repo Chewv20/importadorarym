@@ -77,7 +77,7 @@ class PedidoController extends PortalBaseController
             flash('portal_ok', 'Producto agregado a tu pedido.');
         }
 
-        $this->redirect('/portal/pedidos/nuevo');
+        $this->redirect('/portal/pedidos/nuevo' . catalogo_qs($_POST));
     }
 
     /**
@@ -86,7 +86,7 @@ class PedidoController extends PortalBaseController
      */
     public function quitar(): void
     {
-        $back = ($_POST['origen'] ?? '') === 'confirmar' ? '/portal/pedidos/confirmar' : '/portal/pedidos/nuevo';
+        $back = ($_POST['origen'] ?? '') === 'confirmar' ? '/portal/pedidos/confirmar' : '/portal/pedidos/nuevo' . catalogo_qs($_POST);
         $this->guardCsrf($back);
         $this->requiereAprobacion();
         $this->carrito()->quitar((int) ($_POST['producto_id'] ?? 0));

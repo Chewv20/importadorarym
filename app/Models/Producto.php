@@ -199,22 +199,41 @@ class Producto extends Model
 
     /* --------------------------------- Admin (incluye inactivos) ----- */
 
-    public function todosPaginado(int $limit, int $offset): array
+    /** WHERE de la búsqueda del panel (nombre, SKU, clave SAE); un marcador por LIKE (prepares nativos). */
+    private function busquedaPanel(?string $q): array
     {
+        if ($q === null || $q === '') {
+            return ['', []];
+        }
+        $like = '%' . $q . '%';
+        return ['WHERE (p.nombre LIKE :q1 OR p.sku LIKE :q2 OR p.clave_sae LIKE :q3)',
+                [':q1' => $like, ':q2' => $like, ':q3' => $like]];
+    }
+
+    public function todosPaginado(int $limit, int $offset, ?string $q = null): array
+    {
+        [$where, $params] = $this->busquedaPanel($q);
         $st = $this->db->prepare(
             "SELECT p.*, c.nombre AS categoria FROM productos p
                LEFT JOIN categorias c ON c.id = p.categoria_id
+              {$where}
               ORDER BY p.orden, p.nombre LIMIT :lim OFFSET :off"
         );
+        foreach ($params as $k => $v) {
+            $st->bindValue($k, $v);
+        }
         $st->bindValue(':lim', $limit, PDO::PARAM_INT);
         $st->bindValue(':off', $offset, PDO::PARAM_INT);
         $st->execute();
         return $st->fetchAll();
     }
 
-    public function contarTodos(): int
+    public function contarTodos(?string $q = null): int
     {
-        return (int) $this->db->query("SELECT COUNT(*) FROM productos")->fetchColumn();
+        [$where, $params] = $this->busquedaPanel($q);
+        $st = $this->db->prepare("SELECT COUNT(*) FROM productos p {$where}");
+        $st->execute($params);
+        return (int) $st->fetchColumn();
     }
 
     public function crear(array $data): int

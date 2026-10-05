@@ -35,7 +35,8 @@ class PerfilController extends PortalBaseController
         $referencias      = str_clean($_POST['referencias'] ?? '', 255);
 
         $errores = [];
-        if (!nombre_valido($nombre))                       $errores[] = 'El nombre solo puede contener letras, espacios y . - \'.';
+        if ($nombre === '')                                $errores[] = 'Escribe tu nombre.';
+        elseif (!nombre_valido($nombre))                   $errores[] = 'El nombre solo puede contener letras, espacios y . - \'.';
         if ($empresa !== '' && !empresa_valida($empresa))  $errores[] = 'La empresa contiene caracteres no permitidos.';
         if ($telefono !== '' && !telefono_valido($telefono)) $errores[] = 'El teléfono solo admite dígitos y + - ( ).';
         if ($rfc !== '' && !rfc_valido($rfc))              $errores[] = 'El RFC no tiene un formato válido.';
@@ -47,7 +48,7 @@ class PerfilController extends PortalBaseController
         if ($estadoDireccion === '' || !direccion_valida($estadoDireccion)) $errores[] = 'Captura un estado válido.';
 
         if ($errores) {
-            flash('portal_error', implode(' ', $errores));
+            flash('portal_error', implode("\n", $errores));
             $this->redirect('/portal/perfil');
         }
 

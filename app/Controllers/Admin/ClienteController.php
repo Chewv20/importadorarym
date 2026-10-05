@@ -16,13 +16,15 @@ class ClienteController extends BaseController
         $model = new Usuario();
         $scope = $this->vendedorScope();
         $pend  = ($_GET['filtro'] ?? '') === 'pendientes';
-        $pg    = $this->paginar($model->contarClientes($pend, $scope), 20);
+        $q     = str_clean($_GET['q'] ?? '', 60) ?: null;
+        $pg    = $this->paginar($model->contarClientes($pend, $scope, $q), 20);
 
         $this->render('admin/clientes', [
             'title'         => 'Clientes — Panel RYM',
             'active'        => 'clientes',
             'contentWide'   => true,
-            'clientes'      => $model->clientesPaginado($pg['perPage'], $pg['offset'], $pend, $scope),
+            'clientes'      => $model->clientesPaginado($pg['perPage'], $pg['offset'], $pend, $scope, $q),
+            'busqueda'      => $q,
             'vendedores'    => $model->vendedores(),
             'listasProductos' => (new ListaProductos())->activas(),
             'pend'          => $pend,

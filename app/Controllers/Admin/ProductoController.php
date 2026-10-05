@@ -15,12 +15,14 @@ class ProductoController extends BaseController
     {
         Auth::authorize('productos.ver');
         $model = new Producto();
-        $pg = $this->paginar($model->contarTodos(), 20);
+        $q = str_clean($_GET['q'] ?? '', 60) ?: null;
+        $pg = $this->paginar($model->contarTodos($q), 20);
 
         $this->render('admin/productos', [
             'title'     => 'Productos — Panel RYM',
             'active'    => 'productos',
-            'productos' => $model->todosPaginado($pg['perPage'], $pg['offset']),
+            'productos' => $model->todosPaginado($pg['perPage'], $pg['offset'], $q),
+            'busqueda'  => $q,
             'page'      => $pg['page'],
             'pages'     => $pg['pages'],
             // Para señalar qué productos heredan el esquema general y cuáles no tienen ninguno.

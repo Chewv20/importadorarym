@@ -10,18 +10,18 @@ unset($_SESSION['_old']);
     <p class="auth-card__sub">Ingresa para levantar y consultar tus pedidos.</p>
 
     <?php if ($ok): ?><div class="alert alert--ok mb-6"><?= e($ok) ?></div><?php endif; ?>
-    <?php if ($err): ?><div class="alert alert--error mb-6"><?= e($err) ?></div><?php endif; ?>
+    <?php if ($err): ?><div class="alert alert--error mb-6"><?= mensajes_html($err) ?></div><?php endif; ?>
 
-    <form class="form" method="post" action="<?= url('/portal/login') ?>" novalidate>
+    <form class="form" method="post" action="<?= url('/portal/login') ?>">
         <?= csrf_field() ?>
         <?= honeypot_field() ?>
         <div class="field">
             <label for="email">Correo</label>
-            <input type="email" id="email" name="email" value="<?= e($old['email'] ?? '') ?>" required autofocus>
+            <input autocomplete="username" type="email" id="email" name="email" value="<?= e($old['email'] ?? '') ?>" required autofocus>
         </div>
         <div class="field">
             <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" required autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn--accent btn--lg btn--block">Entrar</button>
     </form>

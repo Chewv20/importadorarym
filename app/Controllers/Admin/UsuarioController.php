@@ -49,7 +49,7 @@ class UsuarioController extends BaseController
         $errores = array_merge($errores, password_errores($password));
 
         if ($errores) {
-            flash('portal_error', implode(' ', $errores));
+            flash('portal_error', implode("\n", $errores));
             $this->redirect('/admin/usuarios/nuevo');
         }
 
@@ -120,7 +120,7 @@ class UsuarioController extends BaseController
         if ($password !== '') {
             $errPass = password_errores($password);
             if ($errPass) {
-                flash('portal_error', implode(' ', $errPass));
+                flash('portal_error', implode("\n", $errPass));
                 $this->redirect('/admin/usuarios/' . (int) $id . '/editar');
             }
             $model->cambiarPassword((int) $id, $password);

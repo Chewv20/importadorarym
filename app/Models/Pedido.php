@@ -106,6 +106,28 @@ class Pedido extends Model
     /** Etapas del flujo (cancelado es terminal aparte). */
     public const FLUJO = ['borrador', 'enviado', 'en_proceso', 'sincronizado'];
 
+    /**
+     * Cómo ve el CLIENTE cada estado (portal y correos). Los nombres internos
+     * ('sincronizado' = ya capturado en SAE, 'parcial' = solo parte exportada)
+     * no le dicen nada; se usan las mismas palabras que el correo de estado.
+     */
+    public const ETIQUETAS_CLIENTE = [
+        'borrador'     => 'Sin enviar',
+        'enviado'      => 'Recibido',
+        'en_proceso'   => 'En preparación',
+        'parcial'      => 'Parcialmente procesado',
+        'sincronizado' => 'Procesado',
+        'cancelado'    => 'Cancelado',
+    ];
+
+    /** Pasos que ve el cliente en la línea de progreso ('parcial' se muestra como "En preparación"). */
+    public const FLUJO_CLIENTE = ['enviado', 'en_proceso', 'sincronizado'];
+
+    public static function etiquetaCliente(string $estado): string
+    {
+        return self::ETIQUETAS_CLIENTE[$estado] ?? ucfirst(str_replace('_', ' ', $estado));
+    }
+
     private function filtros(?string $estado, ?string $busqueda, ?int $vendedorId = null): array
     {
         $cond = [];
@@ -115,8 +137,10 @@ class Pedido extends Model
             $params[':estado'] = $estado;
         }
         if ($busqueda !== null && $busqueda !== '') {
-            $cond[] = '(p.folio LIKE :q OR u.nombre LIKE :q OR u.empresa LIKE :q)';
-            $params[':q'] = '%' . $busqueda . '%';
+            // Un marcador distinto por LIKE: con prepares nativos (EMULATE_PREPARES=false)
+            // repetir :q da SQLSTATE[HY093] y la búsqueda del panel tronaba con 500.
+            $cond[] = '(p.folio LIKE :q1 OR u.nombre LIKE :q2 OR u.empresa LIKE :q3)';
+            $params[':q1'] = $params[':q2'] = $params[':q3'] = '%' . $busqueda . '%';
         }
         if ($vendedorId !== null) {
             $cond[] = 'u.vendedor_id = :vend';
