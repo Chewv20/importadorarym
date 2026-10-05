@@ -1242,6 +1242,32 @@ Verificado:
 - Las rutas públicas responden 200/302/403/404 según corresponde.
 - Bundles reconstruidos y SW `rym-v54`.
 
+### Revisión visual final antes de producción (05/10/2026)
+
+Se repitió la auditoría completa del sitio local (17 rutas × desktop/móvil, con
+scroll real antes de cada captura) y se comparó con la primera pasada:
+
+- axe-core: mismas 26 observaciones, todas preexistentes y moderadas (U19).
+  Ninguna nueva.
+- Desborde horizontal: 0 páginas. Errores de JS: 0. Campos sin
+  `autocomplete`: de 18 a 0.
+- Widget: 0 % de zona bloqueada. Header en una fila en 17 anchos (320–1920).
+  Lightbox funcionando con "reducir movimiento".
+
+Dos detalles visuales encontrados en esta pasada, corregidos:
+- **Registro/perfil**: la nota bajo "Código postal" hacía que el campo
+  "Colonia" de al lado se estirara a la altura de la celda. Se corrigió con
+  `.form__row { align-items: start }`; verificado con ambos campos a la misma
+  altura y posición.
+- **Listas con palomita centradas** (`.check-list--center`, en home y
+  personalización): cada renglón se centraba por separado y, cuando el texto se
+  partía en dos líneas, la palomita quedaba despegada. Ahora la lista se centra
+  como bloque y sus renglones se alinean a la izquierda.
+
+Descartado: en las capturas de página completa el mapa de contacto en móvil
+salía en blanco, pero es la carga diferida del iframe; con scroll real carga
+bien.
+
 ### Pendiente de revisar en vivo
 
 Portal autenticado, panel y reparto solo se revisaron por código. Para

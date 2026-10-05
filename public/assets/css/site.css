@@ -177,8 +177,9 @@ body.lightbox-open { overflow: hidden; }
 .check-list { list-style: none; display: grid; gap: var(--rym-space-3); margin-top: var(--rym-space-6); }
 .check-list li { display: flex; align-items: flex-start; gap: .6rem; }
 .check-list svg { width: 1.25rem; height: 1.25rem; color: var(--rym-secondary); flex: none; margin-top: .15rem; }
-.check-list--center { max-width: 480px; margin-inline: auto; }
-.check-list--center li { justify-content: center; }
+/* La lista se centra como bloque y sus renglones van a la izquierda: centrar cada
+   renglón despegaba la palomita del texto cuando este se partía en dos líneas. */
+.check-list--center { width: fit-content; max-width: min(480px, 100%); margin-inline: auto; text-align: left; }
 
 /* ---- Casilla "requiere impresión" del formulario de cotización --------- */
 .check-inline { display: flex; align-items: center; gap: .6rem; font-size: var(--rym-fs-sm); font-weight: var(--rym-fw-medium); color: var(--rym-text); cursor: pointer; }

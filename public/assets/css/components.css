@@ -48,7 +48,7 @@
 
 /* ---- Formularios --------------------------------------------------------- */
 .form { display: grid; gap: var(--rym-space-4); background: #fff; padding: var(--rym-space-8); border-radius: var(--rym-radius-lg); box-shadow: var(--rym-shadow-lg); }
-.form__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rym-space-4); }
+.form__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rym-space-4); align-items: start; }
 /* Agrupa campos de un formulario largo en bloques con su propio título,
    para que se sienta menos como una lista plana (ej. registro). */
 .form-section { display: grid; gap: var(--rym-space-4); }
