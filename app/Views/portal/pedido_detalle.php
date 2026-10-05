@@ -20,10 +20,10 @@ $idx = array_search($estado === 'parcial' ? 'en_proceso' : $estado, $flujo, true
     <span class="status status--<?= e($estado) ?>"><?= e(\App\Models\Pedido::etiquetaCliente($estado)) ?></span>
     <span class="text-muted fs-sm">Creado el <?= e(date('d/m/Y H:i', strtotime($pedido['created_at']))) ?></span>
     <?php if (!empty($pedido['referencia_cliente'])): ?>
-        <span class="text-muted fs-sm">· Tu referencia: <strong><?= e($pedido['referencia_cliente']) ?></strong></span>
+        <span class="text-muted fs-sm">Tu referencia: <strong><?= e($pedido['referencia_cliente']) ?></strong></span>
     <?php endif; ?>
     <?php if (!empty($pedido['erp_folio'])): ?>
-        <span class="text-muted fs-sm">· Folio de venta: <strong><?= e($pedido['erp_folio']) ?></strong></span>
+        <span class="text-muted fs-sm">Folio de venta: <strong><?= e($pedido['erp_folio']) ?></strong></span>
     <?php endif; ?>
 </div>
 

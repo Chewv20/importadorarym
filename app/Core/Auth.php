@@ -187,10 +187,22 @@ class Auth
     {
         if (!self::can($clave)) {
             http_response_code(403);
-            if (!headers_sent()) {
-                header('Content-Type: text/plain; charset=utf-8');
+            $esAjax = str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json')
+                || ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
+            if ($esAjax || headers_sent()) {
+                if (!headers_sent()) {
+                    header('Content-Type: text/plain; charset=utf-8');
+                }
+                exit('403 · No tienes permiso para realizar esta acción.');
             }
-            exit('403 · No tienes permiso para realizar esta acción.');
+            // Página completa con salida (antes era texto plano sin forma de volver).
+            [$volverUrl, $volverTexto] = self::can('admin.acceder') ? [url('/admin'), 'Volver al panel']
+                : (self::check() ? [url('/portal'), 'Volver al portal'] : [url('/'), 'Volver al inicio']);
+            View::render('errors/403', [
+                'title' => 'Sin acceso', 'robots' => 'noindex',
+                'volverUrl' => $volverUrl, 'volverTexto' => $volverTexto,
+            ]);
+            exit;
         }
     }
 }

@@ -34,6 +34,11 @@
 .grid { display: grid; gap: var(--rym-space-6); }
 .grid--3 { grid-template-columns: repeat(3, 1fr); }
 .grid--4 { grid-template-columns: repeat(4, 1fr); }
+/* Columnas según cuántos elementos haya, sin huérfanos en una segunda fila:
+   fluid = se reparten todo el ancho (categorías); centrado = ancho fijo y centradas
+   (tarjetas de producto, para que 3 no se estiren a lo ancho). */
+.grid--fluid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.grid--centrado { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 270px)); justify-content: center; }
 
 /* ---- Tarjetas ------------------------------------------------------------ */
 .card {
@@ -94,7 +99,10 @@
 .is-sending { opacity: .65; cursor: progress; pointer-events: none; }
 
 /* ---- Tabla --------------------------------------------------------------- */
-.table-wrap { overflow-x: auto; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); }
+/* position:relative hace de .table-wrap el bloque contenedor de los .sr-only
+   (position:absolute) de las celdas: sin esto escapaban del recorte del scroll y
+   ensanchaban toda la página en el celular (hasta 635px en /admin/pedidos). */
+.table-wrap { position: relative; overflow-x: auto; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); }
 /* Pista visual de que la tabla se puede desplazar horizontalmente (móvil):
    sombra interior a la derecha, solo mientras falte contenido por ver. */
 .table-wrap.has-more-right { box-shadow: inset -10px 0 8px -8px rgba(0,0,0,.18); }
@@ -149,6 +157,13 @@
 .order-item__info { min-width: 0; }
 .order-item__name { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); }
 .order-item__meta { color: var(--rym-text-muted); font-size: var(--rym-fs-sm); }
+/* En celular, datos del producto arriba y cantidad + botón abajo: en una sola fila
+   el nombre se partía palabra por palabra ("Vaso / de / papel"). */
+@media (max-width: 560px) {
+    .order-item { flex-wrap: wrap; }
+    .order-item__main { flex: 1 1 100%; }
+    .order-item .qty-form { margin-left: auto; }
+}
 .cart { position: sticky; top: 96px; background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); }
 .cart__title { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); margin-bottom: var(--rym-space-4); }
 .cart__item { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding-block: .6rem; border-bottom: 1px solid var(--rym-border); }
@@ -156,7 +171,7 @@
 .cart__empty { color: var(--rym-text-muted); font-size: var(--rym-fs-sm); }
 
 @media (max-width: 860px) {
-    .order-grid { grid-template-columns: 1fr; }
+    .order-grid { grid-template-columns: minmax(0, 1fr); }
     .cart { position: static; }
 }
 

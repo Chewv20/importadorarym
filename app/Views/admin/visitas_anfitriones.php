@@ -18,9 +18,9 @@
     <?php else: ?>
     <form class="filters-row" method="post" action="<?= url('/admin/visitas/anfitriones') ?>">
         <?= csrf_field() ?>
-        <input type="text" name="nombre" placeholder="Nombre" maxlength="120" required>
-        <input type="email" name="email" placeholder="Correo" maxlength="191" required>
-        <input type="text" name="area" placeholder="Área (visible en el kiosco)" maxlength="100" required>
+        <input type="text" name="nombre" placeholder="Nombre" aria-label="Nombre" maxlength="120" required>
+        <input type="email" name="email" placeholder="Correo" aria-label="Correo" maxlength="191" required>
+        <input type="text" name="area" placeholder="Área (visible en el kiosco)" aria-label="Área (visible en el kiosco)" maxlength="100" required>
         <select name="oficina_id" aria-label="Oficina" required>
             <option value="">— Oficina —</option>
             <?php foreach ($oficinas as $o): ?>
@@ -47,18 +47,18 @@
         <tbody>
         <?php foreach ($anfitriones as $a): $fid = 'anf-' . (int) $a['id']; ?>
             <tr>
-                <td><input class="cell-input" form="<?= $fid ?>" type="text" name="nombre" value="<?= e($a['nombre']) ?>" required></td>
-                <td><input class="cell-input" form="<?= $fid ?>" type="email" name="email" value="<?= e($a['email']) ?>" required></td>
-                <td><input class="cell-input" form="<?= $fid ?>" type="text" name="area" value="<?= e($a['area'] ?? '') ?>" required></td>
+                <td><input class="cell-input" form="<?= $fid ?>" type="text" name="nombre" value="<?= e($a['nombre']) ?>" aria-label="Nombre de <?= e($a['nombre']) ?>" required></td>
+                <td><input class="cell-input" form="<?= $fid ?>" type="email" name="email" value="<?= e($a['email']) ?>" aria-label="Correo de <?= e($a['nombre']) ?>" required></td>
+                <td><input class="cell-input" form="<?= $fid ?>" type="text" name="area" value="<?= e($a['area'] ?? '') ?>" aria-label="Área de <?= e($a['nombre']) ?>" required></td>
                 <td>
-                    <select class="cell-input" form="<?= $fid ?>" name="oficina_id" required>
+                    <select class="cell-input" form="<?= $fid ?>" name="oficina_id" aria-label="Oficina de <?= e($a['nombre']) ?>" required>
                         <option value="">— Oficina —</option>
                         <?php foreach ($oficinas as $o): ?>
                             <option value="<?= (int) $o['id'] ?>" <?= (int) ($a['oficina_id'] ?? 0) === (int) $o['id'] ? 'selected' : '' ?>><?= e($o['nombre']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </td>
-                <td><input form="<?= $fid ?>" type="checkbox" name="activo" value="1" <?= (int) $a['activo'] === 1 ? 'checked' : '' ?>></td>
+                <td><input form="<?= $fid ?>" type="checkbox" name="activo" value="1" aria-label="<?= e($a['nombre']) ?> activo" <?= (int) $a['activo'] === 1 ? 'checked' : '' ?>></td>
                 <td class="nowrap">
                     <button type="submit" form="<?= $fid ?>" class="btn btn--outline btn--sm">Guardar</button>
                     <button type="submit" form="anfdel-<?= (int) $a['id'] ?>" class="btn btn--outline btn--sm">Eliminar</button>

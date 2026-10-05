@@ -1028,9 +1028,11 @@ axe-core: sin violaciones críticas. Solo quedan `region` (la topbar fuera de un
 landmark) y un `link-in-text-block` en el aviso de privacidad. Los hallazgos de
 esta ronda son de diseño y flujo, no de cumplimiento automático.
 
-Estado: **U1–U10 y U14 aplicados (05/10/2026)**, además de 2 bugs encontrados
-en el camino (N1, N2; ver "Segunda ronda de correcciones" al final). U11–U13 y
-U15–U21 siguen pendientes.
+Estado: **U1–U16 aplicados (05/10/2026)**, además de los bugs N1–N4 y 11
+ajustes de accesibilidad y maquetación encontrados con sesión real (ver
+"Segunda ronda" y "Tercera ronda" al final). Siguen pendientes solo los bajos
+U17–U21. U15 queda resuelto en lo que toca al código; las fotos reales de
+producto son contenido.
 
 ### Críticos — rompen la interacción
 
@@ -1268,8 +1270,96 @@ Descartado: en las capturas de página completa el mapa de contacto en móvil
 salía en blanco, pero es la carga diferida del iframe; con scroll real carga
 bien.
 
+### Tercera ronda (05/10/2026) — medios U11–U16 + auditoría con sesión real
+
+Por primera vez se recorrieron **portal, panel y reparto en vivo**, con
+usuarios desechables creados solo en la BD local (admin, vendedor con
+"solo asignados" y cliente aprobado con 3 pedidos en distintos estados). Los
+correos usan `@prueba.invalid` (RFC 2606), así que nada sale a nadie. Se
+recorrieron 52 rutas × desktop/móvil (104 pantallas) con axe-core, medición
+de desborde y errores de consola. Al terminar, los usuarios y todo su rastro
+(pedidos, bitácora) se eliminaron.
+
+**Hallazgos medios:**
+- **U11 ✔**: `.reveal` solo se oculta bajo `html.js`. Una línea inline (con
+  `nonce`) en `layouts/main.php` pone la clase y la quita a los 4 s si
+  `site.js` no se ejecutó. Verificado sin JS: 0 de 42 bloques ocultos (antes
+  42); con JS, la animación sigue igual.
+- **U12 ✔**:
+  - El menú cerrado sale del orden de tabulación (`visibility`).
+  - Al abrir, el foco entra al primer enlace y el Tab cicla entre el botón y
+    los enlaces; el orden se fija a mano porque el botón va después del menú
+    en el DOM.
+  - Escape cierra y devuelve el foco, el `aria-label` alterna entre
+    Abrir/Cerrar menú y WhatsApp se oculta con el menú abierto.
+  - "Bolsa de trabajo" se agregó solo al menú móvil (`.nav__link--movil`); en
+    desktop no cabe sin romper el header en una fila (sigue midiendo 84 px).
+- **U13 ✔**: en el pedido del portal y del vendedor, la cantidad arranca en
+  `minimo_efectivo`, con `min` y `step` igual a la presentación (ej.
+  `100/min100/step50`). Cotizar sigue libre porque ahí la cantidad es
+  orientativa.
+- **U15 ✔ (código)**:
+  - Los destacados de la home **nunca** mostraban la foto del producto aunque
+    existiera; ahora usan la imagen principal y son clicables (llevan al
+    catálogo filtrado por ese producto).
+  - El marcador usa `.prod-card__media--empty`, centrado como en el catálogo.
+  - Utilidades nuevas: `grid--fluid` pone las 5 categorías en una fila (antes
+    4 + 1 huérfana) y `grid--centrado` centra 3 destacados sin estirarlos.
+- **U16 ✔**: en la tarjeta del catálogo "Cotizar" es el botón principal
+  (sólido) y WhatsApp pasa a ser un enlace secundario con ícono (44 px de
+  área táctil, `#0F7A6E` = 5.2:1 AA; el `#128C7E` que se probó primero daba
+  4.1:1 y no pasaba).
+
+**Nuevos, encontrados solo con sesión real:**
+- **N3 · Desborde horizontal en móvil en portal y panel — ALTA.** El área de
+  la página se ensanchaba a 453 px (mis pedidos), 495 px (series SAE) y
+  635 px (pedidos del panel) en una pantalla de 390, y se podía arrastrar de
+  lado.
+  - Causa: los `<span class="sr-only">` (`position:absolute`) dentro de las
+    tablas usaban la página como bloque contenedor, no el `.table-wrap` con
+    scroll, así que escapaban de su recorte.
+  - Se aisló ocultando cada parte. Corrección: `.table-wrap { position:
+    relative }`.
+  - Aparte, en "Nuevo pedido" el carrito medía 402 px: `.order-grid` usaba
+    `1fr` en vez de `minmax(0,1fr)` en móvil.
+  - Resultado: 7 → 0 páginas con desborde.
+- **N4 · La página 403 era texto plano sin salida.** `Auth::authorize()`
+  respondía `403 · No tienes permiso…` sin layout, título ni idioma (axe:
+  `document-title`, `html-has-lang`). Ahora `errors/403.php` usa el layout
+  público, con un botón "Volver al panel / al portal / al inicio" según quién
+  sea. Las peticiones AJAX/JSON siguen recibiendo texto plano. (Que el rol
+  admin no tenga `pedidos.crear_para_cliente` ni `pedidos.tracking` es
+  intencional según las migraciones 036 y 043, y la navegación ya los oculta.)
+- **Accesibilidad del panel (axe: 28 serias → 0):**
+  - Exportar a SAE: casillas y precios sin nombre.
+  - Anfitriones: alta en línea y edición en tabla sin etiquetas, y un select
+    sin nombre.
+  - Configuración de correo: el switch no estaba asociado a su texto.
+  - Subcategorías: usaban el token inexistente `--rym-text-soft`, que caía a
+    un gris de 3.5:1.
+  - Nuevo usuario: la nota "solo Ventas" quedaba al 50 % de opacidad; ahora
+    solo se atenúan los campos.
+  - Enlaces dentro de párrafos sin subrayar.
+  - Tablas con scroll no alcanzables con teclado: `admin.js` les pone
+    `tabindex=0` y `role=region` cuando desbordan.
+- **Portal (vistos en las capturas):**
+  - Perfil con dos notas bajo el CP: quedó la original, enlazada con
+    `aria-describedby`.
+  - En móvil, las filas de producto del pedido y de la cotización partían el
+    nombre palabra por palabra; ahora los datos van arriba y la cantidad con
+    el botón abajo (≤560 px).
+  - En el detalle de pedido, los separadores "·" quedaban colgando al
+    partirse la línea.
+
+Verificado:
+- Las auditorías completas, antes y después: con sesión, axe 28 → 0 y
+  desbordes 7 → 0; el sitio público sin cambios (solo las 26 moderadas de U19).
+- 0 errores de JS, 0 errores de PHP y 0 respuestas 5xx en 138 pantallas.
+- `tests/run.php` 158/158 y `php -l` limpio.
+- Prueba E2E con sesión de "Agregar/Quitar" conservando el filtro (U3) y de
+  la cantidad inicial (U13).
+- SW `rym-v55`.
+
 ### Pendiente de revisar en vivo
 
-Portal autenticado, panel y reparto solo se revisaron por código. Para
-recorrerlos en navegador (capturas, axe y flujos completos) hace falta una
-sesión de prueba proporcionada por el usuario.
+Resuelto en la tercera ronda: portal, panel y reparto se recorrieron con sesión real.

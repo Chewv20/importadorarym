@@ -53,7 +53,7 @@ while (in_array((int) date('N', strtotime($fechaSugerida)), [6, 7], true)) {
                 <div class="table-wrap">
                     <table class="table">
                         <thead><tr>
-                            <th><input type="checkbox" data-sae-check-all checked title="Seleccionar/quitar todas"> Exportar</th>
+                            <th><input type="checkbox" data-sae-check-all checked title="Seleccionar/quitar todas" aria-label="Seleccionar o quitar todas las partidas"> Exportar</th>
                             <th>Producto</th><th>Clave SAE</th><th>Cantidad</th><th>Precio unitario</th>
                         </tr></thead>
                         <tbody>
@@ -64,7 +64,7 @@ while (in_array((int) date('N', strtotime($fechaSugerida)), [6, 7], true)) {
                             $bloqueada = !empty($it['errores']);
                         ?>
                             <tr class="<?= $bloqueada ? 'row-blocked' : '' ?>">
-                                <td><input type="checkbox" name="item_id[]" value="<?= (int) $it['id'] ?>" data-sae-item <?= $bloqueada ? 'disabled' : 'checked' ?>></td>
+                                <td><input type="checkbox" name="item_id[]" value="<?= (int) $it['id'] ?>" aria-label="Exportar <?= e($it['nombre']) ?>" data-sae-item <?= $bloqueada ? 'disabled' : 'checked' ?>></td>
                                 <td>
                                     <?= e($it['nombre']) ?>
                                     <?php if ($bloqueada): ?>
@@ -74,7 +74,7 @@ while (in_array((int) date('N', strtotime($fechaSugerida)), [6, 7], true)) {
                                 <td><?= e($it['clave_sae'] ?? '—') ?></td>
                                 <td><?= (int) $it['cantidad'] ?></td>
                                 <td>
-                                    <input type="number" name="precio[<?= (int) $it['id'] ?>]" step="0.01" min="0"
+                                    <input type="number" name="precio[<?= (int) $it['id'] ?>]" step="0.01" min="0" aria-label="Precio unitario de <?= e($it['nombre']) ?>"
                                            value="<?= $valor === '' ? '' : e(number_format((float) $valor, 2, '.', '')) ?>"
                                            class="price-input" <?= $bloqueada ? 'disabled' : 'required' ?>>
                                 </td>

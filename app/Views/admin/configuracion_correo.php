@@ -38,10 +38,10 @@
 
     <div class="checks">
         <label class="switch">
-            <input type="checkbox" name="activo" <?= !empty($cfg['activo']) ? 'checked' : '' ?>>
+            <input type="checkbox" name="activo" aria-labelledby="o365_activo_txt" <?= !empty($cfg['activo']) ? 'checked' : '' ?>>
             <span class="switch__track"></span>
         </label>
-        <span>Usar Office 365 para el correo saliente</span>
+        <span id="o365_activo_txt">Usar Office 365 para el correo saliente</span>
     </div>
     <p class="text-muted fs-sm">Si se desactiva, la app vuelve a enviar por la configuración SMTP del .env.</p>
 

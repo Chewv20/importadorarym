@@ -45,6 +45,7 @@
 .nav__link:hover, .nav__link.is-active { color: var(--rym-secondary); border-color: var(--rym-secondary); text-decoration: none; }
 .nav__actions { display: flex; align-items: center; gap: .75rem; flex-shrink: 0; }
 .nav__actions .btn, .nav .btn { white-space: nowrap; }
+.nav__link--movil { display: none; }
 .nav-toggle { display: none; background: none; border: 0; cursor: pointer; padding: .4rem; }
 .nav-toggle svg { width: 1.75rem; height: 1.75rem; color: var(--rym-primary); }
 .nav-toggle svg line { transform-box: fill-box; transform-origin: center; transition: transform var(--rym-transition), opacity var(--rym-transition); }
@@ -94,6 +95,12 @@
 .cat-card { position: relative; border-radius: var(--rym-radius); overflow: hidden; min-height: 180px; display: flex; align-items: flex-end; padding: var(--rym-space-6); color: #fff; background: linear-gradient(160deg, var(--rym-secondary), var(--rym-primary)); }
 .cat-card:nth-child(2n) { background: linear-gradient(160deg, #1b2fb5, var(--rym-primary)); }
 .cat-card:hover { text-decoration: none; }
+/* Sin transform en el hover: chocaría con .js .reveal.is-visible { transform: none }. */
+/* Alternativa por WhatsApp en la tarjeta: enlace secundario, no compite con "Cotizar". */
+.prod-card__wa { display: flex; align-items: center; justify-content: center; gap: .4rem; min-height: 44px; margin-top: var(--rym-space-1); font-size: var(--rym-fs-sm); font-weight: var(--rym-fw-medium); color: #0F7A6E; } /* 5.2:1 sobre blanco (AA) */
+.prod-card__wa:hover { color: #075E54; }
+.prod-card--link { display: block; color: inherit; }
+.prod-card--link:hover { text-decoration: none; border-color: var(--rym-secondary); box-shadow: var(--rym-shadow); }
 .cat-card__name { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); font-size: var(--rym-fs-lg); color: #fff; }
 
 .prod-card { background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); overflow: hidden; }
@@ -361,8 +368,10 @@ body.lightbox-open { overflow: hidden; }
     .logo-sim__field input[type="range"] { width: 100%; }
 }
 
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
-.reveal.is-visible { opacity: 1; transform: none; }
+/* Solo se oculta si hay JS (html.js, lo pone el <head> de layouts/main.php): sin JS,
+   o si site.js no carga, el contenido debe verse igual (mejora progresiva). */
+.js .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+.js .reveal.is-visible { opacity: 1; transform: none; }
 .reveal:nth-child(2) { transition-delay: .08s; }
 .reveal:nth-child(3) { transition-delay: .16s; }
 .reveal:nth-child(4) { transition-delay: .24s; }
@@ -386,7 +395,11 @@ body.lightbox-open { overflow: hidden; }
    específico para el menú off-canvas. Si se agrega un enlace al nav, volver a medir. */
 @media (max-width: 1160px) {
     .nav { position: fixed; inset: 0 0 0 auto; width: min(80vw, 320px); background: #fff; flex-direction: column; align-items: flex-start; padding: var(--rym-space-16) var(--rym-space-8); gap: var(--rym-space-4); transform: translateX(100%); transition: transform var(--rym-transition); box-shadow: var(--rym-shadow-lg); z-index: 200; }
+    /* Cerrado queda fuera del orden de tabulación (visibility); se oculta al terminar la transición. */
+    .nav:not(.is-open) { visibility: hidden; transition: transform var(--rym-transition), visibility 0s linear .3s; }
     .nav.is-open { transform: translateX(0); }
+    .nav__link--movil { display: inline-block; }
+    .nav-abierto .wa-widget { visibility: hidden; }
     .nav-toggle { display: block; position: relative; z-index: 210; }
     .nav-backdrop { position: fixed; inset: 0; background: rgba(15,20,50,.5); z-index: 190; opacity: 0; visibility: hidden; transition: opacity var(--rym-transition), visibility 0s linear var(--rym-transition); }
     .nav-backdrop.is-open { opacity: 1; visibility: visible; transition-delay: 0s; }

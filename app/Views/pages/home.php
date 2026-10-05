@@ -89,7 +89,7 @@ unset($_SESSION['_old']);
         </div>
 
         <?php if ($categorias): ?>
-        <div class="grid grid--4 mb-12">
+        <div class="grid grid--fluid mb-12">
             <?php foreach ($categorias as $cat): ?>
                 <a class="cat-card reveal" href="<?= url('/productos/' . e($cat['slug'])) ?>">
                     <span class="cat-card__name"><?= e($cat['nombre']) ?></span>
@@ -99,18 +99,24 @@ unset($_SESSION['_old']);
         <?php endif; ?>
 
         <?php if ($destacados): ?>
-        <div class="grid grid--4">
+        <div class="grid grid--centrado">
             <?php foreach ($destacados as $p): ?>
-                <article class="prod-card reveal">
-                    <div class="prod-card__media">
-                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2h12l-1 20H7L6 2zM6 7h12"/></svg>
+                <a class="prod-card prod-card--link reveal" href="<?= url('/productos') . '?' . e(http_build_query(['q' => $p['nombre']])) ?>">
+                    <div class="prod-card__media <?= empty($p['imagen']) ? 'prod-card__media--empty' : '' ?>">
+                        <?php if (!empty($p['imagen'])): ?>
+                            <div class="prod-gallery">
+                                <img class="prod-gallery__img is-active" src="<?= asset(e($p['imagen'])) ?>" alt="" loading="lazy" decoding="async">
+                            </div>
+                        <?php else: ?>
+                            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 2h12l-1 20H7L6 2zM6 7h12"/></svg>
+                        <?php endif; ?>
                     </div>
                     <div class="prod-card__body">
                         <span class="badge-destacado">Destacado</span>
                         <div class="prod-card__name"><?= e($p['nombre']) ?></div>
                         <div class="prod-card__meta"><?= e($p['unidad'] ?? '') ?></div>
                     </div>
-                </article>
+                </a>
             <?php endforeach; ?>
         </div>
         <?php endif; ?>

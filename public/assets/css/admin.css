@@ -325,5 +325,8 @@ select:disabled { cursor: not-allowed; opacity: .6; }
 .vbar__col  { height: calc(var(--px, 2) * 1px); }
 
 /* Listado de categorías: subcategorías indentadas bajo su padre. */
-.cat-row--sub td:first-child { padding-left: 2rem; color: var(--rym-text-soft, #7a869a); }
+.cat-row--sub td:first-child { padding-left: 2rem; color: var(--rym-text-muted); }
 .cat-row__indent { color: var(--rym-border); }
+
+/* Enlaces dentro de un párrafo: subrayados para no depender solo del color (WCAG 1.4.1). */
+.admin-content p a:not(.btn) { text-decoration: underline; text-underline-offset: 2px; }

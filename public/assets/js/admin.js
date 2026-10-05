@@ -23,7 +23,9 @@
             var esVentas = opt && opt.getAttribute('data-slug') === 'ventas';
             if (cv) cv.disabled = !esVentas;
             if (com) com.disabled = !esVentas;
-            wrap.classList.toggle('is-disabled', !esVentas);
+            // Solo se atenúan los campos; la nota que explica por qué están
+            // deshabilitados debe seguir legible (contraste AA).
+            (wrap.querySelector('.form__row') || wrap).classList.toggle('is-disabled', !esVentas);
             if (!esVentas) {
                 if (cv) cv.value = '';
                 if (com) com.value = '';
@@ -205,6 +207,12 @@
     function actualizarSombra(el) {
         var falta = el.scrollWidth - el.clientWidth - el.scrollLeft > 4;
         el.classList.toggle('has-more-right', falta);
+        // Si la tabla se desliza, que también se pueda con teclado (flechas).
+        if (el.scrollWidth > el.clientWidth) {
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('role', 'region');
+            if (!el.hasAttribute('aria-label')) { el.setAttribute('aria-label', 'Tabla desplazable'); }
+        }
     }
     wraps.forEach(function (el) {
         actualizarSombra(el);

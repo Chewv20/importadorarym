@@ -32,8 +32,7 @@
             <div class="field">
                 <label for="codigo_postal">Código postal *</label>
                 <input autocomplete="postal-code" type="text" id="codigo_postal" name="codigo_postal" value="<?= e($usuario['codigo_postal'] ?? '') ?>" inputmode="numeric" pattern="\d{5}" maxlength="5" required aria-describedby="cp_ayuda">
-                <p class="text-muted fs-sm">Al capturarlo, sugerimos la colonia y llenamos delegación/municipio y estado.</p>
-                <small class="field__note" id="cp_ayuda">Escríbelo primero: completamos colonia, municipio y estado.</small>
+                <p class="text-muted fs-sm" id="cp_ayuda">Al capturarlo, sugerimos la colonia y llenamos delegación/municipio y estado.</p>
             </div>
             <div class="field colonia-picker" data-colonia-picker>
                 <label for="colonia">Colonia *</label>

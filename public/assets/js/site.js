@@ -1,6 +1,7 @@
 // Interacciones del sitio: menú móvil, aparición al scroll y conteo de métricas.
 (function () {
     'use strict';
+    window.__rymSite = true; // ver el <script> del <head> en layouts/main.php
 
     /* ---- Menú móvil ------------------------------------------------------ */
     var toggle = document.getElementById('navToggle');
@@ -11,8 +12,26 @@
         var setOpen = function (open) {
             nav.classList.toggle('is-open', open);
             if (backdrop) backdrop.classList.toggle('is-open', open);
+            document.body.classList.toggle('nav-abierto', open);
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+            // Al abrir, el foco entra al menú (antes se quedaba en la página de atrás).
+            if (open) {
+                var primero = nav.querySelector('a');
+                if (primero) { setTimeout(function () { primero.focus(); }, 50); }
+            }
         };
+        // Con el menú abierto, Tab recorre solo el botón y los enlaces del menú.
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Tab' || !nav.classList.contains('is-open')) return;
+            // El botón va DESPUÉS del menú en el DOM: el orden se fija a mano en ambos
+            // sentidos (si no, desde el botón el foco saltaba al contenido de la página).
+            var focos = [toggle].concat([].slice.call(nav.querySelectorAll('a, button')));
+            var i = focos.indexOf(document.activeElement);
+            e.preventDefault();
+            var siguiente = i === -1 ? 0 : (i + (e.shiftKey ? -1 : 1) + focos.length) % focos.length;
+            focos[siguiente].focus();
+        });
         toggle.addEventListener('click', function () {
             setOpen(!nav.classList.contains('is-open'));
         });

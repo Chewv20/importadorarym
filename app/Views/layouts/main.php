@@ -12,6 +12,9 @@ $_locale = config('app.locale', 'es_MX');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php // Marca "hay JS" antes de pintar (evita parpadeo de las animaciones .reveal). Si site.js
+          // no llegara a ejecutarse, a los 4 s se quita la marca y el contenido se muestra igual. ?>
+    <script nonce="<?= e(csp_nonce()) ?>">document.documentElement.classList.add('js');setTimeout(function(){if(!window.__rymSite){document.documentElement.classList.remove('js');}},4000);</script>
 
     <?php require APP_PATH . '/Views/partials/analytics.php'; ?>
 

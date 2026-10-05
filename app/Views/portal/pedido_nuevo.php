@@ -26,7 +26,9 @@ $carrito   = $carrito ?? [];
                         <?= csrf_field() ?>
                         <?= catalogo_campos() ?>
                         <input type="hidden" name="producto_id" value="<?= (int) $p['id'] ?>">
-                        <input type="number" name="cantidad" value="1" min="1" aria-label="Cantidad de <?= e($p['nombre']) ?>">
+                        <?php // Arranca en la cantidad válida más pequeña (presentación + mínimo); las flechas avanzan por presentación.
+                              $minCant = (int) ($p['minimo_efectivo'] ?? 1) ?: 1; $paso = (int) ($p['piezas_por_presentacion'] ?? 0) ?: 1; ?>
+                        <input type="number" name="cantidad" value="<?= $minCant ?>" min="<?= $minCant ?>" step="<?= $paso ?>" max="9999" aria-label="Cantidad de <?= e($p['nombre']) ?> (piezas)">
                         <button class="btn btn--primary btn--sm" type="submit">Agregar</button>
                     </form>
                 </div>

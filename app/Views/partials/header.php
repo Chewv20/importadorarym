@@ -12,6 +12,8 @@
             <a class="nav__link <?= nav_active('personalizacion', $active) ?>" href="<?= url('/personalizacion') ?>">Personalización</a>
             <a class="nav__link <?= nav_active('reciclaje', $active) ?>" href="<?= url('/reciclaje') ?>">Reciclaje</a>
             <a class="nav__link <?= nav_active('contacto', $active) ?>" href="<?= url('/contacto') ?>">Contacto</a>
+            <?php // Solo en el menú desplegable: en desktop no cabe sin romper el header en una fila (va en el footer). ?>
+            <a class="nav__link nav__link--movil <?= nav_active('bolsa', $active) ?>" href="<?= url('/bolsa-de-trabajo') ?>">Bolsa de trabajo</a>
             <a class="btn btn--outline" href="<?= url('/portal/login') ?>">Portal clientes</a>
         </nav>
 
