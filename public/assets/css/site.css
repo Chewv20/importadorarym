@@ -34,8 +34,10 @@
    (el CTA caía debajo del logo y el header fijo crecía a ~147px). Los breakpoints de
    abajo garantizan que siempre quepa en una fila. */
 .site-header__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .75rem; }
-.site-logo { flex-shrink: 0; }
-.site-logo img { height: 60px; width: auto; }
+/* Si falta espacio (pantalla angosta o texto ampliado en el teléfono) ceden el logo
+   y el CTA; la hamburguesa NUNCA (flex: none): antes se salía de la pantalla. */
+.site-logo { flex: 0 1 auto; min-width: 64px; }
+.site-logo img { width: auto; height: auto; max-width: 100%; max-height: 60px; }
 .nav { display: flex; align-items: center; gap: 1.25rem; }
 .nav__link {
     font-family: var(--rym-font-head); font-weight: var(--rym-fw-medium);
@@ -43,10 +45,10 @@
     border-bottom: 2px solid transparent; white-space: nowrap;
 }
 .nav__link:hover, .nav__link.is-active { color: var(--rym-secondary); border-color: var(--rym-secondary); text-decoration: none; }
-.nav__actions { display: flex; align-items: center; gap: .75rem; flex-shrink: 0; }
+.nav__actions { display: flex; align-items: center; gap: .75rem; flex: 0 1 auto; min-width: 0; }
 .nav__actions .btn, .nav .btn { white-space: nowrap; }
 .nav__link--movil { display: none; }
-.nav-toggle { display: none; background: none; border: 0; cursor: pointer; padding: .4rem; }
+.nav-toggle { display: none; flex: none; background: none; border: 0; cursor: pointer; padding: .4rem; }
 .nav-toggle svg { width: 1.75rem; height: 1.75rem; color: var(--rym-primary); }
 .nav-toggle svg line { transform-box: fill-box; transform-origin: center; transition: transform var(--rym-transition), opacity var(--rym-transition); }
 .nav-toggle[aria-expanded="true"] svg line:nth-child(1) { transform: translateY(6px) rotate(45deg); }
@@ -63,7 +65,7 @@
     background: radial-gradient(closest-side, rgba(206,220,0,.22), transparent);
     border-radius: 50%;
 }
-.hero__inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.15fr .85fr; gap: var(--rym-space-16); align-items: center; padding-block: var(--rym-space-24); }
+.hero__inner { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: var(--rym-space-16); align-items: center; padding-block: var(--rym-space-24); }
 .hero__eyebrow { display: inline-block; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); color: #fff; font-weight: var(--rym-fw-semibold); font-size: var(--rym-fs-sm); padding: .35rem .9rem; border-radius: var(--rym-radius-pill); margin-bottom: var(--rym-space-6); }
 .hero__title { color: #fff; font-size: var(--rym-fs-hero); line-height: 1.05; margin-bottom: var(--rym-space-6); }
 .hero__title .accent { color: var(--rym-highlight); }
@@ -87,7 +89,7 @@
 
 /* ---- Métricas ------------------------------------------------------------ */
 .stats { background: var(--rym-highlight); }
-.stats__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--rym-space-8); padding-block: var(--rym-space-12); text-align: center; }
+.stats__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--rym-space-8); padding-block: var(--rym-space-12); text-align: center; }
 .stat__num { font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); font-size: var(--rym-fs-3xl); color: var(--rym-primary); line-height: 1; }
 .stat__label { color: #33351f; font-weight: var(--rym-fw-medium); margin-top: .4rem; }
 
@@ -101,7 +103,9 @@
 .prod-card__wa:hover { color: #075E54; }
 .prod-card--link { display: block; color: inherit; }
 .prod-card--link:hover { text-decoration: none; border-color: var(--rym-secondary); box-shadow: var(--rym-shadow); }
-.cat-card__name { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); font-size: var(--rym-fs-lg); color: #fff; }
+.cat-card__name { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); font-size: var(--rym-fs-lg); color: #fff; overflow-wrap: anywhere; }
+/* La tarjeta recorta (overflow:hidden): en 2 columnas de celular "Biodegradables" perdía la "s".
+   En móvil la letra baja un paso (ver ≤480px); overflow-wrap solo actúa en casos extremos. */
 
 .prod-card { background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); overflow: hidden; }
 .prod-card__media { position: relative; aspect-ratio: 4/3; background: var(--rym-bg-soft); overflow: hidden; }
@@ -179,11 +183,13 @@ body.lightbox-open { overflow: hidden; }
 .filter-tab--sub.is-active { opacity: 1; }
 
 /* ---- Dos columnas (impresión) ------------------------------------------- */
-.split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rym-space-16); align-items: center; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--rym-space-16); align-items: center; }
 .split__media { border-radius: var(--rym-radius-lg); min-height: 320px; background: linear-gradient(135deg, var(--rym-highlight), var(--rym-secondary)); }
-.check-list { list-style: none; display: grid; gap: var(--rym-space-3); margin-top: var(--rym-space-6); }
-.check-list li { display: flex; align-items: flex-start; gap: .6rem; }
-.check-list svg { width: 1.25rem; height: 1.25rem; color: var(--rym-secondary); flex: none; margin-top: .15rem; }
+.check-list { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--rym-space-3); margin-top: var(--rym-space-6); }
+/* Bloque normal + palomita en absoluto: con display:flex, un <strong> dentro del texto
+   partía el renglón en columnas ("La | Etiqueta Circular | acredita…"). */
+.check-list li { position: relative; padding-left: 1.85rem; }
+.check-list svg { position: absolute; left: 0; top: .15rem; width: 1.25rem; height: 1.25rem; color: var(--rym-secondary); }
 /* La lista se centra como bloque y sus renglones van a la izquierda: centrar cada
    renglón despegaba la palomita del texto cuando este se partía en dos líneas. */
 .check-list--center { width: fit-content; max-width: min(480px, 100%); margin-inline: auto; text-align: left; }
@@ -197,7 +203,7 @@ body.lightbox-open { overflow: hidden; }
 /* ---- Marcas -------------------------------------------------------------- */
 .brands { display: flex; flex-wrap: wrap; gap: var(--rym-space-4); justify-content: center; }
 .brand-chip { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-gray-cg9); background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius-pill); padding: .6rem 1.4rem; letter-spacing: .03em; }
-.brand-logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--rym-space-4); align-items: center; }
+.brand-logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: var(--rym-space-4); align-items: center; }
 .brand-logo { background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); display: grid; place-items: center; min-height: 104px; }
 .brand-logo img { width: 100%; height: auto; display: block; filter: grayscale(1); opacity: .72; transition: filter var(--rym-transition), opacity var(--rym-transition); }
 .brand-logo:hover img { filter: grayscale(0); opacity: 1; }
@@ -231,16 +237,16 @@ body.lightbox-open { overflow: hidden; }
 .cta__note { color: rgba(255,255,255,.9); margin-top: var(--rym-space-6); }
 .link-on-dark { color: #fff; font-weight: var(--rym-fw-semibold); text-decoration: underline; }
 .link-on-dark:hover { color: #fff; }
-.cta__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rym-space-16); align-items: center; }
+.cta__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--rym-space-16); align-items: center; }
 
 /* ---- Footer -------------------------------------------------------------- */
 .site-footer { background: #1f2b66; color: rgba(255,255,255,.8); }
 .site-footer a { color: rgba(255,255,255,.8); }
 .site-footer a:hover { color: #fff; }
-.footer__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--rym-space-12); padding-block: var(--rym-space-16); }
+.footer__grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--rym-space-12); padding-block: var(--rym-space-16); }
 .footer__title { color: #fff; font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); margin-bottom: var(--rym-space-4); }
 .footer__list { list-style: none; display: grid; gap: .6rem; }
-.footer__contact { display: grid; gap: .6rem; overflow-wrap: anywhere; }
+.footer__contact { display: grid; grid-template-columns: minmax(0, 1fr); gap: .6rem; overflow-wrap: anywhere; }
 .footer__contact div { display: flex; align-items: flex-start; gap: .6rem; }
 .footer__contact svg { width: 1.15rem; height: 1.15rem; color: var(--rym-highlight); flex: none; margin-top: .15rem; }
 .footer__bottom { border-top: 1px solid rgba(255,255,255,.15); padding-block: var(--rym-space-6); text-align: center; font-size: var(--rym-fs-sm); color: rgba(255,255,255,.6); }
@@ -262,13 +268,13 @@ body.lightbox-open { overflow: hidden; }
 .prose h2 { font-size: var(--rym-fs-xl); margin-top: var(--rym-space-8); }
 .prose h3 { font-size: var(--rym-fs-lg); margin-top: var(--rym-space-6); }
 .prose p, .prose li { color: var(--rym-text); line-height: var(--rym-lh-base); }
-.prose ul { padding-left: 1.25rem; display: grid; gap: .5rem; }
+.prose ul { padding-left: 1.25rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: .5rem; }
 .prose ul li { list-style: disc; }
-.prose a { text-decoration: underline; text-underline-offset: 2px; } /* no depender solo del color (WCAG 1.4.1) */
+.prose a { text-decoration: underline; text-underline-offset: 2px; overflow-wrap: anywhere; } /* no depender solo del color (WCAG 1.4.1) */
 
 /* ---- Contacto ------------------------------------------------------------ */
-.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rym-space-12); align-items: start; }
-.info-list { display: grid; gap: var(--rym-space-6); }
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--rym-space-12); align-items: start; }
+.info-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--rym-space-6); }
 .info-item { display: flex; gap: .85rem; align-items: flex-start; }
 .info-item svg { width: 1.4rem; height: 1.4rem; color: var(--rym-secondary); flex: none; margin-top: .15rem; }
 .info-item__label { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); }
@@ -276,7 +282,7 @@ body.lightbox-open { overflow: hidden; }
 .info-item__value a { color: var(--rym-secondary); text-decoration: underline; text-underline-offset: 2px; }
 
 /* ---- Pasos numerados (personalización) ---------------------------------- */
-.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--rym-space-6); }
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--rym-space-6); }
 .step-item { background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); }
 .step-item__num { width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--rym-secondary); color: #fff; display: grid; place-items: center; font-family: var(--rym-font-head); font-weight: var(--rym-fw-bold); margin-bottom: var(--rym-space-4); }
 .step-item__title { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); margin-bottom: .3rem; }
@@ -384,11 +390,13 @@ body.lightbox-open { overflow: hidden; }
 /* ---- Responsive ---------------------------------------------------------- */
 @media (max-width: 960px) {
     .hero__inner, .split, .cta__grid, .footer__grid { grid-template-columns: minmax(0, 1fr); }
-    .stats__grid { grid-template-columns: repeat(2, 1fr); gap: var(--rym-space-6); }
-    .sectors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stats__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--rym-space-6); }
+    /* Mínimo en rem: si el teléfono tiene el texto ampliado, pasa a 1 columna en vez de
+       que "Restaurantes" o "Eventos empresariales" se salgan de la pantalla. */
+    .sectors { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); }
     .hero__card { display: none; }
     .contact-grid { grid-template-columns: minmax(0, 1fr); }
-    .steps { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 /* El nav completo (6 enlaces + "Portal clientes") junto al logo y "Cotiza ahora"
    necesita ~1106px útiles (medido 2026-10-05), es decir una pantalla de ≥1154px —
@@ -408,23 +416,26 @@ body.lightbox-open { overflow: hidden; }
 @media (max-width: 720px) {
     .topbar__group--hide-sm { display: none; }
     .section { padding-block: var(--rym-space-16); }
-    .steps { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
     .page-hero__title { font-size: var(--rym-fs-2xl); }
 }
 /* Header en una sola fila en celulares: logo + "Cotiza ahora" + hamburguesa no
    cabían en 342px útiles (390px de pantalla) y el CTA bajaba a una segunda fila. */
 @media (max-width: 480px) {
     .site-header__inner { gap: .5rem; padding-block: .5rem; }
-    .site-logo img { height: 46px; }
+    .site-logo img { max-height: 46px; }
     .nav__actions { gap: .25rem; }
     .nav__actions .btn { padding: .55rem 1rem; font-size: var(--rym-fs-sm); }
+    /* Con el texto muy ampliado, el CTA pasa a dos renglones en vez de empujar la hamburguesa. */
+    .nav__actions .btn--accent { white-space: normal; min-width: 0; text-align: center; line-height: 1.15; }
     .sector { padding: var(--rym-space-4); }
+    .cat-card { padding: var(--rym-space-4) var(--rym-space-3); min-height: 140px; }
+    .cat-card__name { font-size: var(--rym-fs-base); }
 }
 @media (max-width: 359px) {
-    .site-logo img { height: 36px; }
+    .site-logo img { max-height: 36px; }
     .nav__actions .btn { padding: .5rem .75rem; }
     .nav-toggle { padding: .2rem; }
-    .sectors { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
@@ -514,7 +525,7 @@ body.lightbox-open { overflow: hidden; }
 }
 
 /* Bolsa de trabajo */
-.vacancy-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--rym-space-6); }
+.vacancy-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--rym-space-6); }
 .vacancy-card { display: flex; flex-direction: column; gap: var(--rym-space-3); background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); transition: box-shadow var(--rym-transition), transform var(--rym-transition), border-color var(--rym-transition); }
 .vacancy-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,.08); transform: translateY(-2px); border-color: var(--rym-primary); }
 .vacancy-card__title { font-family: var(--rym-font-head); font-size: var(--rym-fs-lg); color: var(--rym-primary); margin: 0; }
@@ -525,12 +536,12 @@ body.lightbox-open { overflow: hidden; }
 .vacancy-tag--soft { background: var(--rym-bg-soft); color: var(--rym-primary); border: 1px solid var(--rym-border); }
 .vacancy-loc { font-size: var(--rym-fs-sm); color: var(--rym-text-soft, #55607a); }
 
-.vacancy-detail-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--rym-space-8); align-items: start; }
+.vacancy-detail-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--rym-space-8); align-items: start; }
 .vacancy-detail__h { font-family: var(--rym-font-head); font-size: var(--rym-fs-lg); color: var(--rym-primary); margin: var(--rym-space-6) 0 var(--rym-space-2); }
 .vacancy-form { position: sticky; top: var(--rym-space-6); background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); }
 .vacancy-form input[type="file"] { width: 100%; font: inherit; padding: .5rem 0; }
 @media (max-width: 860px) {
-    .vacancy-detail-grid { grid-template-columns: 1fr; }
+    .vacancy-detail-grid { grid-template-columns: minmax(0, 1fr); }
     .vacancy-form { position: static; }
 }
 

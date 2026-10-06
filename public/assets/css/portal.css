@@ -51,7 +51,7 @@
 .portal-head .portal-title { margin-bottom: 0; }
 
 /* Login / registro */
-.auth-shell { min-height: 100vh; display: grid; place-items: center; padding: var(--rym-space-8); background: linear-gradient(135deg, var(--rym-primary), var(--rym-secondary)); }
+.auth-shell { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: var(--rym-space-8); background: linear-gradient(135deg, var(--rym-primary), var(--rym-secondary)); }
 .auth-card { width: 100%; max-width: 440px; background: #fff; border-radius: var(--rym-radius-lg); box-shadow: var(--rym-shadow-lg); padding: var(--rym-space-12); }
 /* Formularios más largos (registro, con dirección) necesitan más ancho para no verse angostos y alargados. */
 .auth-card--wide { max-width: 680px; }
@@ -103,7 +103,7 @@
 .pill--off { background: #eceef3; color: #666; }
 
 /* Pedidos recurrentes */
-.recurrentes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--rym-space-4); }
+.recurrentes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: var(--rym-space-4); }
 .recurrente-card { background: #fff; border: 1px solid var(--rym-border); border-radius: var(--rym-radius); padding: var(--rym-space-6); }
 .recurrente-card.is-paused { opacity: .7; }
 .recurrente-card__head { display: flex; justify-content: space-between; align-items: start; gap: var(--rym-space-3); margin-bottom: var(--rym-space-2); }

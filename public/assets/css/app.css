@@ -18,6 +18,9 @@ body {
     background: var(--rym-bg);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Red de seguridad para texto ampliado en el teléfono: una palabra que no cabe en
+       la línea se parte en vez de salirse de la pantalla (no afecta al texto normal). */
+    overflow-wrap: break-word;
 }
 
 img, svg { max-width: 100%; height: auto; display: block; }

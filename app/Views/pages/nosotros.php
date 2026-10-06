@@ -33,7 +33,7 @@
             <span class="section__eyebrow">Nuestros principios</span>
             <h2 class="section__title">Misión, visión y calidad</h2>
         </div>
-        <div class="grid grid--3">
+        <div class="grid grid--3 grid--lectura">
             <article class="card reveal">
                 <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V4m0 1h13l-2.5 4L18 13H5"/></svg></div>
                 <h3 class="card__title">Misión</h3>

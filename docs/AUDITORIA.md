@@ -1403,3 +1403,72 @@ terminar:
 - 138 pantallas (34 públicas y 104 con sesión): **axe 0, desbordes 0,
   errores de JS 0, errores de PHP 0 y 5xx 0**.
 - `tests/run.php` 158/158, `php -l` limpio y SW `rym-v56`.
+
+### Quinta ronda (05/10/2026) — hamburguesa oculta en teléfonos (reporte del usuario)
+
+El usuario detectó en teléfonos reales que **el menú hamburguesa se ocultaba**.
+Se reprodujo con 9 perfiles de teléfono (280–480 px) × 5 condiciones (texto
+normal, ampliado al 115/130/150 % como en la accesibilidad de Android, y
+fuente de respaldo antes de que cargue la web).
+
+**N5 · Hamburguesa fuera de pantalla con el texto ampliado — ALTA (regresión de U2).**
+- Causa: al quitar `flex-wrap` del header (U2), lo que no cabía ya no bajaba a
+  una segunda fila: se salía por la derecha. A 360 px con texto al 130 %, el
+  botón terminaba en 382 px. A tamaño normal sobraban apenas 7 px.
+- Corrección: la hamburguesa nunca cede espacio (`flex: none`). Si falta,
+  cede el logo (`flex: 0 1 auto`, `min-width: 64px`, la imagen escala con
+  `max-height`/`max-width`) y "Cotiza ahora" pasa a dos renglones (≤480 px).
+- Resultado: **45 de 45 escenarios con la hamburguesa visible y tocable**,
+  incluido un plegable de 280 px con texto al 150 %. A tamaño normal, el
+  header sigue midiendo lo mismo (62 px en móvil, 84 px en desktop).
+
+**N6 · Desbordes horizontales con el texto ampliado — MEDIA.**
+Las cuadrículas usaban `1fr` (= `minmax(auto, 1fr)`) o no tenían plantilla de
+columnas (columna implícita `auto`): una palabra larga ("personalizada",
+"Restaurantes", un correo) ensanchaba toda la columna.
+- Todas las pistas `Nfr` de `site.css`, `components.css` y `portal.css` pasan
+  a `minmax(0, Nfr)`, con un script que solo toca las pistas sueltas o de
+  `repeat()`.
+- Los mínimos fijos de auto-fill pasan a `min(100%, Npx)`.
+- `.form`, `.form-section`, `.auth-shell`, `.check-list`, `.footer__contact`
+  e `.info-list` reciben `minmax(0, 1fr)` explícito.
+- En móvil, sectores con mínimo en `rem` (pasa a 1 columna si el texto
+  crece); listas de `.prose` con `minmax(0, 1fr)` y enlaces que se pueden
+  cortar.
+- `body { overflow-wrap: break-word }` como red de seguridad.
+- Resultado: **0 desbordes en las 12 páginas públicas** para 10 combinaciones
+  de 280–390 px × 100–150 % de texto.
+
+**N7 · `.check-list` partía el renglón en columnas — MEDIA (visible a tamaño normal).**
+- Síntoma: con `li { display: flex }`, un `<strong>` en medio del texto
+  convertía "La", **"Etiqueta Circular"** y "acredita…" en tres columnas
+  (Reciclaje, móvil).
+- Corrección: el `li` pasa a ser un bloque normal con la palomita en
+  `position: absolute`.
+- Se encontró aislando el desborde por bisección: la emulación móvil de Chrome
+  "recuerda" un ancho ampliado, así que hubo que medir sin `isMobile`.
+
+**N8 · "Biodegradables" cortado en las tarjetas de categoría (2 columnas en teléfono).**
+- Causa: la tarjeta recorta (`overflow: hidden`) y perdía la "s".
+- En móvil: letra un paso menor y relleno horizontal de 12 px.
+- Se probó `hyphens: auto` y se descartó: partía sin necesidad
+  ("contenedo-res").
+- Mínimos de columna: 170 px en general (tablet 3 + 2, desktop 5 en fila) y
+  150 px en teléfono (2 columnas).
+- Verificado con el rectángulo real del texto en 10 anchos (320–1440): ningún
+  nombre cortado.
+
+**Tablet:** en Nosotros, "Misión, visión y calidad" pasaba de tres columnas
+angostas con párrafos largos a una columna legible (`grid--lectura`, ≤960 px).
+
+Verificado:
+- 51 pantallas públicas (desktop 1440, tablet 768 y móvil 390): axe 0,
+  desbordes 0 y errores de JS 0.
+- 104 pantallas con sesión (usuarios desechables, eliminados al terminar):
+  axe 0, desbordes 0, errores 0.
+- Matriz de texto ampliado: 0 desbordes. Hamburguesa: 45/45.
+- `tests/run.php` 158/158 y SW `rym-v57`.
+
+Lección: al endurecer un layout con `nowrap`, probar también con el **tamaño
+de texto ampliado del teléfono**, no solo con anchos de pantalla. Un margen de
+7 px a tamaño normal desaparece con el primer escalón de accesibilidad.

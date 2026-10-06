@@ -32,12 +32,17 @@
 
 /* ---- Grid genérico ------------------------------------------------------- */
 .grid { display: grid; gap: var(--rym-space-6); }
-.grid--3 { grid-template-columns: repeat(3, 1fr); }
-.grid--4 { grid-template-columns: repeat(4, 1fr); }
+.grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 /* Columnas según cuántos elementos haya, sin huérfanos en una segunda fila:
    fluid = se reparten todo el ancho (categorías); centrado = ancho fijo y centradas
    (tarjetas de producto, para que 3 no se estiren a lo ancho). */
-.grid--fluid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.grid--fluid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); }
+/* Teléfono: 2 columnas de categorías; en tablet 170px da 3 + 2 (con menos, 5 columnas
+   quedaban demasiado angostas para "Biodegradables"). */
+@media (max-width: 480px) { .grid--fluid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); } }
+/* Bloques de texto largo (misión, visión…): en tablet, una columna legible en vez de tres angostas. */
+@media (max-width: 960px) { .grid--lectura { grid-template-columns: minmax(0, 1fr); } }
 .grid--centrado { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 270px)); justify-content: center; }
 
 /* ---- Tarjetas ------------------------------------------------------------ */
@@ -52,11 +57,11 @@
 .card__text { color: var(--rym-text-muted); }
 
 /* ---- Formularios --------------------------------------------------------- */
-.form { display: grid; gap: var(--rym-space-4); background: #fff; padding: var(--rym-space-8); border-radius: var(--rym-radius-lg); box-shadow: var(--rym-shadow-lg); }
-.form__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rym-space-4); align-items: start; }
+.form { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--rym-space-4); background: #fff; padding: var(--rym-space-8); border-radius: var(--rym-radius-lg); box-shadow: var(--rym-shadow-lg); }
+.form__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--rym-space-4); align-items: start; }
 /* Agrupa campos de un formulario largo en bloques con su propio título,
    para que se sienta menos como una lista plana (ej. registro). */
-.form-section { display: grid; gap: var(--rym-space-4); }
+.form-section { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--rym-space-4); }
 .field__note { color: var(--rym-text-muted); font-size: var(--rym-fs-xs); margin: 0; }
 .form-section + .form-section { margin-top: var(--rym-space-2); padding-top: var(--rym-space-6); border-top: 1px solid var(--rym-border); }
 .form-section__title { font-family: var(--rym-font-head); font-weight: var(--rym-fw-semibold); color: var(--rym-primary); font-size: var(--rym-fs-xs); text-transform: uppercase; letter-spacing: .05em; margin: 0; }
@@ -154,7 +159,7 @@
 .portal-filters__search:focus, .portal-filters__cat:focus { outline: none; border-color: var(--rym-secondary); box-shadow: 0 0 0 3px rgba(0,94,184,.15); }
 
 /* ---- Catálogo + carrito (armar pedido: portal del cliente y panel) ------ */
-.order-grid { display: grid; grid-template-columns: 1fr 340px; gap: var(--rym-space-8); align-items: start; }
+.order-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--rym-space-8); align-items: start; }
 .order-item { display: flex; align-items: center; justify-content: space-between; gap: var(--rym-space-4); padding: var(--rym-space-4); border: 1px solid var(--rym-border); border-radius: var(--rym-radius); background: #fff; margin-bottom: var(--rym-space-3); }
 .order-item__main { display: flex; align-items: center; gap: var(--rym-space-3); min-width: 0; }
 .order-item__img { width: 48px; height: 48px; object-fit: cover; border-radius: var(--rym-radius-sm); background: var(--rym-bg-soft); flex-shrink: 0; }
@@ -197,11 +202,11 @@
 
 /* ---- Responsive de componentes ------------------------------------------ */
 @media (max-width: 960px) {
-    .grid--4 { grid-template-columns: repeat(2, 1fr); }
+    .grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 720px) {
-    .grid--3, .grid--4 { grid-template-columns: 1fr; }
-    .form__row { grid-template-columns: 1fr; }
+    .grid--3, .grid--4 { grid-template-columns: minmax(0, 1fr); }
+    .form__row { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Pipeline / stepper de estados (panel: detalle de pedido · portal: progreso del pedido) */
