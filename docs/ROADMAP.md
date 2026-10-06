@@ -12,7 +12,7 @@ Leyenda de estado: ☐ pendiente · ◐ en progreso · ☑ hecho.
 
 Sin esto, no se debe exponer el portal a Internet.
 
-### 0.1 ◐ SSL / HTTPS forzado  · S
+### 0.1 ☑ SSL / HTTPS forzado  · S · cerrada (2026-10-05)
 - **Objetivo:** todo el tráfico (login, portal, panel) cifrado.
 - **Verificado en vivo (2026-10-05):** `https://` responde 200 con HSTS (o sea,
   `FORCE_HTTPS=true` ya está en el `.env` del servidor), cookie `PHPSESSID` con
@@ -24,9 +24,11 @@ Sin esto, no se debe exponer el portal a Internet.
   al `.htaccess` de la raíz, resuelta por Apache antes de PHP, limitada al dominio de
   producción y sin bucle si el SSL termina en el balanceador. La de `index.php` queda
   como respaldo. De paso, el Router atiende `HEAD` como `GET` (daba 404).
-- **Pendiente:** subir `.htaccess` y `app/Core/Router.php` al servidor y comprobar
-  que `curl -I http://www.importadorarym.com/` → `301` a `https://www…`.
-- **Aceptación:** `http://` redirige a `https://`; cookies de sesión con flag `Secure`; sin *mixed content*.
+- **Verificado en vivo tras subirlo (commit `87459c7`):** `http://www…` y
+  `http://importadorarym.com` → `301` a `https://www…` en un solo salto, conservando
+  ruta y query string; `https://importadorarym.com` → `301` a `www`; `HEAD /` → 200;
+  backend sigue en 403.
+- **Aceptación:** `http://` redirige a `https://`; cookies de sesión con flag `Secure`; sin *mixed content*. ✔
 
 ### 0.2 ◐ `APP_KEY` — generada, falta pegarla en el servidor  · S
 - `.env.example` ya trae `APP_KEY=` con el comando para generarla — hecho.

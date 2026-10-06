@@ -38,7 +38,7 @@ Estas cuatro medidas salieron de la auditoría del 27/07/2026 (ver [AUDITORIA.md
 y quedaron **conscientemente aplazadas hasta el paso a producción**, porque dependen del
 hosting y no del código. No son deuda olvidada: son requisitos de este checklist.
 
-- [ ] **SSL + `FORCE_HTTPS=true`** — §5. **Bloqueante**: sin esto el login del portal
+- [x] **SSL + `FORCE_HTTPS=true`** (2026-10-05: http→https 301 verificado en vivo) — §5. **Bloqueante**: sin esto el login del portal
       viaja en claro y la cookie de sesión sale sin la marca `Secure`.
 - [x] **`AllowOverride All` verificado** (2026-10-05: 14 rutas del backend → 403 en vivo) — §1 y §2. **Bloqueante**: el `DocumentRoot` no
       apunta a `/public`, así que si Apache ignora los `.htaccess`, `.env` queda
