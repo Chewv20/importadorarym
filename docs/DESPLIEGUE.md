@@ -43,11 +43,11 @@ hosting y no del código. No son deuda olvidada: son requisitos de este checklis
 - [x] **`AllowOverride All` verificado** (2026-10-05: 14 rutas del backend → 403 en vivo) — §1 y §2. **Bloqueante**: el `DocumentRoot` no
       apunta a `/public`, así que si Apache ignora los `.htaccess`, `.env` queda
       descargable. Se comprueba en §6.
-- [ ] **Credenciales de producción** — §3 y §4: usuario de BD dedicado (hoy es `root`),
+- [x] **Credenciales de producción** (confirmadas 2026-10-05) — §3 y §4: usuario de BD dedicado (hoy es `root`),
       `APP_KEY` nueva y cambio de la contraseña del admin sembrado.
       Cambiar `APP_KEY` invalida las sesiones y los captchas en vuelo: hacerlo dentro de
       la ventana de despliegue, no en caliente.
-- [ ] **Cron de mantenimiento y de respaldo agendados** — §4.1, §4.2, §4.2.1 y §4.2.2.
+- [x] **Cron de mantenimiento y de respaldo agendados** (confirmados 2026-10-05) — §4.1, §4.2, §4.2.1 y §4.2.2.
 - [ ] **OPcache habilitado** — §1.1. No es bloqueante, pero es la mejora de rendimiento
       de mayor impacto y de ella depende que la caché de datos del sitio aporte algo
       (medido: −58 % con OPcache, −4 % sin él).

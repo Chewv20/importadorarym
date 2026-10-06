@@ -8,7 +8,7 @@ Leyenda de estado: ☐ pendiente · ◐ en progreso · ☑ hecho.
 
 ---
 
-## Fase 0 — Bloqueantes de producción  ·  esfuerzo total ~M
+## Fase 0 — Bloqueantes de producción  ·  ✅ COMPLETADA (2026-10-05)
 
 Sin esto, no se debe exponer el portal a Internet.
 
@@ -30,12 +30,13 @@ Sin esto, no se debe exponer el portal a Internet.
   backend sigue en 403.
 - **Aceptación:** `http://` redirige a `https://`; cookies de sesión con flag `Secure`; sin *mixed content*. ✔
 
-### 0.2 ◐ `APP_KEY` — generada, falta pegarla en el servidor  · S
+### 0.2 ☑ `APP_KEY` de producción  · S · confirmada (2026-10-05)
 - `.env.example` ya trae `APP_KEY=` con el comando para generarla — hecho.
 - **Generada 2026-09-01** (ver `.env` de producción preparado, no versionado):
   `php -r "echo bin2hex(random_bytes(32));"`. Pendiente solo: pegarla en el `.env`
   real del servidor (distinta a la de desarrollo).
-- **Aceptación:** `config('app.key')` no vacío en producción y distinto al de desarrollo.
+- **Confirmado por el responsable del despliegue (2026-10-05)** en el `.env` del servidor.
+- **Aceptación:** `config('app.key')` no vacío en producción y distinto al de desarrollo. ✔
 
 ### 0.3 ☑ `AllowOverride All` + protección de backend  · S · verificado (2026-10-05)
 - **Contexto:** el DocumentRoot **no** apunta a `/public`, así que los `.htaccess` deben aplicar.
@@ -45,7 +46,7 @@ Sin esto, no se debe exponer el portal a Internet.
   `/public/.htaccess` → **403** las catorce. Los `.htaccess` se aplican.
 - **Aceptación:** `GET /.env` y `GET /app/` → 403. ✔
 
-### 0.4 ☐ Rotar credenciales de prueba  · S
+### 0.4 ☑ Rotar credenciales de prueba  · S · confirmada (2026-10-05)
 - **Decisión 2026-09-01:** producción arranca con base de datos limpia
   (`migrate.php` + `seed.php "ContraseñaFuerte" --solo-admin`, ver `DESPLIEGUE.md`
   §3) — los datos de prueba de la base local (2 pedidos y `clave_sae='1'` de
@@ -55,6 +56,9 @@ Sin esto, no se debe exponer el portal a Internet.
 - El admin de producción queda creado directamente con una contraseña fuerte (pasada
   como argumento del seed), nunca con la contraseña por defecto del script.
 - Crear el/los usuarios internos reales con sus roles desde el panel, una vez arriba.
+- **Confirmado (2026-10-05)** desde el panel de Rackspace: usuario de BD dedicado (no
+  `root`), admin con contraseña fuerte, usuarios internos reales creados, crons de
+  respaldo/mantenimiento/recordatorios agendados y `TRUSTED_PROXY_CIDR` capturado.
 
 ---
 
@@ -1096,7 +1100,8 @@ Tras la auditoría de seguridad/performance y su endurecimiento (guardia CLI, ma
 Hechas: **Fase 1** (correo), **Fase 2** (galería), **Fase 3** (recuperar contraseña), **Fase 4** (importador de catálogo), **Fase 5** (robustez). Extras: módulo de auditoría + visor de errores; **módulo de cotizaciones** con partidas/precios (cliente arma → ventas cotiza → cliente aprueba → convierte a pedido; correo + imprimible).
 Pendiente:
 
-1. **Fase 0 (bloqueantes de producción)** — cerrar junto con la fecha de despliegue (SSL, APP_KEY, AllowOverride, rotar credenciales de prueba).
+1. **Fase 0 (bloqueantes de producción) — ✅ COMPLETA (2026-10-05).** 0.1 y 0.3 verificadas
+   en vivo; 0.2 y 0.4 confirmadas desde el panel del hosting.
 2. Operativo: cargar el inventario real con el importador y subir imágenes por el panel.
 3. **Fase 7 (propuesta 2026-07-31) — ✅ COMPLETA (2026-08-03)** — logística, ventas
    asistidas y catálogo por cliente. **Grupo A completo: 7.9 ✅, 7.2 ✅, 7.10 ✅, 7.1 ✅
