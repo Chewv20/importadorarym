@@ -17,6 +17,28 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # HTTPS + dominio canónico (www) — solo en el dominio de producción, así
+    # que no interviene en local (localhost) ni en otros entornos. Se resuelve
+    # aquí, en Apache, y no solo en public/index.php: en Rackspace las
+    # peticiones por http:// que llegan a PHP devolvían un 500 vacío en vez de
+    # la redirección (los estáticos sí respondían), así que la redirección no
+    # debe depender de PHP. La de index.php se queda como respaldo.
+    #
+    # "Ya es HTTPS" si CUALQUIER indicador lo dice (el SSL puede terminar en el
+    # balanceador del hosting): ante la duda no se redirige, para no formar un
+    # bucle. Confiar aquí en X-Forwarded-Proto sin validar la IP es inofensivo:
+    # quien lo falsifique solo se salta su propia redirección.
+    RewriteCond %{HTTP_HOST} ^(www\.)?importadorarym\.com$ [NC]
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{ENV:HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https [NC]
+    RewriteCond %{SERVER_PORT} !=443
+    RewriteRule ^ https://www.importadorarym.com%{REQUEST_URI} [R=301,L]
+
+    # Ya en HTTPS pero sin www: un solo dominio canónico (el de APP_URL).
+    RewriteCond %{HTTP_HOST} ^importadorarym\.com$ [NC]
+    RewriteRule ^ https://www.importadorarym.com%{REQUEST_URI} [R=301,L]
+
     # Acceso directo a las carpetas del backend: denegado.
     RewriteRule ^(app|config|routes|database|storage|docs|build|tests)(/|$) - [F]
 

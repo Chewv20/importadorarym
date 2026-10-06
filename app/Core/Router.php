@@ -31,6 +31,11 @@ class Router
     {
         $uri    = '/' . trim($uri, '/');
         $method = strtoupper($method);
+        // HEAD responde como GET (Apache descarta el cuerpo): sin esto, los
+        // monitores de disponibilidad y verificadores de enlaces veían 404.
+        if ($method === 'HEAD') {
+            $method = 'GET';
+        }
 
         foreach ($this->routes[$method] ?? [] as $route => $action) {
             $pattern = preg_replace('#\{[a-zA-Z_][a-zA-Z0-9_]*\}#', '([^/]+)', $route);

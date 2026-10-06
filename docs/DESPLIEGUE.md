@@ -40,7 +40,7 @@ hosting y no del código. No son deuda olvidada: son requisitos de este checklis
 
 - [ ] **SSL + `FORCE_HTTPS=true`** — §5. **Bloqueante**: sin esto el login del portal
       viaja en claro y la cookie de sesión sale sin la marca `Secure`.
-- [ ] **`AllowOverride All` verificado** — §1 y §2. **Bloqueante**: el `DocumentRoot` no
+- [x] **`AllowOverride All` verificado** (2026-10-05: 14 rutas del backend → 403 en vivo) — §1 y §2. **Bloqueante**: el `DocumentRoot` no
       apunta a `/public`, así que si Apache ignora los `.htaccess`, `.env` queda
       descargable. Se comprueba en §6.
 - [ ] **Credenciales de producción** — §3 y §4: usuario de BD dedicado (hoy es `root`),
@@ -297,6 +297,10 @@ TRUSTED_PROXY_CIDR=98.129.229.200   # ver "Proxy de confianza" arriba — verifi
 ## 5. SSL / HTTPS (BLOQUEANTE para el portal)
 - Instalar el certificado (Let's Encrypt u otro).
 - Poner `FORCE_HTTPS=true` → redirige http→https y activa HSTS.
+- La redirección http→https y `importadorarym.com` → `www` la hace el `.htaccess`
+  de la raíz (Apache, antes de PHP): en este hosting las peticiones por HTTP que
+  llegan a PHP devolvían 500. Si cambia el dominio, actualizar esas reglas.
+- Comprobar: `curl -I http://www.importadorarym.com/` → `301` a `https://www…`.
 - Sin SSL, **no exponer el portal de clientes** (login/sesión viajarían en claro).
 
 ## 6. Verificación post-deploy

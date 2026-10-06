@@ -14,11 +14,18 @@ Sin esto, no se debe exponer el portal a Internet.
 
 ### 0.1 ◐ SSL / HTTPS forzado  · S
 - **Objetivo:** todo el tráfico (login, portal, panel) cifrado.
-- **Certificado instalado en el servidor (confirmado 2026-09-01).** Pendiente solo:
-  en el `.env` de producción, `FORCE_HTTPS=true`.
-- **Ya soportado:** `config('app.force_https')`, `is_https()` (detecta proxy vía
-  `X-Forwarded-Proto`, validado contra `TRUSTED_PROXY_CIDR` desde la auditoría del
-  01/09), HSTS en `.htaccess`.
+- **Verificado en vivo (2026-10-05):** `https://` responde 200 con HSTS (o sea,
+  `FORCE_HTTPS=true` ya está en el `.env` del servidor), cookie `PHPSESSID` con
+  `secure; HttpOnly; SameSite=Lax`, y CSP/cabeceras de seguridad presentes.
+- **Hallazgo (2026-10-05):** `http://` devolvía **500 vacío** en vez de redirigir —
+  toda petición por HTTP que llega a PHP truena en el servidor (los estáticos sí
+  responden 200), así que la redirección de `public/index.php` nunca se ejecuta.
+  **Corregido:** la redirección http→https (y `importadorarym.com` → `www`) se movió
+  al `.htaccess` de la raíz, resuelta por Apache antes de PHP, limitada al dominio de
+  producción y sin bucle si el SSL termina en el balanceador. La de `index.php` queda
+  como respaldo. De paso, el Router atiende `HEAD` como `GET` (daba 404).
+- **Pendiente:** subir `.htaccess` y `app/Core/Router.php` al servidor y comprobar
+  que `curl -I http://www.importadorarym.com/` → `301` a `https://www…`.
 - **Aceptación:** `http://` redirige a `https://`; cookies de sesión con flag `Secure`; sin *mixed content*.
 
 ### 0.2 ◐ `APP_KEY` — generada, falta pegarla en el servidor  · S
@@ -28,10 +35,13 @@ Sin esto, no se debe exponer el portal a Internet.
   real del servidor (distinta a la de desarrollo).
 - **Aceptación:** `config('app.key')` no vacío en producción y distinto al de desarrollo.
 
-### 0.3 ☐ `AllowOverride All` + protección de backend  · S
+### 0.3 ☑ `AllowOverride All` + protección de backend  · S · verificado (2026-10-05)
 - **Contexto:** el DocumentRoot **no** apunta a `/public`, así que los `.htaccess` deben aplicar.
-- **Pasos:** en el vhost, `AllowOverride All`; verificar que `.env`, `app/`, `storage/`, `database/` devuelven 403 por web.
-- **Aceptación:** `GET /.env` y `GET /app/` → 403. Solo verificable una vez subido al servidor real.
+- **Verificado en vivo contra producción:** `/.env`, `/app/`, `/config/`, `/database/`,
+  `/storage/`, `/routes/`, `/docs/`, `/build/`, `/tests/`, `/composer.json`,
+  `/app/Core/Mailer.php`, `/database/migrate.php`, `/storage/logs/php-error.log` y
+  `/public/.htaccess` → **403** las catorce. Los `.htaccess` se aplican.
+- **Aceptación:** `GET /.env` y `GET /app/` → 403. ✔
 
 ### 0.4 ☐ Rotar credenciales de prueba  · S
 - **Decisión 2026-09-01:** producción arranca con base de datos limpia
