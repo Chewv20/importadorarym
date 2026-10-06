@@ -47,6 +47,10 @@ use App\Controllers\RepartoController;
 /* Landing */
 $router->get('/', [HomeController::class, 'index']);
 
+/* SEO: robots.txt y sitemap.xml dinámicos (dominio desde APP_URL) */
+$router->get('/robots.txt', [App\Controllers\SeoController::class, 'robots']);
+$router->get('/sitemap.xml', [App\Controllers\SeoController::class, 'sitemap']);
+
 /* Formulario de cotización / contacto (leads) */
 $router->post('/cotizar', [CotizacionController::class, 'store']);
 
